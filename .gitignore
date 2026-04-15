@@ -20,3 +20,5 @@ test.sh
 **/.DS_Store
 
 dev/
+# WorkBuddy memory
+.workbuddy/memory/
