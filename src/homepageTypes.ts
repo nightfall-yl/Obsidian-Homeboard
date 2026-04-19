@@ -47,6 +47,43 @@ export interface HomepageConfig {
 	cards?: HomepageCardConfig[];
 }
 
+// ===== Force View Mode Settings =====
+export interface ForceViewModeSettings {
+	enabled: boolean;
+	debounceTimeout: number;
+	ignoreOpenFiles: boolean;
+	ignoreForceViewAll: boolean;
+	folders: { folder: string; viewMode: string }[];
+	files: { filePattern: string; viewMode: string }[];
+}
+
+export const DEFAULT_FORCE_VIEW_MODE_SETTINGS: ForceViewModeSettings = {
+	enabled: true,
+	debounceTimeout: 300,
+	ignoreOpenFiles: false,
+	ignoreForceViewAll: false,
+	folders: [{ folder: "", viewMode: "" }],
+	files: [{ filePattern: "", viewMode: "" }],
+};
+
+// ===== Remember Cursor Position Settings =====
+export interface CursorPositionSettings {
+	enabled: boolean;
+	dbFileName: string;
+	delayAfterFileOpening: number;
+	saveTimer: number;
+}
+
+export const SAFE_DB_FLUSH_INTERVAL = 5000;
+
+export const DEFAULT_CURSOR_POSITION_SETTINGS: CursorPositionSettings = {
+	enabled: true,
+	dbFileName: ".obsidian/plugins/obsidian-homeboard/cursor-positions.json",
+	delayAfterFileOpening: 100,
+	saveTimer: SAFE_DB_FLUSH_INTERVAL,
+};
+
+// ===== Homepage Component Settings =====
 export interface HomepageComponentSettings {
 	defaultColumns: number;
 	defaultGap: number;
@@ -59,6 +96,9 @@ export interface HomepageComponentSettings {
 	resizerColor: string;
 	resizerTransparency: number;
 	minColumnWidthPercent: number;
+	// Integrated plugin settings
+	forceViewMode: ForceViewModeSettings;
+	cursorPosition: CursorPositionSettings;
 }
 
 export const DEFAULT_HOMEPAGE_SETTINGS: HomepageComponentSettings = {
@@ -73,6 +113,8 @@ export const DEFAULT_HOMEPAGE_SETTINGS: HomepageComponentSettings = {
 	resizerColor: "#c0cad5",
 	resizerTransparency: 100,
 	minColumnWidthPercent: 15,
+	forceViewMode: DEFAULT_FORCE_VIEW_MODE_SETTINGS,
+	cursorPosition: DEFAULT_CURSOR_POSITION_SETTINGS,
 };
 
 export const HOMEPAGE_CARD_PALETTES: Record<HomepageCardPalettePreset, HomepageCardPalette> = {

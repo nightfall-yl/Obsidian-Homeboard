@@ -48,6 +48,456 @@
 .homepage-builder-modal__palette-trigger:hover{background:transparent;box-shadow:none}
 .homepage-builder-modal__palette-trigger-row{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:8px 10px;border:1px solid var(--background-modifier-border);border-radius:var(--input-radius,10px);background:var(--background-primary)}
 .homepage-builder-modal__palette-trigger-label{font-size:12px;font-weight:600;color:var(--text-normal);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ===== Settings Panel - Fork from imgbox-pro ===== */
+
+.homeboard-settings-root {
+	--hb-settings-collapsible-padding: 20px 16px;
+	--hb-settings-collapsible-radius: 20px;
+	--hb-settings-collapsible-border: 1px solid color-mix(in srgb, var(--background-modifier-border) 58%, transparent 42%);
+	--hb-settings-collapsible-light-bg: color-mix(in srgb, var(--background-secondary) 94%, white 6%);
+	--hb-settings-collapsible-dark-bg: var(--background-secondary);
+	--hb-settings-nav-font-size: 15px;
+	--hb-settings-nav-font-weight: 600;
+	padding-bottom: 24px;
+}
+
+/* Content Area */
+.homeboard-settings-content {
+	padding-top: 22px;
+}
+
+.homeboard-settings-section {
+	display: none;
+	animation: homeboard-settings-fade-in 140ms ease;
+}
+
+.homeboard-settings-section.is-active {
+	display: block;
+}
+
+.homeboard-settings-section .setting-item {
+	padding-top: 14px;
+	padding-bottom: 14px;
+}
+
+.homeboard-settings-section .setting-item:first-child {
+	border-top: 0;
+}
+
+/* Top Navigation - Fork from imgbox-pro */
+.homeboard-settings-nav {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 14px 18px;
+	margin: 18px 0 0;
+	padding: 0 0 18px;
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.homeboard-settings-nav-btn {
+	appearance: none;
+	-webkit-appearance: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	padding: 12px 14px;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	color: var(--text-muted);
+	font-size: var(--hb-settings-nav-font-size);
+	font-weight: var(--hb-settings-nav-font-weight);
+	line-height: 1;
+	cursor: pointer;
+	box-shadow: none;
+	outline: none;
+	transition: background-color 140ms ease, color 140ms ease, transform 140ms ease;
+}
+
+.homeboard-settings-nav-btn:hover {
+	background: transparent;
+	color: var(--text-normal);
+	transform: translateY(-1px);
+}
+
+.homeboard-settings-nav-btn:not(.is-active) {
+	padding: 12px 8px;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	box-shadow: none;
+}
+
+.homeboard-settings-nav-btn:not(.is-active):focus,
+.homeboard-settings-nav-btn:not(.is-active):focus-visible {
+	outline: none;
+	box-shadow: none;
+}
+
+.homeboard-settings-nav-btn.is-active {
+	padding: 12px 16px;
+	border-radius: 12px;
+	background: var(--background-secondary);
+	color: var(--text-normal);
+	box-shadow: none;
+}
+
+.homeboard-settings-nav-btn.is-active .svg-icon {
+	color: var(--text-normal);
+}
+
+.homeboard-settings-nav-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	color: currentColor;
+}
+
+.homeboard-settings-nav-icon svg {
+	width: 20px;
+	height: 20px;
+	stroke-width: 1.9px;
+}
+
+/* Collapsible Cards - Fork from imgbox-pro */
+.homeboard-settings-collapsible {
+	margin-top: 18px;
+	border: 0 !important;
+	background: transparent !important;
+	overflow: visible;
+	box-shadow: none !important;
+	outline: none !important;
+}
+
+.homeboard-settings-collapsible-summary {
+	display: flex;
+	align-items: flex-start;
+	justify-content: flex-start;
+	gap: 14px;
+	width: 100%;
+	margin: 0;
+	padding: var(--hb-settings-collapsible-padding);
+	border: var(--hb-settings-collapsible-border) !important;
+	border-radius: var(--hb-settings-collapsible-radius);
+	box-sizing: border-box;
+	background: var(--background-secondary) !important;
+	background-color: var(--background-secondary) !important;
+	box-shadow: none !important;
+	outline: none !important;
+	color: var(--text-normal);
+	font-family: inherit;
+	font-size: 15px;
+	font-weight: 600;
+	cursor: pointer;
+	text-align: left;
+}
+
+.homeboard-settings-collapsible-summary:focus,
+.homeboard-settings-collapsible-summary:focus-visible,
+.homeboard-settings-collapsible-summary:hover,
+.homeboard-settings-collapsible-summary.is-open {
+	background: var(--background-secondary) !important;
+	background-color: var(--background-secondary) !important;
+	border: var(--hb-settings-collapsible-border) !important;
+	box-shadow: none !important;
+	outline: none !important;
+}
+
+.homeboard-settings-collapsible-copy {
+	display: flex;
+	flex: 1 1 auto;
+	min-width: 0;
+	flex-direction: column;
+}
+
+.homeboard-settings-collapsible-title {
+	font-size: 15px;
+	font-weight: 600;
+	line-height: 1.35;
+}
+
+.homeboard-settings-collapsible-desc {
+	margin: 6px 0 0;
+	color: var(--text-muted);
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.homeboard-settings-collapsible-content {
+	padding: 14px 0 0;
+}
+
+/* no-summary cards: apply card style directly (no summary element) */
+.homeboard-settings-collapsible.no-summary {
+	border: var(--hb-settings-collapsible-border) !important;
+	border-radius: var(--hb-settings-collapsible-radius);
+	background: var(--background-secondary) !important;
+	background-color: var(--background-secondary) !important;
+}
+
+.homeboard-settings-collapsible.no-summary .homeboard-settings-collapsible-content {
+	padding: 14px 16px;
+}
+
+.theme-light .homeboard-settings-collapsible.no-summary {
+	background: var(--hb-settings-collapsible-light-bg) !important;
+	background-color: var(--hb-settings-collapsible-light-bg) !important;
+}
+
+.theme-dark .homeboard-settings-collapsible.no-summary {
+	background: var(--hb-settings-collapsible-dark-bg) !important;
+	background-color: var(--hb-settings-collapsible-dark-bg) !important;
+}
+
+.theme-light .homeboard-settings-collapsible-summary,
+.theme-light .homeboard-settings-collapsible-summary:focus,
+.theme-light .homeboard-settings-collapsible-summary:focus-visible,
+.theme-light .homeboard-settings-collapsible-summary:hover,
+.theme-light .homeboard-settings-collapsible-summary.is-open {
+	background: var(--hb-settings-collapsible-light-bg) !important;
+	background-color: var(--hb-settings-collapsible-light-bg) !important;
+}
+
+.theme-dark .homeboard-settings-collapsible-summary,
+.theme-dark .homeboard-settings-collapsible-summary:focus,
+.theme-dark .homeboard-settings-collapsible-summary:focus-visible,
+.theme-dark .homeboard-settings-collapsible-summary:hover,
+.theme-dark .homeboard-settings-collapsible-summary.is-open {
+	background: var(--hb-settings-collapsible-dark-bg) !important;
+	background-color: var(--hb-settings-collapsible-dark-bg) !important;
+	border: var(--hb-settings-collapsible-border) !important;
+}
+
+/* Force View Mode specific styles */
+.force-view-mode-div {
+	margin-bottom: 8px;
+}
+
+.force-view-mode-div > .setting-item {
+	padding: 8px 12px;
+	border: none;
+}
+
+.force-view-mode-div > .setting-item > .setting-item-control {
+	justify-content: flex-start;
+	gap: 8px;
+	padding: 0;
+	width: 100%;
+}
+
+.force-view-mode-folder > .setting-item > .setting-item-control > .search-input-container,
+.force-view-mode-file > .setting-item > .setting-item-control > .search-input-container,
+.force-view-mode-folder > .setting-item > .setting-item-control > *:first-child,
+.force-view-mode-file > .setting-item > .setting-item-control > *:first-child {
+	flex: 2 1 0;
+	min-width: 0;
+}
+
+.force-view-mode-folder > .setting-item > .setting-item-control > *:nth-child(2),
+.force-view-mode-file > .setting-item > .setting-item-control > *:nth-child(2) {
+	flex: 1 1 0;
+	min-width: 0;
+}
+
+/* 修复新增行搜索框左侧贴边：强制保留图标与输入文本左内边距 */
+.force-view-mode-folder .search-input-container,
+.force-view-mode-file .search-input-container {
+	position: relative;
+}
+
+/* 仅作用于 force-view-mode 的搜索框，确保新增行也有稳定左内边距 */
+.force-view-mode-search-container,
+.force-view-mode-folder .search-input-container,
+.force-view-mode-file .search-input-container {
+	position: relative;
+	width: 100%;
+}
+
+.force-view-mode-search-icon {
+	position: absolute;
+	left: 10px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 18px;
+	height: 18px;
+	color: var(--text-muted);
+	pointer-events: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.force-view-mode-search-icon svg {
+	width: 18px;
+	height: 18px;
+	stroke-width: 2;
+}
+
+.force-view-mode-search-container .search-input,
+.force-view-mode-search-input,
+.force-view-mode-folder .search-input-container input,
+.force-view-mode-file .search-input-container input,
+.force-view-mode-folder .search-input,
+.force-view-mode-file .search-input {
+	padding-left: 34px !important;
+	padding-inline-start: 34px !important;
+	text-indent: 0 !important;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+/* Folder browse button */
+.homeboard-folder-browse-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	border: none;
+	background: transparent;
+	color: var(--text-muted);
+	cursor: pointer;
+	border-radius: var(--input-radius);
+	margin-left: 4px;
+	flex-shrink: 0;
+}
+
+.homeboard-folder-browse-btn:hover {
+	background-color: var(--background-modifier-hover);
+	color: var(--text-normal);
+}
+
+/* Folder suggest dropdown */
+.folder-suggest-backdrop {
+	position: fixed;
+	inset: 0;
+	z-index: var(--layer-modal);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.folder-suggest-dropdown {
+	width: 480px;
+	max-width: 90vw;
+	max-height: 70vh;
+	overflow: hidden;
+	background: var(--background-primary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	display: flex;
+	flex-direction: column;
+}
+
+/* Inline dropdown (used by force-view-mode row input itself) */
+.folder-suggest-dropdown--inline {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: calc(100% + 4px);
+	width: 100%;
+	max-width: none;
+	max-height: 280px;
+	z-index: calc(var(--layer-modal) + 2);
+	border-radius: var(--input-radius, 10px);
+	box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+}
+
+.folder-suggest-search {
+	padding: 8px 10px;
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.folder-suggest-search-input {
+	width: 100%;
+	padding: 6px 8px;
+	background: var(--background-modifier-form-field);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-s);
+	color: var(--text-normal);
+	font-size: var(--font-ui-small);
+	outline: none;
+	pointer-events: auto;
+	user-select: text;
+	-webkit-user-select: text;
+	caret-color: var(--text-normal);
+}
+
+.folder-suggest-search-input:focus {
+	border-color: var(--interactive-accent);
+}
+
+.folder-suggest-list {
+	overflow-y: auto;
+	padding: 4px 0;
+}
+
+.folder-suggest-empty {
+	padding: 20px 10px;
+	text-align: center;
+	color: var(--text-faint);
+	font-size: var(--font-ui-small);
+}
+
+.folder-suggest-dropdown .suggest-item {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 10px;
+	cursor: pointer;
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+}
+
+.folder-suggest-dropdown .suggest-item:hover,
+.folder-suggest-dropdown .suggest-item.is-active {
+	background: var(--background-modifier-hover);
+	color: var(--text-normal);
+}
+
+.folder-suggest-dropdown .suggest-icon {
+	display: flex;
+	flex-shrink: 0;
+	color: var(--text-faint);
+}
+
+.folder-suggest-dropdown .suggest-icon svg {
+	width: 14px;
+	height: 14px;
+}
+
+.folder-suggest-dropdown .suggest-text {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+@keyframes homeboard-settings-fade-in {
+	from {
+		opacity: 0;
+		transform: translateY(4px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@media (max-width: 720px) {
+	.homeboard-settings-nav {
+		gap: 10px 12px;
+	}
+
+	.homeboard-settings-nav-btn {
+		padding: 10px 12px;
+		font-size: calc(var(--hb-settings-nav-font-size) - 1px);
+	}
+
+	.homeboard-settings-content {
+		padding: 16px;
+	}
+}
 .homepage-builder-modal__palette-menu{display:flex;flex-direction:column;gap:4px;margin-top:6px;padding:6px;border:1px solid var(--background-modifier-border);border-radius:var(--input-radius,10px);background:var(--background-primary);box-shadow:0 12px 28px rgba(15,23,42,.08)}
 .homepage-builder-modal__palette-option{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:8px 10px;border:1px solid transparent;border-radius:var(--input-radius,10px);background:transparent;text-align:left}
 .homepage-builder-modal__palette-option:hover{background:var(--background-modifier-hover)}

@@ -4,12 +4,36 @@ import { Zh } from "./zh";
 
 export type AppLanguage = "zh" | "en";
 
+function getObsidianLanguage(): string | null {
+	try {
+		const appLike = (window as Window & { app?: { getLanguage?: () => string } }).app;
+		if (appLike && typeof appLike.getLanguage === "function") {
+			const lang = appLike.getLanguage();
+			if (typeof lang === "string" && lang.length > 0) {
+				return lang;
+			}
+		}
+	} catch {
+		// ignore
+	}
+	return null;
+}
+
+function normalizeLanguage(lang: string | null | undefined): AppLanguage {
+	const value = (lang ?? "").toLowerCase();
+	return value.startsWith("zh") ? "zh" : "en";
+}
+
 export function getLanguage(): AppLanguage {
-	const lang = window.localStorage.getItem("language");
-	return lang === "zh" ? "zh" : "en";
+	const obsidianLang = getObsidianLanguage();
+	if (obsidianLang) {
+		return normalizeLanguage(obsidianLang);
+	}
+	return normalizeLanguage(navigator.language);
 }
 
 export function setLanguage(lang: AppLanguage) {
+	// Keep for backward compatibility; language now follows Obsidian UI language.
 	window.localStorage.setItem("language", lang);
 }
 

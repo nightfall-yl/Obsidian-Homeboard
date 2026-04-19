@@ -150,25 +150,25 @@ export class Zh implements Local {
 	homeboard_card_label = "卡片";
 	homeboard_default_title = "主页";
 	homeboard_default_card_title = "链接";
-	homeboard_menu_title = "新增Homeboard组件";
-	homeboard_insert_command = "插入 Homeboard 代码块";
-	homeboard_builder_command = "打开 Homeboard Builder";
-	homeboard_edit_command = "编辑光标所在的 Homeboard 代码块";
+	homeboard_menu_title = "新增 Trimmings 组件";
+	homeboard_insert_command = "插入 Trimmings（homeboard）代码块";
+	homeboard_builder_command = "打开 Trimmings Builder";
+	homeboard_edit_command = "编辑光标所在的 Trimmings（homeboard）代码块";
 	homeboard_menu_insert = "新建分栏";
 	notice_open_markdown_first = "请先打开一个 Markdown 笔记。";
-	notice_homeboard_update_failed = "更新当前 Homeboard 代码块失败。";
-	notice_homeboard_parse_failed = "解析当前 Homeboard 代码块失败。";
-	notice_homeboard_cursor_required = "请先把光标放在 Homeboard 代码块内。";
+	notice_homeboard_update_failed = "更新当前 Trimmings（homeboard）代码块失败。";
+	notice_homeboard_parse_failed = "解析当前 Trimmings（homeboard）代码块失败。";
+	notice_homeboard_cursor_required = "请先把光标放在 Trimmings（homeboard）代码块内。";
 	notice_no_active_markdown_file = "当前没有激活的 Markdown 文件。";
 	notice_heatmap_no_markdown_view = "当前没有激活的 Markdown 视图。";
 	notice_heatmap_editor_unsupported = "当前编辑器不支持就地编辑热力图。";
-	homeboard_error_empty = "Homeboard 配置为空";
+	homeboard_error_empty = "Trimmings（homeboard）配置为空";
 	homeboard_error_empty_recommend = "请先添加 cards 配置";
-	homeboard_error_invalid_yaml_object = "Homeboard 配置不是有效的 YAML 对象";
-	homeboard_error_card_required = "Homeboard 至少需要一张卡片";
+	homeboard_error_invalid_yaml_object = "Trimmings（homeboard）配置不是有效的 YAML 对象";
+	homeboard_error_card_required = "Trimmings（homeboard）至少需要一张卡片";
 	homeboard_error_card_required_recommend = "请在 cards 中添加 links 卡片";
-	homeboard_error_yaml_failed_at_line = "Homeboard YAML 解析失败，位置在第 {line} 行附近";
-	homeboard_error_yaml_failed = "Homeboard YAML 解析失败，请检查缩进与字段格式";
+	homeboard_error_yaml_failed_at_line = "Trimmings（homeboard）YAML 解析失败，位置在第 {line} 行附近";
+	homeboard_error_yaml_failed = "Trimmings（homeboard）YAML 解析失败，请检查缩进与字段格式";
 
     /**
      * weekday

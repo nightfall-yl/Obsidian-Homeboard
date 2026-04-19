@@ -14,7 +14,7 @@ import {
 	HomepageLinkItem,
 	resolveHomepageCardPalette,
 } from "./homepageTypes";
-import { AppLanguage, Locals, getLanguage, setLanguage } from "./i18/messages";
+import { Locals } from "./i18/messages";
 import { Local } from "./i18/types";
 import { stringifyHomepageConfig } from "./homepageYaml";
 
@@ -213,18 +213,6 @@ export class HomepageBuilderModal extends Modal {
 
 	private renderBasicSettings(container: HTMLElement) {
 		const local = Locals.get();
-		new Setting(container)
-			.setName(local.language_label)
-			.setDesc(local.language_desc)
-			.addButton((button) => {
-				this.configureLanguageButton(button.buttonEl, "zh");
-				button.onClick(() => this.switchLanguage("zh"));
-			})
-			.addButton((button) => {
-				this.configureLanguageButton(button.buttonEl, "en");
-				button.onClick(() => this.switchLanguage("en"));
-			});
-
 		new Setting(container)
 			.setName(local.homeboard_block_id)
 			.setDesc(local.homeboard_block_id_desc)
@@ -611,24 +599,6 @@ export class HomepageBuilderModal extends Modal {
 
 	private cloneConfig(config: HomepageConfig): HomepageConfig {
 		return JSON.parse(JSON.stringify(config)) as HomepageConfig;
-	}
-
-	private switchLanguage(lang: AppLanguage) {
-		if (getLanguage() === lang) {
-			return;
-		}
-		setLanguage(lang);
-		this.closePaletteMenu?.();
-		this.render();
-	}
-
-	private configureLanguageButton(buttonEl: HTMLButtonElement, lang: AppLanguage) {
-		const local = Locals.get();
-		buttonEl.addClass("homepage-builder-modal__language-button");
-		buttonEl.setText(lang === "zh" ? local.language_zh : local.language_en);
-		if (getLanguage() === lang) {
-			buttonEl.addClass("is-active");
-		}
 	}
 
 	static toCodeBlock(config: HomepageConfig): string {

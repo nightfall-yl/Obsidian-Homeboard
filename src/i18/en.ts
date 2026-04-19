@@ -152,25 +152,25 @@ export class En implements Local {
     homeboard_card_label = "Card";
     homeboard_default_title = "Home";
     homeboard_default_card_title = "Links";
-    homeboard_menu_title = "Add Homeboard Component";
-    homeboard_insert_command = "Insert Homeboard block";
-    homeboard_builder_command = "Open Homeboard builder";
-    homeboard_edit_command = "Edit Homeboard block at cursor";
+    homeboard_menu_title = "Add Trimmings Component";
+    homeboard_insert_command = "Insert Trimmings (homeboard) block";
+    homeboard_builder_command = "Open Trimmings Builder";
+    homeboard_edit_command = "Edit Trimmings (homeboard) block at cursor";
     homeboard_menu_insert = "Add Columns";
     notice_open_markdown_first = "Please open a Markdown note first.";
-    notice_homeboard_update_failed = "Failed to update current Homeboard block.";
-    notice_homeboard_parse_failed = "Failed to parse current Homeboard block.";
-    notice_homeboard_cursor_required = "Place the cursor inside a Homeboard code block first.";
+    notice_homeboard_update_failed = "Failed to update current Trimmings (homeboard) block.";
+    notice_homeboard_parse_failed = "Failed to parse current Trimmings (homeboard) block.";
+    notice_homeboard_cursor_required = "Place the cursor inside a Trimmings (homeboard) code block first.";
     notice_no_active_markdown_file = "No active markdown file.";
     notice_heatmap_no_markdown_view = "No markdown view is active.";
     notice_heatmap_editor_unsupported = "Current editor does not support in-place heatmap editing.";
-    homeboard_error_empty = "Homeboard config is empty";
+    homeboard_error_empty = "Trimmings (homeboard) config is empty";
     homeboard_error_empty_recommend = "Please add cards first";
-    homeboard_error_invalid_yaml_object = "Homeboard config is not a valid YAML object";
-    homeboard_error_card_required = "Homeboard requires at least one card";
+    homeboard_error_invalid_yaml_object = "Trimmings (homeboard) config is not a valid YAML object";
+    homeboard_error_card_required = "Trimmings (homeboard) requires at least one card";
     homeboard_error_card_required_recommend = "Please add a links card in cards";
-    homeboard_error_yaml_failed_at_line = "Homeboard YAML parse failed near line {line}";
-    homeboard_error_yaml_failed = "Homeboard YAML parse failed, please check indentation and field format";
+    homeboard_error_yaml_failed_at_line = "Trimmings (homeboard) YAML parse failed near line {line}";
+    homeboard_error_yaml_failed = "Trimmings (homeboard) YAML parse failed, please check indentation and field format";
 
     /**
      * weekday

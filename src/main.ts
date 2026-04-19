@@ -13,14 +13,21 @@ import { Locals } from "./i18/messages";
 import { parseHomepageConfig } from "./homepageConfig";
 import { HomeboardError } from "./homeboardError";
 import { HomepageProcessor } from "./homepageProcessor";
-import { DEFAULT_HOMEPAGE_SETTINGS, HOMEPAGE_CARD_PALETTES, HomepageCardPalettePreset, HomepageComponentSettings } from "./homepageTypes";
+import { 
+	DEFAULT_HOMEPAGE_SETTINGS, 
+	HOMEPAGE_CARD_PALETTES, 
+	HomepageCardPalettePreset, 
+	HomepageComponentSettings 
+} from "./homepageTypes";
 import { stringifyHomepageConfig } from "./homepageYaml";
 import { CodeBlockProcessor } from "./processor/codeBlockProcessor";
 import { Renders } from "./render/renders";
-import { applyHomepageStyles } from "./settings";
+import { applyHomepageStyles, HomepageSettingTab } from "./settings";
 import { ContributionGraphConfig } from "./types";
 import { mountEditButtonToCodeblock } from "./view/codeblock/CodeblockEditButtonMount";
 import { ContributionGraphCreateModal } from "./view/form/GraphFormModal";
+import { ForceViewModeManager } from "./forceViewMode";
+import { CursorPositionManager } from "./cursorPosition";
 import "../styles.css";
 
 declare global {
@@ -70,11 +77,23 @@ cards:
 
 export default class HomepageComponentPlugin extends Plugin {
 	settings: HomepageComponentSettings;
+	forceViewModeManager: ForceViewModeManager;
+	cursorPositionManager: CursorPositionManager;
 
 	async onload() {
 		await this.loadSettings();
 		applyHomepageStyles(this.settings);
 		this.registerGlobalRenderApi();
+
+		// Initialize integrated plugins
+		this.forceViewModeManager = new ForceViewModeManager(this, this.settings.forceViewMode);
+		this.cursorPositionManager = new CursorPositionManager(this, this.settings.cursorPosition);
+		
+		this.forceViewModeManager.onload();
+		this.cursorPositionManager.onload();
+
+		// Register setting tab
+		this.addSettingTab(new HomepageSettingTab(this.app, this));
 
 		this.registerMarkdownCodeBlockProcessor("contributionGraph", (code, el, ctx) => {
 			const processor = new CodeBlockProcessor();
@@ -137,12 +156,20 @@ export default class HomepageComponentPlugin extends Plugin {
 		);
 	}
 
+	onunload() {
+		this.forceViewModeManager?.onunload();
+		this.cursorPositionManager?.onunload();
+	}
+
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_HOMEPAGE_SETTINGS, await this.loadData());
 	}
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+		// Update managers with new settings
+		this.forceViewModeManager?.updateSettings(this.settings.forceViewMode);
+		this.cursorPositionManager?.updateSettings(this.settings.cursorPosition);
 	}
 
 	private registerGlobalRenderApi() {

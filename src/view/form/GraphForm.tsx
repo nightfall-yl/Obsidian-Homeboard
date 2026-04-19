@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { CellStyleRule } from "src/types";
 import { Choose } from "../choose/Choose";
 import { getThemes, getThemeSwatches, matchThemeByRules } from "./GraphTheme";
-import { AppLanguage, getLanguage, getLocalByLanguage, setLanguage } from "src/i18/messages";
+import { Locals } from "src/i18/messages";
 import { App } from "obsidian";
 
 import {
@@ -24,8 +24,7 @@ export function GraphForm(props: {
 	app: App;
 }): JSX.Element {
 	const { yamlConfig } = props;
-	const [language, setLanguageState] = useState<AppLanguage>(getLanguage());
-	const local = getLocalByLanguage(language);
+	const local = Locals.get();
 	const themes = useMemo(() => getThemes(local), [local]);
 
 	const [formData, setFormData] = useState(yamlConfig);
@@ -149,14 +148,6 @@ export function GraphForm(props: {
 		return parseInt(numberStr);
 	};
 
-	const changeLanguage = (lang: AppLanguage) => {
-		if (language === lang) {
-			return;
-		}
-		setLanguage(lang);
-		setLanguageState(lang);
-	};
-
 	return (
 		<div className="contribution-graph-modal-content">
 			<Tab
@@ -167,30 +158,6 @@ export function GraphForm(props: {
 						children: (
 							<div className="contribution-graph-modal-form">
 								<div className="form-group contribution-graph-modal__basic-group">
-									<div className="form-item">
-										<span className="label">
-											{local.language_label}
-										</span>
-										<div className="form-content">
-											<div className="contribution-graph-modal-language-toggle">
-												<button
-													type="button"
-													className={language === "zh" ? "is-active" : ""}
-													onClick={() => changeLanguage("zh")}
-												>
-													{local.language_zh}
-												</button>
-												<button
-													type="button"
-													className={language === "en" ? "is-active" : ""}
-													onClick={() => changeLanguage("en")}
-												>
-													{local.language_en}
-												</button>
-											</div>
-										</div>
-									</div>
-
 									<div className="form-item">
 										<span className="label">
 											{local.form_title}
