@@ -1,23 +1,9 @@
 import { En } from "./en";
 import { Local } from "./types";
 import { Zh } from "./zh";
+import { getLanguage as getObsidianLanguage } from "obsidian";
 
 export type AppLanguage = "zh" | "en";
-
-function getObsidianLanguage(): string | null {
-	try {
-		const appLike = (window as Window & { app?: { getLanguage?: () => string } }).app;
-		if (appLike && typeof appLike.getLanguage === "function") {
-			const lang = appLike.getLanguage();
-			if (typeof lang === "string" && lang.length > 0) {
-				return lang;
-			}
-		}
-	} catch {
-		// ignore
-	}
-	return null;
-}
 
 function normalizeLanguage(lang: string | null | undefined): AppLanguage {
 	const value = (lang ?? "").toLowerCase();
@@ -25,9 +11,13 @@ function normalizeLanguage(lang: string | null | undefined): AppLanguage {
 }
 
 export function getLanguage(): AppLanguage {
-	const obsidianLang = getObsidianLanguage();
-	if (obsidianLang) {
-		return normalizeLanguage(obsidianLang);
+	try {
+		const obsidianLang = getObsidianLanguage();
+		if (obsidianLang) {
+			return normalizeLanguage(obsidianLang);
+		}
+	} catch {
+		// ignore
 	}
 	return normalizeLanguage(navigator.language);
 }

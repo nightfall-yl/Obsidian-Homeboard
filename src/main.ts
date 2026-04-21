@@ -268,8 +268,8 @@ export default class HomepageComponentPlugin extends Plugin {
 			const menuRect = currentMenuEl.getBoundingClientRect();
 			const rect = menuItemEl.getBoundingClientRect();
 			submenuEl = createDiv({ cls: "menu homeboard-hover-submenu" });
-			submenuEl.style.left = `${menuRect.right - 10}px`;
-			submenuEl.style.top = `${rect.top - 10}px`;
+			submenuEl.style.left = `${menuRect.right - 4}px`;
+			submenuEl.style.top = `${rect.top}px`;
 			submenuEl.appendChild(
 				createSubmenuItem(local.context_menu_create, "lucide-chart-no-axes-combined", () => {
 					this.openContributionGraphModal();
