@@ -1,0 +1,10 @@
+{
+	"id": "obsidian-trimmings",
+	"name": "Trimmings",
+	"version": "26.4.3",
+	"minAppVersion": "1.3.0",
+	"description": "Light enhancements for Obsidian: homeboard cards, heatmaps, view mode, and cursor memory.",
+	"author": "nightfall-yl",
+	"authorUrl": "https://github.com/nightfall-yl/obsidian-trimmings",
+	"isDesktopOnly": false
+}
