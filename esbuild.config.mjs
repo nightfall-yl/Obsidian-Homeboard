@@ -1,5 +1,5 @@
 import esbuild from "esbuild";
-import { cp, mkdir } from "fs/promises";
+import { cp, mkdir, readFile, writeFile } from "fs/promises";
 import process from "process";
 import builtins from "builtin-modules";
 
@@ -10,6 +10,51 @@ if you want to view the source, please visit the plugin source
 `;
 
 const prod = process.argv[2] === "production";
+
+async function updateVersionsJson() {
+	// 读取package.json获取当前版本号
+	const packageJson = JSON.parse(await readFile("package.json", "utf8"));
+	const currentVersion = packageJson.version;
+
+	// 读取versions.json获取现有版本信息
+	let versionsJson;
+	try {
+		versionsJson = JSON.parse(await readFile("versions.json", "utf8"));
+	} catch {
+		// 如果文件不存在，创建一个空对象
+		versionsJson = {};
+	}
+
+	// 检查当前版本是否已经存在
+	if (!versionsJson[currentVersion]) {
+		// 获取最新版本的Obsidian最低版本要求
+		const versionKeys = Object.keys(versionsJson);
+		let minObsidianVersion = "1.3.0"; // 默认值
+		if (versionKeys.length > 0) {
+			// 按版本号排序，获取最新版本
+			versionKeys.sort((a, b) => {
+				const aParts = a.split(".").map(Number);
+				const bParts = b.split(".").map(Number);
+				for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+					const aVal = aParts[i] || 0;
+					const bVal = bParts[i] || 0;
+					if (aVal !== bVal) {
+						return bVal - aVal;
+					}
+				}
+				return 0;
+			});
+			minObsidianVersion = versionsJson[versionKeys[0]];
+		}
+
+		// 添加新的版本条目
+		versionsJson[currentVersion] = minObsidianVersion;
+
+		// 保存更新后的versions.json文件
+		await writeFile("versions.json", JSON.stringify(versionsJson, null, 2));
+		console.log(`Updated versions.json: added version ${currentVersion} with min Obsidian version ${minObsidianVersion}`);
+	}
+}
 
 async function syncReleaseArtifacts() {
 	await mkdir("released", { recursive: true });
@@ -47,10 +92,14 @@ const context = await esbuild.context({
 	treeShaking: true,
 	outfile: "main.js",
 	minify: prod,
+	loader: {
+		".css": "text",
+	},
 });
 
 if (prod) {
 	await context.rebuild();
+	await updateVersionsJson();
 	await syncReleaseArtifacts();
 	process.exit(0);
 } else {
