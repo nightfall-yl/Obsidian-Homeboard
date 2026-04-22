@@ -8,21 +8,21 @@ import {
 	TFile,
 	setIcon,
 } from "obsidian";
-import { HomepageBuilderModal } from "./builderModal";
+import { ElementCardBuilderModal } from "./elementCardBuilderModal";
 import { Locals } from "./i18/messages";
-import { parseHomepageConfig } from "./homepageConfig";
-import { HomeboardError } from "./homeboardError";
-import { HomepageProcessor } from "./homepageProcessor";
+import { parseElementCardConfig } from "./elementCardConfig";
+import { ElementCardError } from "./elementCardError";
+import { ElementCardProcessor } from "./elementCardProcessor";
 import { 
-	DEFAULT_HOMEPAGE_SETTINGS, 
-	HOMEPAGE_CARD_PALETTES, 
-	HomepageCardPalettePreset, 
-	HomepageComponentSettings 
-} from "./homepageTypes";
-import { stringifyHomepageConfig } from "./homepageYaml";
+	DEFAULT_ELEMENTCARD_SETTINGS, 
+	ELEMENTCARD_CARD_PALETTES, 
+	ElementCardCardPalettePreset, 
+	ElementCardComponentSettings 
+} from "./elementCardTypes";
+import { stringifyElementCardConfig } from "./elementCardYaml";
 import { CodeBlockProcessor } from "./processor/codeBlockProcessor";
 import { Renders } from "./render/renders";
-import { applyHomepageStyles, HomepageSettingTab } from "./settings";
+import { applyElementCardStyles, ElementCardSettingTab } from "./settings";
 import { ContributionGraphConfig } from "./types";
 import { mountEditButtonToCodeblock } from "./view/codeblock/CodeblockEditButtonMount";
 import { ContributionGraphCreateModal } from "./view/form/GraphFormModal";
@@ -39,14 +39,14 @@ declare global {
 	}
 }
 
-const PALETTE_KEYS: HomepageCardPalettePreset[] = ["sage", "mist", "amber", "plum", "slate"];
+const PALETTE_KEYS: ElementCardCardPalettePreset[] = ["sage", "mist", "amber", "plum", "slate"];
 
-function pickRandomPalettes(count: number): HomepageCardPalettePreset[] {
+function pickRandomPalettes(count: number): ElementCardCardPalettePreset[] {
 	const shuffled = [...PALETTE_KEYS].sort(() => Math.random() - 0.5);
 	return shuffled.slice(0, count);
 }
 
-function generateHomeboardSample(): string {
+function generateElementCardSample(): string {
 	const palettes = pickRandomPalettes(2);
 	return String.raw`title: 主页
 columns: 2
@@ -75,14 +75,14 @@ cards:
 `;
 }
 
-export default class HomepageComponentPlugin extends Plugin {
-	settings: HomepageComponentSettings;
+export default class ElementCardComponentPlugin extends Plugin {
+	settings: ElementCardComponentSettings;
 	forceViewModeManager: ForceViewModeManager;
 	cursorPositionManager: CursorPositionManager;
 
 	async onload() {
 		await this.loadSettings();
-		applyHomepageStyles(this.settings);
+		applyElementCardStyles(this.settings);
 		this.registerGlobalRenderApi();
 
 		// Initialize integrated plugins
@@ -93,7 +93,7 @@ export default class HomepageComponentPlugin extends Plugin {
 		this.cursorPositionManager.onload();
 
 		// Register setting tab
-		this.addSettingTab(new HomepageSettingTab(this.app, this));
+		this.addSettingTab(new ElementCardSettingTab(this.app, this));
 
 		this.registerMarkdownCodeBlockProcessor("contributionGraph", (code, el, ctx) => {
 			const processor = new CodeBlockProcessor();
@@ -103,32 +103,32 @@ export default class HomepageComponentPlugin extends Plugin {
 			}
 		});
 
-		this.registerMarkdownCodeBlockProcessor("homeboard", (source, el, ctx) => {
-			const processor = new HomepageProcessor(this, this.settings);
+		this.registerMarkdownCodeBlockProcessor("elementCard", (source, el, ctx) => {
+			const processor = new ElementCardProcessor(this, this.settings);
 			processor.render(source, el, ctx, this.app);
 		});
 
 		this.addCommand({
-			id: "insert-homeboard-block",
-			name: Locals.get().homeboard_insert_command,
+			id: "insert-elementCard-block",
+			name: Locals.get().elementCard_insert_command,
 			editorCallback: (editor: Editor, _ctx: MarkdownView | MarkdownFileInfo) => {
-				editor.replaceSelection(`\`\`\`homeboard\n${generateHomeboardSample()}\n\`\`\`\n`);
+				editor.replaceSelection(`\`\`\`elementCard\n${generateElementCardSample()}\n\`\`\`\n`);
 			},
 		});
 
 		this.addCommand({
-			id: "open-homeboard-builder",
-			name: Locals.get().homeboard_builder_command,
+			id: "open-elementCard-builder",
+			name: Locals.get().elementCard_builder_command,
 			callback: () => {
 				this.openBuilder();
 			},
 		});
 
 		this.addCommand({
-			id: "edit-homeboard-block-at-cursor",
-			name: Locals.get().homeboard_edit_command,
+			id: "edit-elementCard-block-at-cursor",
+			name: Locals.get().elementCard_edit_command,
 			editorCallback: (editor: Editor, _ctx: MarkdownView | MarkdownFileInfo) => {
-				this.editHomeboardBlockAtCursor(editor);
+				this.editElementCardBlockAtCursor(editor);
 			},
 		});
 
@@ -145,12 +145,12 @@ export default class HomepageComponentPlugin extends Plugin {
 				menu.setUseNativeMenu(false);
 				menu.addItem((item) =>
 					item
-						.setTitle(Locals.get().homeboard_menu_title)
+						.setTitle(Locals.get().elementCard_menu_title)
 						.setIcon("lucide-layout-template")
 						.onClick(() => {})
 				);
 				window.setTimeout(() => {
-					this.attachHomeboardSubmenuHover(menu, editor);
+					this.attachElementCardSubmenuHover(menu, editor);
 				}, 0);
 			})
 		);
@@ -162,7 +162,7 @@ export default class HomepageComponentPlugin extends Plugin {
 	}
 
 	async loadSettings() {
-		this.settings = Object.assign({}, DEFAULT_HOMEPAGE_SETTINGS, await this.loadData());
+		this.settings = Object.assign({}, DEFAULT_ELEMENTCARD_SETTINGS, await this.loadData());
 	}
 
 	async saveSettings() {
@@ -181,15 +181,15 @@ export default class HomepageComponentPlugin extends Plugin {
 		};
 	}
 
-	private insertHomeboardBlock(editor: Editor) {
-		editor.replaceSelection(`\`\`\`homeboard\n${generateHomeboardSample()}\n\`\`\`\n`);
+	private insertElementCardBlock(editor: Editor) {
+		editor.replaceSelection(`\`\`\`elementCard\n${generateElementCardSample()}\n\`\`\`\n`);
 	}
 
 	private openContributionGraphModal() {
 		new ContributionGraphCreateModal(this.app).open();
 	}
 
-	private attachHomeboardSubmenuHover(menu: Menu, editor: Editor) {
+	private attachElementCardSubmenuHover(menu: Menu, editor: Editor) {
 		const local = Locals.get();
 		const menus = Array.from(document.querySelectorAll<HTMLElement>(".menu"));
 		const currentMenuEl = menus.at(-1);
@@ -198,19 +198,19 @@ export default class HomepageComponentPlugin extends Plugin {
 		}
 
 		const menuItemEl = Array.from(currentMenuEl.querySelectorAll<HTMLElement>(".menu-item")).find(
-			(itemEl) => itemEl.textContent?.includes(local.homeboard_menu_title)
+			(itemEl) => itemEl.textContent?.includes(local.elementCard_menu_title)
 		);
-		if (!menuItemEl || menuItemEl.dataset.homeboardSubmenuBound === "true") {
+		if (!menuItemEl || menuItemEl.dataset.elementCardSubmenuBound === "true") {
 			return;
 		}
 
-		menuItemEl.dataset.homeboardSubmenuBound = "true";
-		menuItemEl.addClass("homeboard-menu-item--has-submenu");
+		menuItemEl.dataset.elementCardSubmenuBound = "true";
+		menuItemEl.addClass("elementCard-menu-item--has-submenu");
 
 		const titleEl = menuItemEl.querySelector<HTMLElement>(".menu-item-title");
-		if (titleEl && !titleEl.querySelector(".homeboard-menu-item__chevron")) {
+		if (titleEl && !titleEl.querySelector(".elementCard-menu-item__chevron")) {
 			titleEl.createSpan({
-				cls: "homeboard-menu-item__chevron",
+				cls: "elementCard-menu-item__chevron",
 				text: "›",
 			});
 		}
@@ -247,7 +247,7 @@ export default class HomepageComponentPlugin extends Plugin {
 		};
 
 		const createSubmenuItem = (title: string, icon: string, onClick: () => void) => {
-			const itemEl = createDiv({ cls: "menu-item homeboard-hover-submenu__item" });
+			const itemEl = createDiv({ cls: "menu-item elementCard-hover-submenu__item" });
 			const iconEl = itemEl.createDiv({ cls: "menu-item-icon" });
 			setIcon(iconEl, icon);
 			itemEl.createDiv({ cls: "menu-item-title", text: title });
@@ -267,17 +267,17 @@ export default class HomepageComponentPlugin extends Plugin {
 
 			const menuRect = currentMenuEl.getBoundingClientRect();
 			const rect = menuItemEl.getBoundingClientRect();
-			submenuEl = createDiv({ cls: "menu homeboard-hover-submenu" });
+			submenuEl = createDiv({ cls: "menu elementCard-hover-submenu" });
 			submenuEl.style.left = `${menuRect.right - 4}px`;
 			submenuEl.style.top = `${rect.top}px`;
 			submenuEl.appendChild(
-				createSubmenuItem(local.context_menu_create, "lucide-chart-no-axes-combined", () => {
-					this.openContributionGraphModal();
+				createSubmenuItem(local.elementCard_menu_insert, "lucide-columns-2", () => {
+					this.insertElementCardBlock(editor);
 				})
 			);
 			submenuEl.appendChild(
-				createSubmenuItem(local.homeboard_menu_insert, "lucide-columns-2", () => {
-					this.insertHomeboardBlock(editor);
+				createSubmenuItem(local.context_menu_create, "lucide-chart-no-axes-combined", () => {
+					this.openContributionGraphModal();
 				})
 			);
 			document.body.appendChild(submenuEl);
@@ -312,15 +312,15 @@ export default class HomepageComponentPlugin extends Plugin {
 
 		const editor = view.editor;
 		const start = editor.getCursor("from");
-		const initialConfig = HomepageBuilderModal.createInitialConfig(this.settings);
-		const codeBlock = HomepageBuilderModal.toCodeBlock(initialConfig);
+		const initialConfig = ElementCardBuilderModal.createInitialConfig(this.settings);
+		const codeBlock = ElementCardBuilderModal.toCodeBlock(initialConfig);
 		editor.replaceSelection(codeBlock);
 		const insertedLines = this.countBlockLines(codeBlock);
 		this.openBuilderForBlock(
 			view.file.path,
 			start.line,
 			start.line + insertedLines - 1,
-			stringifyHomepageConfig(initialConfig)
+			stringifyElementCardConfig(initialConfig)
 		);
 	}
 
@@ -348,8 +348,8 @@ export default class HomepageComponentPlugin extends Plugin {
 		content: string
 	) {
 		try {
-			const config = parseHomepageConfig(content);
-			new HomepageBuilderModal(
+			const config = parseElementCardConfig(content);
+			new ElementCardBuilderModal(
 				this.app,
 				this.settings,
 				async (nextConfig) => {
@@ -358,30 +358,30 @@ export default class HomepageComponentPlugin extends Plugin {
 							sourcePath,
 							startLine,
 							endLine,
-							HomepageBuilderModal.toCodeBlock(nextConfig)
+							ElementCardBuilderModal.toCodeBlock(nextConfig)
 						);
 					} catch (error) {
 						console.error(error);
-						new Notice(Locals.get().notice_homeboard_update_failed);
+						new Notice(Locals.get().notice_elementCard_update_failed);
 					}
 				},
 				config
 			).open();
 		} catch (error) {
-			if (error instanceof HomeboardError) {
+			if (error instanceof ElementCardError) {
 				new Notice(error.summary);
 				return;
 			}
 
 			console.error(error);
-			new Notice(Locals.get().notice_homeboard_parse_failed);
+			new Notice(Locals.get().notice_elementCard_parse_failed);
 		}
 	}
 
-	private editHomeboardBlockAtCursor(editor: Editor) {
-		const block = this.findHomeboardBlockAtCursor(editor);
+	private editElementCardBlockAtCursor(editor: Editor) {
+		const block = this.findElementCardBlockAtCursor(editor);
 		if (!block) {
-			new Notice(Locals.get().notice_homeboard_cursor_required);
+			new Notice(Locals.get().notice_elementCard_cursor_required);
 			return;
 		}
 
@@ -398,26 +398,26 @@ export default class HomepageComponentPlugin extends Plugin {
 				block.content
 			);
 		} catch (error) {
-			if (error instanceof HomeboardError) {
+			if (error instanceof ElementCardError) {
 				new Notice(error.summary);
 				return;
 			}
 
 			console.error(error);
-			new Notice(Locals.get().notice_homeboard_parse_failed);
+			new Notice(Locals.get().notice_elementCard_parse_failed);
 		}
 	}
 
-	private findHomeboardBlockAtCursor(editor: Editor) {
+	private findElementCardBlockAtCursor(editor: Editor) {
 		const cursorLine = editor.getCursor().line;
 		let startLine = -1;
 		for (let line = cursorLine; line >= 0; line--) {
 			const current = editor.getLine(line).trim();
-			if (current.startsWith("```homeboard")) {
+			if (current.startsWith("```elementCard")) {
 				startLine = line;
 				break;
 			}
-			if (current.startsWith("```") && !current.startsWith("```homeboard")) {
+			if (current.startsWith("```") && !current.startsWith("```elementCard")) {
 				return null;
 			}
 		}

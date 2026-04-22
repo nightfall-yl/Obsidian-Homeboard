@@ -1,8 +1,8 @@
 import {
-	HomepageCardConfig,
-	HomepageConfig,
-	HomepageLinkItem,
-} from "./homepageTypes";
+	ElementCardCardConfig,
+	ElementCardConfig,
+	ElementCardLinkItem,
+} from "./elementCardTypes";
 
 function needsQuotes(value: string): boolean {
 	return value === "" || /[:#[\]{}|>*&!%@`'"]/.test(value) || /^\s|\s$/.test(value);
@@ -33,7 +33,7 @@ function indent(level: number): string {
 	return "  ".repeat(level);
 }
 
-function pushLinks(lines: string[], links: HomepageLinkItem[], level: number) {
+function pushLinks(lines: string[], links: ElementCardLinkItem[], level: number) {
 	lines.push(`${indent(level)}links:`);
 	for (const link of links) {
 		lines.push(`${indent(level + 1)}- label: ${formatScalar(link.label)}`);
@@ -41,7 +41,7 @@ function pushLinks(lines: string[], links: HomepageLinkItem[], level: number) {
 	}
 }
 
-function pushCard(lines: string[], card: HomepageCardConfig, level: number) {
+function pushCard(lines: string[], card: ElementCardCardConfig, level: number) {
 	lines.push(`${indent(level)}- type: links`);
 
 	if (card.title) {
@@ -52,6 +52,9 @@ function pushCard(lines: string[], card: HomepageCardConfig, level: number) {
 	}
 	if (card.span !== undefined) {
 		lines.push(`${indent(level + 1)}span: ${formatScalar(card.span)}`);
+	}
+	if (card.row !== undefined) {
+		lines.push(`${indent(level + 1)}row: ${formatScalar(card.row)}`);
 	}
 	lines.push(`${indent(level + 1)}linksLayout: ${formatScalar(card.linksLayout ?? "inline")}`);
 	if (card.palettePreset) {
@@ -76,7 +79,7 @@ function pushCard(lines: string[], card: HomepageCardConfig, level: number) {
 	pushLinks(lines, card.links ?? [], level + 1);
 }
 
-export function stringifyHomepageConfig(config: HomepageConfig): string {
+export function stringifyElementCardConfig(config: ElementCardConfig): string {
 	const lines: string[] = [];
 
 	if (config.id) {

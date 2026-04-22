@@ -25,35 +25,48 @@ async function updateVersionsJson() {
 		versionsJson = {};
 	}
 
-	// 检查当前版本是否已经存在
-	if (!versionsJson[currentVersion]) {
-		// 获取最新版本的Obsidian最低版本要求
-		const versionKeys = Object.keys(versionsJson);
-		let minObsidianVersion = "1.3.0"; // 默认值
-		if (versionKeys.length > 0) {
-			// 按版本号排序，获取最新版本
-			versionKeys.sort((a, b) => {
-				const aParts = a.split(".").map(Number);
-				const bParts = b.split(".").map(Number);
-				for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
-					const aVal = aParts[i] || 0;
-					const bVal = bParts[i] || 0;
-					if (aVal !== bVal) {
-						return bVal - aVal;
-					}
+	// 获取最新版本的Obsidian最低版本要求
+	const versionKeys = Object.keys(versionsJson);
+	let minObsidianVersion = "1.3.0"; // 默认值
+	if (versionKeys.length > 0) {
+		// 按版本号排序，获取最新版本
+		versionKeys.sort((a, b) => {
+			const aParts = a.split(".").map(Number);
+			const bParts = b.split(".").map(Number);
+			for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+				const aVal = aParts[i] || 0;
+				const bVal = bParts[i] || 0;
+				if (aVal !== bVal) {
+					return bVal - aVal;
 				}
-				return 0;
-			});
-			minObsidianVersion = versionsJson[versionKeys[0]];
-		}
-
-		// 添加新的版本条目
-		versionsJson[currentVersion] = minObsidianVersion;
-
-		// 保存更新后的versions.json文件
-		await writeFile("versions.json", JSON.stringify(versionsJson, null, 2));
-		console.log(`Updated versions.json: added version ${currentVersion} with min Obsidian version ${minObsidianVersion}`);
+			}
+			return 0;
+		});
+		minObsidianVersion = versionsJson[versionKeys[0]];
 	}
+
+	// 添加新的版本条目
+	versionsJson[currentVersion] = minObsidianVersion;
+
+	// 按版本号降序排序
+	const sortedVersions = Object.fromEntries(
+		Object.entries(versionsJson).sort(([a], [b]) => {
+			const aParts = a.split(".").map(Number);
+			const bParts = b.split(".").map(Number);
+			for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+				const aVal = aParts[i] || 0;
+				const bVal = bParts[i] || 0;
+				if (aVal !== bVal) {
+					return bVal - aVal;
+				}
+			}
+			return 0;
+		})
+	);
+
+	// 保存更新后的versions.json文件
+	await writeFile("versions.json", JSON.stringify(sortedVersions, null, 2));
+	console.log(`Updated versions.json: added version ${currentVersion} with min Obsidian version ${minObsidianVersion}`);
 }
 
 async function syncReleaseArtifacts() {

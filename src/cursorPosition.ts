@@ -1,5 +1,5 @@
 import { App, Plugin, TAbstractFile, Editor, TFile, MarkdownView } from "obsidian";
-import { CursorPositionSettings, SAFE_DB_FLUSH_INTERVAL } from "./homepageTypes";
+import { CursorPositionSettings, SAFE_DB_FLUSH_INTERVAL } from "./elementCardTypes";
 
 interface EphemeralState {
 	cursor?: {

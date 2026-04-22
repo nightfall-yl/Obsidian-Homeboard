@@ -1,7 +1,7 @@
 {
-	"name": "obsidian-trimmings",
-	"version": "26.4.4",
-	"description": "Light enhancements for Obsidian: homeboard cards, heatmaps, view mode, and cursor memory.",
+	"name": "obsidian-elements",
+	"version": "26.4.5",
+	"description": "Light enhancements for Obsidian: elementCard cards, heatmaps, view mode, and cursor memory.",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",

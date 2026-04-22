@@ -1,12 +1,12 @@
-export type HomepageCardType = "links";
-export type HomepageCardPalettePreset =
+export type ElementCardCardType = "links";
+export type ElementCardCardPalettePreset =
 	| "sage"
 	| "mist"
 	| "amber"
 	| "plum"
 	| "slate";
 
-export interface HomepageCardPalette {
+export interface ElementCardCardPalette {
 	label: string;
 	background: string;
 	title: string;
@@ -14,27 +14,28 @@ export interface HomepageCardPalette {
 	separator: string;
 }
 
-export interface HomepageLinkItem {
+export interface ElementCardLinkItem {
 	label: string;
 	url: string;
 }
 
-export interface HomepageCardConfig {
-	type?: HomepageCardType;
+export interface ElementCardCardConfig {
+	type?: ElementCardCardType;
 	title?: string;
 	column?: number;
 	span?: number;
+	row?: number;
 	linksLayout?: "stack" | "inline";
-	palettePreset?: HomepageCardPalettePreset;
+	palettePreset?: ElementCardCardPalettePreset;
 	cardBackgroundColor?: string;
 	cardBackgroundTransparency?: number;
 	titleColor?: string;
 	linkColor?: string;
 	separatorColor?: string;
-	links?: HomepageLinkItem[];
+	links?: ElementCardLinkItem[];
 }
 
-export interface HomepageConfig {
+export interface ElementCardConfig {
 	id?: string;
 	title?: string;
 	titleFontSize?: number;
@@ -44,7 +45,7 @@ export interface HomepageConfig {
 	cardBorderTransparency?: number;
 	resizerColor?: string;
 	resizerTransparency?: number;
-	cards?: HomepageCardConfig[];
+	cards?: ElementCardCardConfig[];
 }
 
 // ===== Force View Mode Settings =====
@@ -78,13 +79,13 @@ export const SAFE_DB_FLUSH_INTERVAL = 5000;
 
 export const DEFAULT_CURSOR_POSITION_SETTINGS: CursorPositionSettings = {
 	enabled: true,
-	dbFileName: ".obsidian/plugins/obsidian-homeboard/cursor-positions.json",
+	dbFileName: ".obsidian/plugins/obsidian-elements/cursor-positions.json",
 	delayAfterFileOpening: 100,
 	saveTimer: SAFE_DB_FLUSH_INTERVAL,
 };
 
-// ===== Homepage Component Settings =====
-export interface HomepageComponentSettings {
+// ===== ElementCard Component Settings =====
+export interface ElementCardComponentSettings {
 	defaultColumns: number;
 	defaultGap: number;
 	cardPadding: number;
@@ -101,7 +102,7 @@ export interface HomepageComponentSettings {
 	cursorPosition: CursorPositionSettings;
 }
 
-export const DEFAULT_HOMEPAGE_SETTINGS: HomepageComponentSettings = {
+export const DEFAULT_ELEMENTCARD_SETTINGS: ElementCardComponentSettings = {
 	defaultColumns: 2,
 	defaultGap: 2,
 	cardPadding: 16,
@@ -117,7 +118,7 @@ export const DEFAULT_HOMEPAGE_SETTINGS: HomepageComponentSettings = {
 	cursorPosition: DEFAULT_CURSOR_POSITION_SETTINGS,
 };
 
-export const HOMEPAGE_CARD_PALETTES: Record<HomepageCardPalettePreset, HomepageCardPalette> = {
+export const ELEMENTCARD_CARD_PALETTES: Record<ElementCardCardPalettePreset, ElementCardCardPalette> = {
 	sage: {
 		label: "苔绿晨雾",
 		background: "#edf4ea",
@@ -155,9 +156,9 @@ export const HOMEPAGE_CARD_PALETTES: Record<HomepageCardPalettePreset, HomepageC
 	},
 };
 
-export function resolveHomepageCardPalette(card: HomepageCardConfig) {
+export function resolveElementCardCardPalette(card: ElementCardCardConfig) {
 	const presetPalette = card.palettePreset
-		? HOMEPAGE_CARD_PALETTES[card.palettePreset]
+		? ELEMENTCARD_CARD_PALETTES[card.palettePreset]
 		: null;
 
 	return {

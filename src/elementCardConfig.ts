@@ -1,10 +1,10 @@
 import { parseYaml } from "obsidian";
-import { HomeboardError } from "./homeboardError";
-import { HomepageConfig, HomepageLinkItem } from "./homepageTypes";
+import { ElementCardError } from "./elementCardError";
+import { ElementCardConfig, ElementCardLinkItem } from "./elementCardTypes";
 import { Locals } from "./i18/messages";
 
-function parseShortcutLinks(line: string): HomepageLinkItem[] {
-	const links: HomepageLinkItem[] = [];
+function parseShortcutLinks(line: string): ElementCardLinkItem[] {
+	const links: ElementCardLinkItem[] = [];
 	const pattern = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]|\[([^\]]+)\]\(([^)]+)\)/g;
 
 	for (const match of line.matchAll(pattern)) {
@@ -29,7 +29,7 @@ function parseShortcutLinks(line: string): HomepageLinkItem[] {
 	return links;
 }
 
-function parseShortcutHomepageConfig(code: string): HomepageConfig | null {
+function parseShortcutElementCardConfig(code: string): ElementCardConfig | null {
 	const rawLines = code
 		.split("\n")
 		.map((line) => line.trim())
@@ -68,50 +68,50 @@ function parseShortcutHomepageConfig(code: string): HomepageConfig | null {
 	};
 }
 
-export function parseHomepageConfig(code: string): HomepageConfig {
+export function parseElementCardConfig(code: string): ElementCardConfig {
 	const local = Locals.get();
 	if (!code.trim()) {
-		throw new HomeboardError({
-				summary: local.homeboard_error_empty,
-			recommends: [local.homeboard_error_empty_recommend],
+		throw new ElementCardError({
+				summary: local.elementCard_error_empty,
+			recommends: [local.elementCard_error_empty_recommend],
 		});
 	}
 
 	try {
-		const shortcutConfig = parseShortcutHomepageConfig(code);
+		const shortcutConfig = parseShortcutElementCardConfig(code);
 		if (shortcutConfig) {
 			return shortcutConfig;
 		}
 
-		const config = parseYaml(code) as HomepageConfig | null;
+		const config = parseYaml(code) as ElementCardConfig | null;
 		if (!config || typeof config !== "object") {
-			throw new HomeboardError({
-				summary: local.homeboard_error_invalid_yaml_object,
+			throw new ElementCardError({
+				summary: local.elementCard_error_invalid_yaml_object,
 			});
 		}
 
 		if (!config.cards || !Array.isArray(config.cards) || config.cards.length === 0) {
-			throw new HomeboardError({
-				summary: local.homeboard_error_card_required,
-				recommends: [local.homeboard_error_card_required_recommend],
+			throw new ElementCardError({
+				summary: local.elementCard_error_card_required,
+				recommends: [local.elementCard_error_card_required_recommend],
 			});
 		}
 
 		return config;
 	} catch (error) {
-		if (error instanceof HomeboardError) {
+		if (error instanceof ElementCardError) {
 			throw error;
 		}
 
 		const line = (error as { mark?: { line?: number } })?.mark?.line;
 		if (typeof line === "number") {
-			throw new HomeboardError({
-				summary: local.homeboard_error_yaml_failed_at_line.replace("{line}", String(line + 1)),
+			throw new ElementCardError({
+				summary: local.elementCard_error_yaml_failed_at_line.replace("{line}", String(line + 1)),
 			});
 		}
 
-		throw new HomeboardError({
-			summary: local.homeboard_error_yaml_failed,
+		throw new ElementCardError({
+			summary: local.elementCard_error_yaml_failed,
 		});
 	}
 }

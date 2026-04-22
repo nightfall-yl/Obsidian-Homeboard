@@ -1,37 +1,37 @@
-# Homeboard
+# Elements
 
-> An Obsidian plugin that turns your homepage into a configurable navigation dashboard with contribution tracking.
+> An Obsidian plugin that turns your homepage into a configurable navigation dashboard with contribution heatmaps.
 
 [![Min App Version](https://img.shields.io/badge/Obsidian-1.3.0%2B-7C3AED?logo=obsidian)](https://obsidian.md/)
-[![Version](https://img.shields.io/badge/Version-2026.4-22C55E)](https://github.com/nightfall-yl/Obsidian-Homeboard/releases)
+[![Version](https://img.shields.io/badge/Version-26.4.2-22C55E)](https://github.com/nightfall-yl/obsidian-elements/releases)
 [![License](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
 
-Homeboard provides two core features that can be used independently or combined on the same page:
+Elements provides two core features that can be used independently or combined on the same page:
 
-- **Homeboard** — Build a multi-column navigation card layout via `homeboard` code blocks
-- **Contribution Graph** — Render GitHub-style heatmaps via `contributionGraph` code blocks to track your note-taking rhythm
+- **ElementCard** — Build a multi-column navigation card layout via `elementCard` code blocks
+- **Contribution Graph** — Render GitHub-style heatmaps via `contributionGraph` code blocks to track note creation rhythm
 
 ## Installation
 
 ### Manual
 
-1. Download the latest [release](https://github.com/nightfall-yl/Obsidian-Homeboard/releases)
+1. Download the latest [release](https://github.com/nightfall-yl/Trimmings/releases)
 2. Extract `main.js`, `manifest.json`, and `styles.css` into your vault's plugin folder:
 
 ```
-.obsidian/plugins/obsidian-homeboard/
+.obsidian/plugins/obsidian-elements/
 ├── main.js
 ├── manifest.json
 └── styles.css
 ```
 
-3. Enable **Homeboard** in Settings → Community Plugins
+3. Enable **Trimmings** in Settings → Community Plugins
 
 ### From Source
 
 ```bash
-git clone https://github.com/nightfall-yl/Obsidian-Homeboard.git
-cd Obsidian-Homeboard
+git clone https://github.com/nightfall-yl/obsidian-elements.git
+cd obsidian-elements
 npm install
 npm run build
 ```
@@ -42,14 +42,14 @@ npm run build
 
 ---
 
-## Homeboard
+## ElementCard
 
-Create a dashboard with multi-column card layouts using the `homeboard` code block.
+Create a dashboard with multi-column card layouts using the `elementCard` code block.
 
 ### Quick Start
 
 ````markdown
-```homeboard
+```elementCard
 id: homepage-main
 title: My Dashboard
 columns: 2
@@ -80,11 +80,11 @@ cards:
 
 ### Builder
 
-Open the visual builder via the command palette: `Open Homeboard builder`.
+Open the visual builder via the command palette: `Open Trimmings Builder`.
 
-To edit an existing block, place your cursor inside a `homeboard` code block and run `Edit Homeboard block at cursor`. Changes are written back to the source block on save.
+To edit an existing block, place your cursor inside a `elementCard` code block and run `Edit Trimmings (elementCard) block at cursor`. Changes are written back to the source block on save.
 
-You can also right-click in the editor and select **New Homeboard Component** from the context menu.
+You can also right-click in the editor and select **Add Trimmings Component** from the context menu.
 
 ### Configuration
 
@@ -235,12 +235,39 @@ Cell shape supports rounded (default), square (`borderRadius: "0%"`), and circle
 
 | Command | Description |
 |---------|-------------|
-| `Insert Homeboard block` | Insert a new `homeboard` code block |
-| `Open Homeboard builder` | Open the visual builder |
-| `Edit Homeboard block at cursor` | Edit the `homeboard` block under cursor |
+| `Insert Elements (elementCard) block` | Insert a new `elementCard` code block |
+| `Open Elements Builder` | Open the visual builder |
+| `Edit Elements (elementCard) block at cursor` | Edit the `elementCard` block under cursor |
 | `New Heatmap` | Create a new contribution graph |
 
-Right-click in the editor to access **New Homeboard Component** from the context menu. Floating edit buttons are available in reading mode for both `homeboard` and `contributionGraph` blocks.
+Right-click in the editor to access **Add Elements Component** from the context menu. Floating edit buttons are available in reading mode for both `elementCard` and `contributionGraph` blocks.
+
+---
+
+## Integrated Features
+
+Elements also integrates the following utility features:
+
+### Force View Mode
+
+Based on [obsidian-force-view-mode-of-note](https://github.com/bwydoogh/obsidian-force-view-mode-of-note), this feature allows you to set default view modes (reading or editing) for specific folders or files.
+
+**Features:**
+- Support setting view mode by folder
+- Support setting view mode by file pattern
+- Can ignore already opened files to avoid switching interference
+- Can ignore all force view settings temporarily
+
+### Remember Cursor Position
+
+Based on [obsidian-remember-cursor-position](https://github.com/dy-sh/obsidian-remember-cursor-position), this feature automatically remembers and restores your cursor position in files.
+
+**Features:**
+- Automatically saves cursor position
+- Restores cursor position when reopening files
+- Supports delayed restoration to avoid affecting file opening speed
+
+These features can be configured in the plugin settings.
 
 ---
 
@@ -251,11 +278,11 @@ Built with TypeScript, React, and esbuild.
 ```
 src/
 ├── main.ts                    # Plugin entry point
-├── builderModal.ts            # Homeboard Builder modal
-├── homepageProcessor.ts       # homeboard block parsing & rendering
-├── homepageConfig.ts          # homeboard configuration
-├── homepageTypes.ts           # homeboard type definitions
-├── homepageYaml.ts            # homeboard YAML serialization
+├── elementCardBuilderModal.ts # Elements ElementCard Builder modal
+├── elementCardProcessor.ts    # elementCard block parsing & rendering
+├── elementCardConfig.ts       # elementCard configuration
+├── elementCardTypes.ts        # elementCard type definitions
+├── elementCardYaml.ts         # elementCard YAML serialization
 ├── types.ts                   # Contribution graph core types
 ├── i18/                       # i18n (zh / en)
 ├── processor/                 # Graph data processing & validation

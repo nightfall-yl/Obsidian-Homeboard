@@ -1,25 +1,25 @@
 import { App, PluginSettingTab, Setting, setIcon, getLanguage, TFolder } from "obsidian";
-import HomepageComponentPlugin from "./main";
+import ElementCardComponentPlugin from "./main";
 import {
-	DEFAULT_HOMEPAGE_SETTINGS,
-	HomepageComponentSettings,
+	DEFAULT_ELEMENTCARD_SETTINGS,
+	ElementCardComponentSettings,
 	ForceViewModeSettings,
 	CursorPositionSettings,
 	SAFE_DB_FLUSH_INTERVAL,
-} from "./homepageTypes";
+} from "./elementCardTypes";
 import { convertToRGBA } from "./colorUtils";
 
-export function applyHomepageStyles(settings: HomepageComponentSettings) {
+export function applyElementCardStyles(settings: ElementCardComponentSettings) {
 	const rootStyle = document.documentElement.style;
-	rootStyle.setProperty("--homepage-card-padding", `${settings.cardPadding}px`);
-	rootStyle.setProperty("--homepage-card-radius", `${settings.cardBorderRadius}px`);
+	rootStyle.setProperty("--elementCard-card-padding", `${settings.cardPadding}px`);
+	rootStyle.setProperty("--elementCard-card-radius", `${settings.cardBorderRadius}px`);
 	rootStyle.setProperty(
-		"--homepage-card-border-color",
+		"--elementCard-card-border-color",
 		convertToRGBA(settings.cardBorderColor, settings.cardBorderTransparency)
 	);
-	rootStyle.setProperty("--homepage-resizer-width", `${settings.resizerWidth}px`);
+	rootStyle.setProperty("--elementCard-resizer-width", `${settings.resizerWidth}px`);
 	rootStyle.setProperty(
-		"--homepage-resizer-color",
+		"--elementCard-resizer-color",
 		settings.showResizers
 			? convertToRGBA(settings.resizerColor, settings.resizerTransparency)
 			: "transparent"
@@ -335,31 +335,31 @@ export class FolderSuggestDropdown {
 	}
 }
 
-export class HomepageSettingTab extends PluginSettingTab {
-	plugin: HomepageComponentPlugin;
+export class ElementCardSettingTab extends PluginSettingTab {
+	plugin: ElementCardComponentPlugin;
 
-	constructor(app: App, plugin: HomepageComponentPlugin) {
+	constructor(app: App, plugin: ElementCardComponentPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
 
 	display(): void {
-		// Save scroll position before re-render (fixes mobile jump-to-top)
-		const scrollTop = this.containerEl.scrollTop;
+			// Save scroll position before re-render (fixes mobile jump-to-top)
+			const scrollTop = this.containerEl.scrollTop;
 
-		const { containerEl } = this;
-		containerEl.empty();
-		containerEl.addClass("homeboard-settings-root");
+			const { containerEl } = this;
+			containerEl.empty();
+			containerEl.addClass("elementCard-settings-root");
 
-		// Define navigation sections
-		const sections: SettingsSection[] = [
-			{ id: "forceView", label: "Force View Mode", labelZh: "视图模式", icon: "eye" },
-			{ id: "cursorPosition", label: "Cursor Position", labelZh: "光标位置", icon: "mouse-pointer" },
-		];
+			// Define navigation sections
+			const sections: SettingsSection[] = [
+				{ id: "forceView", label: "Force View Mode", labelZh: "视图模式", icon: "eye" },
+				{ id: "cursorPosition", label: "Cursor Position", labelZh: "光标位置", icon: "mouse-pointer" },
+			];
 
-		// Create layout: nav + content
-		const navEl = containerEl.createDiv({ cls: "homeboard-settings-nav" });
-		const contentEl = containerEl.createDiv({ cls: "homeboard-settings-content" });
+			// Create layout: nav + content
+			const navEl = containerEl.createDiv({ cls: "elementCard-settings-nav" });
+			const contentEl = containerEl.createDiv({ cls: "elementCard-settings-content" });
 
 		const sectionEls = new Map<string, HTMLElement>();
 		const navButtons = new Map<string, HTMLButtonElement>();
@@ -374,21 +374,21 @@ export class HomepageSettingTab extends PluginSettingTab {
 		};
 
 		// Create navigation buttons and content sections
-		sections.forEach((section, index) => {
-			// Navigation button
-			const button = navEl.createEl("button", {
-				cls: "homeboard-settings-nav-btn",
-				attr: { type: "button" },
-			});
-			const iconEl = button.createSpan({ cls: "homeboard-settings-nav-icon" });
-			setIcon(iconEl, section.icon);
-			button.createSpan({ text: isZh() ? section.labelZh : section.label });
-			button.addEventListener("click", () => setActiveSection(section.id));
-			navButtons.set(section.id, button);
+			sections.forEach((section, index) => {
+				// Navigation button
+				const button = navEl.createEl("button", {
+					cls: "elementCard-settings-nav-btn",
+					attr: { type: "button" },
+				});
+				const iconEl = button.createSpan({ cls: "elementCard-settings-nav-icon" });
+				setIcon(iconEl, section.icon);
+				button.createSpan({ text: isZh() ? section.labelZh : section.label });
+				button.addEventListener("click", () => setActiveSection(section.id));
+				navButtons.set(section.id, button);
 
-			// Content section
-			const sectionEl = contentEl.createDiv({ cls: "homeboard-settings-section" });
-			sectionEls.set(section.id, sectionEl);
+				// Content section
+				const sectionEl = contentEl.createDiv({ cls: "elementCard-settings-section" });
+				sectionEls.set(section.id, sectionEl);
 
 			// Set first section as active
 			if (index === 0) {

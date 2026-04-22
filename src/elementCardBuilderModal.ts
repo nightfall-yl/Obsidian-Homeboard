@@ -5,26 +5,26 @@ import {
 	TextAreaComponent,
 } from "obsidian";
 import {
-	DEFAULT_HOMEPAGE_SETTINGS,
-	HOMEPAGE_CARD_PALETTES,
-	HomepageCardConfig,
-	HomepageCardPalettePreset,
-	HomepageComponentSettings,
-	HomepageConfig,
-	HomepageLinkItem,
-	resolveHomepageCardPalette,
-} from "./homepageTypes";
+	DEFAULT_ELEMENTCARD_SETTINGS,
+	ELEMENTCARD_CARD_PALETTES,
+	ElementCardCardConfig,
+	ElementCardCardPalettePreset,
+	ElementCardComponentSettings,
+	ElementCardConfig,
+	ElementCardLinkItem,
+	resolveElementCardCardPalette,
+} from "./elementCardTypes";
 import { Locals } from "./i18/messages";
 import { Local } from "./i18/types";
-import { stringifyHomepageConfig } from "./homepageYaml";
+import { stringifyElementCardConfig } from "./elementCardYaml";
 
-function createDefaultCard(index?: number, existingCards?: HomepageCardConfig[]): HomepageCardConfig {
-	const allKeys: HomepageCardPalettePreset[] = ["sage", "mist", "amber", "plum", "slate"];
+function createDefaultCard(index?: number, existingCards?: ElementCardCardConfig[]): ElementCardCardConfig {
+	const allKeys: ElementCardCardPalettePreset[] = ["sage", "mist", "amber", "plum", "slate"];
 	const usedKeys = new Set(existingCards?.map((c) => c.palettePreset).filter(Boolean));
 	const availableKeys = allKeys.filter((k) => !usedKeys.has(k));
 	const keys = availableKeys.length > 0 ? availableKeys : allKeys;
 	const randomKey = keys[Math.floor(Math.random() * keys.length)];
-	const palette = HOMEPAGE_CARD_PALETTES[randomKey];
+	const palette = ELEMENTCARD_CARD_PALETTES[randomKey];
 	return {
 		type: "links",
 		title: index ? `卡片 ${index}` : undefined,
@@ -42,7 +42,7 @@ function createDefaultCard(index?: number, existingCards?: HomepageCardConfig[])
 	};
 }
 
-function parseLinks(text: string): HomepageLinkItem[] {
+function parseLinks(text: string): ElementCardLinkItem[] {
 	return text
 		.split("\n")
 		.map((line) => line.trim())
@@ -56,14 +56,14 @@ function parseLinks(text: string): HomepageLinkItem[] {
 		});
 }
 
-function stringifyLinks(links: HomepageLinkItem[] | undefined): string {
+function stringifyLinks(links: ElementCardLinkItem[] | undefined): string {
 	return (links ?? [])
 		.map((item) => `${item.label} | ${item.url}`)
 		.join("\n");
 }
 
-function applyPalette(card: HomepageCardConfig, preset: HomepageCardPalettePreset) {
-	const palette = HOMEPAGE_CARD_PALETTES[preset];
+function applyPalette(card: ElementCardCardConfig, preset: ElementCardCardPalettePreset) {
+	const palette = ELEMENTCARD_CARD_PALETTES[preset];
 	card.palettePreset = preset;
 	card.cardBackgroundColor = palette.background;
 	card.cardBackgroundTransparency = 100;
@@ -75,10 +75,10 @@ function applyPalette(card: HomepageCardConfig, preset: HomepageCardPalettePrese
 function createPaletteSwatches(
 	container: HTMLElement,
 	colors: string[],
-	className = "homepage-builder-modal__palette-swatch"
+	className = "elementCard-builder-modal__palette-swatch"
 ) {
 	const swatches = container.createDiv({
-		cls: "homepage-builder-modal__palette-swatches plugin-config-swatch-group",
+		cls: "elementCard-builder-modal__palette-swatches plugin-config-swatch-group",
 	});
 	colors.forEach((color) => {
 		swatches.createEl("span", {
@@ -89,27 +89,27 @@ function createPaletteSwatches(
 	return swatches;
 }
 
-function getPaletteLabel(local: Local, preset: HomepageCardPalettePreset): string {
+function getPaletteLabel(local: Local, preset: ElementCardCardPalettePreset): string {
 	switch (preset) {
 		case "sage":
-			return local.homeboard_palette_sage;
+			return local.elementCard_palette_sage;
 		case "mist":
-			return local.homeboard_palette_mist;
+			return local.elementCard_palette_mist;
 		case "amber":
-			return local.homeboard_palette_amber;
+			return local.elementCard_palette_amber;
 		case "plum":
-			return local.homeboard_palette_plum;
+			return local.elementCard_palette_plum;
 		case "slate":
-			return local.homeboard_palette_slate;
+			return local.elementCard_palette_slate;
 		default:
-			return local.homeboard_palette_custom;
+			return local.elementCard_palette_custom;
 	}
 }
 
-export class HomepageBuilderModal extends Modal {
-	private config: HomepageConfig;
-	private settings: HomepageComponentSettings;
-	private onSubmit: (config: HomepageConfig) => void | Promise<void>;
+export class ElementCardBuilderModal extends Modal {
+	private config: ElementCardConfig;
+	private settings: ElementCardComponentSettings;
+	private onSubmit: (config: ElementCardConfig) => void | Promise<void>;
 	private saveTimer: number | null = null;
 	private isSaving = false;
 	private pendingSave = false;
@@ -118,18 +118,18 @@ export class HomepageBuilderModal extends Modal {
 
 	constructor(
 		app: App,
-		settings: HomepageComponentSettings,
-		onSubmit: (config: HomepageConfig) => void | Promise<void>,
-		initialConfig?: HomepageConfig
+		settings: ElementCardComponentSettings,
+		onSubmit: (config: ElementCardConfig) => void | Promise<void>,
+		initialConfig?: ElementCardConfig
 	) {
 		super(app);
 		this.settings = settings;
 		this.onSubmit = onSubmit;
-		this.config = initialConfig ?? HomepageBuilderModal.createInitialConfig(settings);
+		this.config = initialConfig ?? ElementCardBuilderModal.createInitialConfig(settings);
 	}
 
 	onOpen() {
-		this.modalEl.addClass("homepage-builder-modal-container");
+		this.modalEl.addClass("elementCard-builder-modal-container");
 		this.render();
 	}
 
@@ -139,17 +139,17 @@ export class HomepageBuilderModal extends Modal {
 		void this.flushSave();
 	}
 
-	static createInitialConfig(settings: HomepageComponentSettings): HomepageConfig {
+	static createInitialConfig(settings: ElementCardComponentSettings): ElementCardConfig {
 		const local = Locals.get();
 		const firstCard = createDefaultCard(1);
 		const secondCard = createDefaultCard(2);
 		applyPalette(secondCard, "mist");
 		return {
-			id: `homepage-${Date.now()}`,
-			title: local.homeboard_default_title,
+			id: `elementCard-${Date.now()}`,
+			title: local.elementCard_default_title,
 			titleFontSize: 16,
-			columns: settings.defaultColumns ?? DEFAULT_HOMEPAGE_SETTINGS.defaultColumns,
-			gap: settings.defaultGap ?? DEFAULT_HOMEPAGE_SETTINGS.defaultGap,
+			columns: settings.defaultColumns ?? DEFAULT_ELEMENTCARD_SETTINGS.defaultColumns,
+			gap: settings.defaultGap ?? DEFAULT_ELEMENTCARD_SETTINGS.defaultGap,
 			cards: [firstCard, secondCard],
 		};
 	}
@@ -158,32 +158,32 @@ export class HomepageBuilderModal extends Modal {
 		const { contentEl } = this;
 		const local = Locals.get();
 		contentEl.empty();
-		contentEl.addClass("homepage-builder-modal", "plugin-config-modal");
+		contentEl.addClass("elementCard-builder-modal", "plugin-config-modal");
 
 		const workspace = contentEl.createDiv({
-			cls: "homepage-builder-modal__workspace plugin-config-modal__workspace",
+			cls: "elementCard-builder-modal__workspace plugin-config-modal__workspace",
 		});
 		workspace.tabIndex = -1;
 		const tabContainer = workspace.createDiv({
-			cls: "tab-container homepage-builder-modal__tabs plugin-config-form",
+			cls: "tab-container elementCard-builder-modal__tabs plugin-config-form",
 		});
 		const tabTitles = tabContainer.createDiv({ cls: "tab-titles" });
-		this.renderTabTitle(tabTitles, local.homeboard_tab_basic, "basic");
-		this.renderTabTitle(tabTitles, local.homeboard_tab_cards, "cards");
-		const divider = tabContainer.createDiv({ cls: "contribution-graph-divider homepage-builder-modal__divider" });
+		this.renderTabTitle(tabTitles, local.elementCard_tab_basic, "basic");
+		this.renderTabTitle(tabTitles, local.elementCard_tab_cards, "cards");
+		const divider = tabContainer.createDiv({ cls: "contribution-graph-divider elementCard-builder-modal__divider" });
 		divider.createDiv();
 		const tabItems = tabContainer.createDiv({ cls: "tab-items" });
 
 		const basicTab = tabItems.createDiv({
 			cls: `tab-item ${this.activeTab === "basic" ? "active" : ""}`,
 		});
-		const basicPane = basicTab.createDiv({ cls: "homepage-builder-modal__editor" });
+		const basicPane = basicTab.createDiv({ cls: "elementCard-builder-modal__editor" });
 		this.renderBasicSettings(basicPane);
 
 		const cardsTab = tabItems.createDiv({
 			cls: `tab-item ${this.activeTab === "cards" ? "active" : ""}`,
 		});
-		const cardsPane = cardsTab.createDiv({ cls: "homepage-builder-modal__editor" });
+		const cardsPane = cardsTab.createDiv({ cls: "elementCard-builder-modal__editor" });
 		this.renderCardSettings(cardsPane);
 
 		window.setTimeout(() => {
@@ -214,11 +214,11 @@ export class HomepageBuilderModal extends Modal {
 	private renderBasicSettings(container: HTMLElement) {
 		const local = Locals.get();
 		new Setting(container)
-			.setName(local.homeboard_block_id)
-			.setDesc(local.homeboard_block_id_desc)
+			.setName(local.elementCard_block_id)
+			.setDesc(local.elementCard_block_id_desc)
 			.addText((text) =>
 				text.setValue(this.config.id ?? "").onChange((value) => {
-					this.config.id = value.trim() || `homepage-${Date.now()}`;
+					this.config.id = value.trim() || `elementCard-${Date.now()}`;
 					this.refreshDerivedViews();
 				})
 			);
@@ -226,15 +226,15 @@ export class HomepageBuilderModal extends Modal {
 		new Setting(container)
 			.setName(local.form_title)
 			.addText((text) => {
-				text.inputEl.addClass("homepage-builder-modal__title-input");
+				text.inputEl.addClass("elementCard-builder-modal__title-input");
 				return text.setValue(this.config.title ?? "").onChange((value) => {
 					this.config.title = value.trim() || undefined;
 					this.refreshDerivedViews();
 				});
 			})
 			.addText((text) => {
-				text.inputEl.addClass("homepage-builder-modal__title-size-input");
-				text.setPlaceholder(local.homeboard_title_font_size_placeholder);
+				text.inputEl.addClass("elementCard-builder-modal__title-size-input");
+				text.setPlaceholder(local.elementCard_title_font_size_placeholder);
 				return text.setValue(String(this.config.titleFontSize ?? 16)).onChange((value) => {
 					this.config.titleFontSize = Number(value) || 16;
 					this.refreshDerivedViews();
@@ -242,7 +242,7 @@ export class HomepageBuilderModal extends Modal {
 			});
 
 		new Setting(container)
-			.setName(local.homeboard_columns)
+			.setName(local.elementCard_columns)
 			.addText((text) =>
 				text
 					.setPlaceholder("2")
@@ -257,8 +257,8 @@ export class HomepageBuilderModal extends Modal {
 			);
 
 		new Setting(container)
-			.setName(local.homeboard_gap)
-			.setDesc(local.homeboard_gap_desc)
+			.setName(local.elementCard_gap)
+			.setDesc(local.elementCard_gap_desc)
 			.addText((text) =>
 				text.setValue(String(this.config.gap ?? 16)).onChange((value) => {
 					this.config.gap = Number(value) || value || 16;
@@ -269,16 +269,16 @@ export class HomepageBuilderModal extends Modal {
 
 	private renderCardSettings(container: HTMLElement) {
 		const local = Locals.get();
-		container.createEl("h3", { text: local.homeboard_cards });
+		container.createEl("h3", { text: local.elementCard_cards });
 		for (const [index, card] of (this.config.cards ?? []).entries()) {
 			this.renderCardEditor(container, card, index);
 		}
 
 		new Setting(container)
-			.setName(local.homeboard_add_card)
-			.setDesc(local.homeboard_add_card_desc)
+			.setName(local.elementCard_add_card)
+			.setDesc(local.elementCard_add_card_desc)
 			.addButton((button) =>
-				button.setButtonText(local.homeboard_add_button).onClick(() => {
+				button.setButtonText(local.elementCard_add_button).onClick(() => {
 					this.addCard();
 				})
 			);
@@ -320,27 +320,27 @@ export class HomepageBuilderModal extends Modal {
 		}
 	}
 
-	private renderCardEditor(container: HTMLElement, card: HomepageCardConfig, index: number) {
+	private renderCardEditor(container: HTMLElement, card: ElementCardCardConfig, index: number) {
 		const local = Locals.get();
-		const cardEl = container.createDiv({ cls: "homepage-builder-modal__card" });
-		cardEl.createEl("h4", { text: `${local.homeboard_card_label} ${index + 1}` });
+		const cardEl = container.createDiv({ cls: "elementCard-builder-modal__card" });
+		cardEl.createEl("h4", { text: `${local.elementCard_card_label} ${index + 1}` });
 		card.type = "links";
 
 		new Setting(cardEl)
-			.setName(local.homeboard_type)
-			.setDesc(local.homeboard_type_desc)
+			.setName(local.elementCard_type)
+			.setDesc(local.elementCard_type_desc)
 			.addExtraButton((button) => {
-				button.setIcon("arrow-up").setTooltip(local.homeboard_move_up).onClick(() => {
+				button.setIcon("arrow-up").setTooltip(local.elementCard_move_up).onClick(() => {
 					this.moveCard(index, -1);
 				});
 			})
 			.addExtraButton((button) => {
-				button.setIcon("arrow-down").setTooltip(local.homeboard_move_down).onClick(() => {
+				button.setIcon("arrow-down").setTooltip(local.elementCard_move_down).onClick(() => {
 					this.moveCard(index, 1);
 				});
 			})
 			.addExtraButton((button) => {
-				button.setIcon("trash").setTooltip(local.homeboard_remove).onClick(() => {
+				button.setIcon("trash").setTooltip(local.elementCard_remove).onClick(() => {
 					this.removeCard(index);
 				});
 			});
@@ -355,10 +355,10 @@ export class HomepageBuilderModal extends Modal {
 			);
 
 		new Setting(cardEl)
-			.setName(local.homeboard_palette)
-			.setDesc(local.homeboard_palette_desc)
+			.setName(local.elementCard_palette)
+			.setDesc(local.elementCard_palette_desc)
 			.addButton((button) => {
-				button.setClass("homepage-builder-modal__palette-trigger");
+				button.setClass("elementCard-builder-modal__palette-trigger");
 				this.renderPaletteTrigger(button.buttonEl, card);
 				button.onClick(() => {
 					this.togglePaletteMenu(button.buttonEl, card);
@@ -366,8 +366,8 @@ export class HomepageBuilderModal extends Modal {
 			});
 
 		new Setting(cardEl)
-			.setName(local.homeboard_background)
-			.setDesc(local.homeboard_background_desc)
+			.setName(local.elementCard_background)
+			.setDesc(local.elementCard_background_desc)
 			.addColorPicker((picker) =>
 				picker
 					.setValue(card.cardBackgroundColor ?? "#ffffff")
@@ -386,8 +386,8 @@ export class HomepageBuilderModal extends Modal {
 			);
 
 		new Setting(cardEl)
-			.setName(local.homeboard_accent_colors)
-			.setDesc(local.homeboard_accent_colors_desc)
+			.setName(local.elementCard_accent_colors)
+			.setDesc(local.elementCard_accent_colors_desc)
 			.addColorPicker((picker) =>
 				picker
 					.setValue(card.titleColor ?? "#61b94d")
@@ -411,8 +411,8 @@ export class HomepageBuilderModal extends Modal {
 			);
 
 		new Setting(cardEl)
-			.setName(local.homeboard_column_span)
-			.setDesc(local.homeboard_column_span_desc)
+			.setName(local.elementCard_column_span)
+			.setDesc(local.elementCard_column_span_desc)
 			.addText((text) =>
 				text.setPlaceholder("1").setValue(card.column ? String(card.column) : "").onChange((value) => {
 					card.column = value ? Number(value) : undefined;
@@ -426,14 +426,16 @@ export class HomepageBuilderModal extends Modal {
 				})
 			);
 
+
+
 		this.addTextareaSetting(
 			cardEl,
-			local.homeboard_links,
+			local.elementCard_links,
 			stringifyLinks(card.links),
 			(value) => {
 				card.links = parseLinks(value);
 			},
-			local.homeboard_links_desc
+			local.elementCard_links_desc
 		);
 	}
 
@@ -454,7 +456,7 @@ export class HomepageBuilderModal extends Modal {
 				this.refreshDerivedViews();
 			});
 			text.inputEl.rows = 6;
-			text.inputEl.addClass("homepage-builder-modal__textarea");
+			text.inputEl.addClass("elementCard-builder-modal__textarea");
 		});
 	}
 
@@ -486,26 +488,26 @@ export class HomepageBuilderModal extends Modal {
 		this.render();
 	}
 
-	private updateCardColors(card: HomepageCardConfig, update: () => void) {
+	private updateCardColors(card: ElementCardCardConfig, update: () => void) {
 		update();
 		card.palettePreset = undefined;
 		this.refreshDerivedViews();
 	}
 
-	private renderPaletteTrigger(container: HTMLElement, card: HomepageCardConfig) {
+	private renderPaletteTrigger(container: HTMLElement, card: ElementCardCardConfig) {
 		const local = Locals.get();
 		const activePreset = card.palettePreset;
-		const activePalette = activePreset ? HOMEPAGE_CARD_PALETTES[activePreset] : null;
-		const resolvedPalette = resolveHomepageCardPalette(card);
+		const activePalette = activePreset ? ELEMENTCARD_CARD_PALETTES[activePreset] : null;
+		const resolvedPalette = resolveElementCardCardPalette(card);
 		container.empty();
 		const triggerRow = container.createDiv({
-			cls: "homepage-builder-modal__palette-trigger-row plugin-config-palette-trigger-row",
+			cls: "elementCard-builder-modal__palette-trigger-row plugin-config-palette-trigger-row",
 		});
 		triggerRow.createEl("span", {
 			text: activePreset
 				? getPaletteLabel(local, activePreset)
-				: local.homeboard_palette_custom,
-			cls: "homepage-builder-modal__palette-trigger-label plugin-config-palette-label",
+				: local.elementCard_palette_custom,
+			cls: "elementCard-builder-modal__palette-trigger-label plugin-config-palette-label",
 		});
 		createPaletteSwatches(
 			triggerRow,
@@ -517,11 +519,11 @@ export class HomepageBuilderModal extends Modal {
 					resolvedPalette.link,
 					resolvedPalette.separator,
 				],
-			"homepage-builder-modal__palette-swatch homepage-builder-modal__palette-swatch--small"
+			"elementCard-builder-modal__palette-swatch elementCard-builder-modal__palette-swatch--small"
 		);
 	}
 
-	private togglePaletteMenu(triggerEl: HTMLElement, card: HomepageCardConfig) {
+	private togglePaletteMenu(triggerEl: HTMLElement, card: ElementCardCardConfig) {
 		if (this.closePaletteMenu) {
 			this.closePaletteMenu();
 			return;
@@ -529,7 +531,7 @@ export class HomepageBuilderModal extends Modal {
 
 		const triggerRect = triggerEl.getBoundingClientRect();
 		const menuEl = this.modalEl.createDiv({
-			cls: "homepage-builder-modal__palette-menu plugin-config-palette-menu",
+			cls: "elementCard-builder-modal__palette-menu plugin-config-palette-menu",
 		});
 		menuEl.style.position = "fixed";
 		menuEl.style.left = `${triggerRect.left}px`;
@@ -561,18 +563,18 @@ export class HomepageBuilderModal extends Modal {
 
 	private renderPaletteOptions(
 		menuEl: HTMLElement,
-		card: HomepageCardConfig,
+		card: ElementCardCardConfig,
 		closeMenu: () => void
 	) {
 		const local = Locals.get();
 		(
-			Object.entries(HOMEPAGE_CARD_PALETTES) as [
-				HomepageCardPalettePreset,
-				typeof HOMEPAGE_CARD_PALETTES.sage,
+			Object.entries(ELEMENTCARD_CARD_PALETTES) as [
+				ElementCardCardPalettePreset,
+				typeof ELEMENTCARD_CARD_PALETTES.sage,
 			][]
 		).forEach(([preset, palette]) => {
 			const item = menuEl.createEl("button", {
-				cls: "homepage-builder-modal__palette-option plugin-config-palette-option",
+				cls: "elementCard-builder-modal__palette-option plugin-config-palette-option",
 				attr: { type: "button" },
 			});
 			if (card.palettePreset === preset) {
@@ -580,7 +582,7 @@ export class HomepageBuilderModal extends Modal {
 			}
 			item.createEl("span", {
 				text: getPaletteLabel(local, preset),
-				cls: "homepage-builder-modal__palette-option-label plugin-config-palette-label",
+				cls: "elementCard-builder-modal__palette-option-label plugin-config-palette-label",
 			});
 			createPaletteSwatches(item, [
 				palette.background,
@@ -597,11 +599,11 @@ export class HomepageBuilderModal extends Modal {
 		});
 	}
 
-	private cloneConfig(config: HomepageConfig): HomepageConfig {
-		return JSON.parse(JSON.stringify(config)) as HomepageConfig;
+	private cloneConfig(config: ElementCardConfig): ElementCardConfig {
+		return JSON.parse(JSON.stringify(config)) as ElementCardConfig;
 	}
 
-	static toCodeBlock(config: HomepageConfig): string {
-		return `\`\`\`homeboard\n${stringifyHomepageConfig(config)}\n\`\`\`\n`;
+	static toCodeBlock(config: ElementCardConfig): string {
+		return `\`\`\`elementCard\n${stringifyElementCardConfig(config)}\n\`\`\`\n`;
 	}
 }
