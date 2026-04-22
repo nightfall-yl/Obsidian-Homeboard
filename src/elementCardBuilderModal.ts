@@ -365,9 +365,13 @@ export class ElementCardBuilderModal extends Modal {
 				});
 			});
 
-		new Setting(cardEl)
+		const backgroundSetting = new Setting(cardEl)
 			.setName(local.elementCard_background)
-			.setDesc(local.elementCard_background_desc)
+			.setDesc(local.elementCard_background_desc);
+		
+		backgroundSetting.settingEl.addClass("elementCard-builder-modal__background");
+		
+		backgroundSetting
 			.addColorPicker((picker) =>
 				picker
 					.setValue(card.cardBackgroundColor ?? "#ffffff")
@@ -385,9 +389,13 @@ export class ElementCardBuilderModal extends Modal {
 					})
 			);
 
-		new Setting(cardEl)
+		const accentColorSetting = new Setting(cardEl)
 			.setName(local.elementCard_accent_colors)
-			.setDesc(local.elementCard_accent_colors_desc)
+			.setDesc(local.elementCard_accent_colors_desc);
+		
+		accentColorSetting.settingEl.addClass("elementCard-builder-modal__accent-colors");
+		
+		accentColorSetting
 			.addColorPicker((picker) =>
 				picker
 					.setValue(card.titleColor ?? "#61b94d")
