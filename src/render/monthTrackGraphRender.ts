@@ -67,6 +67,8 @@ export class MonthTrackGraphRender extends BaseGraphRender {
 
 		let monthDataRowEl;
 		let currentYearMonth = "";
+		const fragment = document.createDocumentFragment();
+		
 		for (let i = 0; i < contributionData.length; i++) {
 			const contributionItem = contributionData[i];
 			const yearMonth = `${contributionItem.year}-${contributionItem.month}`;
@@ -86,7 +88,7 @@ export class MonthTrackGraphRender extends BaseGraphRender {
 				// new month data row
 				monthDataRowEl = document.createElement("div");
 				monthDataRowEl.className = "row";
-				chartsEl.appendChild(monthDataRowEl);
+				fragment.appendChild(monthDataRowEl);
 				currentYearMonth = yearMonth;
 
 				// month indicator
@@ -123,20 +125,21 @@ export class MonthTrackGraphRender extends BaseGraphRender {
 
 			// render cell
 			const cellEl = document.createElement("div");
-			this.applyCellGlobalStyle(cellEl, graphConfig);
-			monthDataRowEl?.appendChild(cellEl);
+			
 			if (contributionItem.value == 0) {
 				cellEl.className = "cell empty";
 				this.applyCellStyleRule(cellEl, contributionItem, cellRules);
 				this.bindCellAttribute(cellEl, contributionItem);
 			} else {
 				cellEl.className = "cell";
-
 				this.applyCellStyleRule(cellEl, contributionItem, cellRules, () => cellRules[0]);
 				this.bindCellAttribute(cellEl, contributionItem);
 				this.bindCellClickEvent(cellEl, contributionItem, graphConfig, activityContainer);
 				this.bindCellTips(cellEl, contributionItem);
 			}
+			
+			this.applyCellGlobalStyle(cellEl, graphConfig);
+			monthDataRowEl?.appendChild(cellEl);
 		}
 
 		// fill hole at last month, if last month date is not end of month
@@ -151,6 +154,9 @@ export class MonthTrackGraphRender extends BaseGraphRender {
 				monthDataRowEl?.appendChild(cellEl);
 			}
 		}
+		
+		// 一次性添加所有元素到DOM
+		chartsEl.appendChild(fragment);
 	}
 
 	renderMonthDateIndicator(dateIndicatorRow: HTMLDivElement, graphConfig: ContributionGraphConfig) {

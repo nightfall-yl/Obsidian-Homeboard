@@ -1007,7 +1007,7 @@ width:100%;max-width:none;margin:0
 padding-top:1.4rem;flex:1 1 0
 }
 .contribution-graph .default .week-indicator {
-background-color:transparent;font-size:10px;min-width:14px;text-wrap:nowrap;height:8px;margin-right:6px;margin-top:1.5px;text-align:center;cursor:pointer
+background-color:transparent;font-size:10px;min-width:14px;text-wrap:nowrap;height:9.5px;margin-right:6px;margin-top:1.5px;text-align:center;cursor:pointer;display:flex;align-items:flex-start
 }
 .contribution-graph .default .month-indicator {
 position:absolute;top:0;left:0;text-wrap:nowrap;font-size:10px;min-width:20px;cursor:pointer
@@ -1072,7 +1072,7 @@ min-width:8px;min-height:8px;width:8px;height:8px;font-size:8px;border-radius:2p
 flex-grow:1
 }
 .contribution-graph .cell {
-min-width:7px;min-height:7px;height:7px;font-size:8px;border-radius:2px;background-color:transparent;margin-top:1.5px;margin-right:1.5px;flex-grow:1;cursor:pointer;position:relative;display:flex;justify-content:center;align-items:center
+min-width:7px;min-height:7px;height:10px;font-size:8px;border-radius:2px;background-color:transparent;margin-top:1.5px;margin-right:1.5px;flex-grow:1;cursor:pointer;position:relative;display:flex;justify-content:center;align-items:center
 }
 .contribution-graph .cell.empty {
 background-color:#ebedf0d9

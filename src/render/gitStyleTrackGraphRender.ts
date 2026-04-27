@@ -79,22 +79,21 @@ export class GitStyleTrackGraphRender extends BaseGraphRender {
 		const cellRules = this.getCellRules(graphConfig);
 
 		let columnEl;
+		const fragment = document.createDocumentFragment();
+		
 		for (let i = 0; i < contributionData.length; i++) {
 			// i % 7 == 0 means new column
 			if (i % 7 == 0) {
 				columnEl = document.createElement("div");
 				columnEl.className = "column";
-				chartsEl.appendChild(columnEl);
+				fragment.appendChild(columnEl);
 			}
 
 			const contributionItem = contributionData[i];
 			// main -> charts -> column -> month indicator
 			if (contributionItem.monthDate == 1) {
-				const monthCell = createDiv({
-					cls: "month-indicator",
-					parent: columnEl,
-					text: "",
-				});
+				const monthCell = document.createElement("div");
+				monthCell.className = "month-indicator";
 				monthCell.innerText = localizedMonthMapping(
 					contributionItem.month
 				);
@@ -103,12 +102,12 @@ export class GitStyleTrackGraphRender extends BaseGraphRender {
 					contributionItem,
 					contributionMapByYearMonth
 				);
+				columnEl?.appendChild(monthCell);
 			}
 
 			// main -> charts -> column -> cell
 			const cellEl = document.createElement("div");
-			columnEl?.appendChild(cellEl);
-
+			
 			if (contributionItem.value == 0) {
 				if (contributionItem.date != "$HOLE$") {
 					cellEl.className = "cell empty";
@@ -127,7 +126,12 @@ export class GitStyleTrackGraphRender extends BaseGraphRender {
 				this.bindCellClickEvent(cellEl, contributionItem, graphConfig, activityContainer);
 				this.bindCellTips(cellEl, contributionItem);
 			}
+			
+			columnEl?.appendChild(cellEl);
 		}
+		
+		// 一次性添加所有元素到DOM
+		chartsEl.appendChild(fragment);
 	}
 
 	renderWeekIndicator(weekdayContainer: HTMLDivElement,graphConfig: ContributionGraphConfig) {

@@ -93,6 +93,8 @@ export class CalendarGraphRender extends BaseGraphRender {
 		let currentYearMonth = "";
 		let monthContainer;
 		let rowContainer = null;
+		const fragment = document.createDocumentFragment();
+		
 		for (let i = 0; i < contributionData.length; i++) {
 			const item = contributionData[i];
 			const yearMonth = `${item.year}-${item.month + 1}`;
@@ -101,7 +103,7 @@ export class CalendarGraphRender extends BaseGraphRender {
 
 				monthContainer = document.createElement("div");
 				monthContainer.className = "month-container";
-				chartsEl.appendChild(monthContainer);
+				fragment.appendChild(monthContainer);
 
 				const monthIndicator = document.createElement("div");
 				monthIndicator.className = "month-indicator";
@@ -122,10 +124,10 @@ export class CalendarGraphRender extends BaseGraphRender {
 					contributionMapByYearMonth
 				);
 
-				const weekDateIndicators = createDiv({
-					cls: ["row", "week-indicator-container"],
-					parent: monthContainer,
-				});
+				const weekDateIndicators = document.createElement("div");
+				weekDateIndicators.className = "row week-indicator-container";
+				monthContainer.appendChild(weekDateIndicators);
+				
 				for (let i = 0; i < 7; i++) {
 					const dateIndicatorCell = document.createElement("div");
 					dateIndicatorCell.className = "cell week-indicator";
@@ -166,25 +168,26 @@ export class CalendarGraphRender extends BaseGraphRender {
 
 			// render cell
 			const cellEl = document.createElement("div");
-			rowContainer?.appendChild(cellEl);
-			cellEl.className = "cell";
+			
 			if (item.date == "$HOLE$") {
 				cellEl.innerText = "···";
 				cellEl.className = "cell";
 				this.applyCellGlobalStylePartial(cellEl, graphConfig, ['minWidth', 'minHeight']);
 			} else if (item.value == 0) {
 				cellEl.className = "cell empty";
-				this.applyCellGlobalStyle(cellEl, graphConfig);
 				this.applyCellStyleRule(cellEl, item, cellRules);
 				this.bindCellAttribute(cellEl, item);
+				this.applyCellGlobalStyle(cellEl, graphConfig);
 			} else {
 				cellEl.className = "cell";
-				this.applyCellGlobalStyle(cellEl, graphConfig);
 				this.applyCellStyleRule(cellEl, item, cellRules, () => cellRules[0]);
 				this.bindCellAttribute(cellEl, item);
 				this.bindCellClickEvent(cellEl, item, graphConfig, activityContainer);
 				this.bindCellTips(cellEl, item);
+				this.applyCellGlobalStyle(cellEl, graphConfig);
 			}
+			
+			rowContainer?.appendChild(cellEl);
 
 			if (i + 1 < contributionData.length) {
 				const next = contributionData[i + 1];
@@ -213,5 +216,8 @@ export class CalendarGraphRender extends BaseGraphRender {
 				}
 			}
 		}
+		
+		// 一次性添加所有元素到DOM
+		chartsEl.appendChild(fragment);
 	}
 }
