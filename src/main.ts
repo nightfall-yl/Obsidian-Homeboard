@@ -19,6 +19,11 @@ import { mountEditButtonToCodeblock } from "./view/codeblock/CodeblockEditButton
 import { ContributionGraphCreateModal } from "./view/form/GraphFormModal";
 import { ForceViewModeManager } from "./forceViewMode";
 import { CursorPositionManager } from "./cursorPosition";
+import { CalendarView } from "./calendar/CalendarView";
+import { VIEW_TYPE_CALENDAR } from "./calendar/constants";
+import { calendarSettings } from "./calendar/ui/stores";
+import { defaultCalendarSettings } from "./calendar/settings";
+import type { IWeekStartOption } from "obsidian-calendar-ui";
 
 // Load CSS dynamically
 const loadCss = () => {
@@ -93,6 +98,36 @@ export default class ElementCardComponentPlugin extends Plugin {
 		this.forceViewModeManager.onload();
 		this.cursorPositionManager.onload();
 
+		// Register Calendar view
+		this.registerView(VIEW_TYPE_CALENDAR, (leaf) => new CalendarView(leaf));
+
+		// Initialize calendar settings from plugin settings
+		const calSettings = this.settings.calendar;
+		calendarSettings.set({
+			...defaultCalendarSettings,
+			wordsPerDot: calSettings.wordsPerDot,
+			weekStart: calSettings.weekStart as IWeekStartOption,
+			shouldConfirmBeforeCreate: calSettings.shouldConfirmBeforeCreate,
+			position: calSettings.position || "left",
+			highlightToday: calSettings.highlightToday !== false,
+		});
+
+		// Add ribbon icon for calendar (only if enabled)
+		if (this.settings.calendar.enabled) {
+			this.addRibbonIcon("calendar-days", "Open Elements Calendar", () => {
+				this.activateCalendarView();
+			});
+		}
+
+		// Add command to open calendar
+		this.addCommand({
+			id: "open-elements-calendar",
+			name: "Open Elements Calendar",
+			callback: () => {
+				this.activateCalendarView();
+			},
+		});
+
 		// Register setting tab
 		this.addSettingTab(new ElementCardSettingTab(this.app, this));
 
@@ -144,6 +179,29 @@ export default class ElementCardComponentPlugin extends Plugin {
 	onunload() {
 		this.forceViewModeManager?.onunload();
 		this.cursorPositionManager?.onunload();
+		this.app.workspace.detachLeavesOfType(VIEW_TYPE_CALENDAR);
+	}
+
+	async activateCalendarView() {
+		const existing = this.app.workspace.getLeavesOfType(VIEW_TYPE_CALENDAR);
+		if (existing.length > 0) {
+			this.app.workspace.revealLeaf(existing[0]);
+			return;
+		}
+		const position = this.settings.calendar.position || "left";
+		const leaf = position === "left"
+			? this.app.workspace.getLeftLeaf(false)
+			: this.app.workspace.getRightLeaf(false);
+		if (leaf) {
+			await leaf.setViewState({
+				type: VIEW_TYPE_CALENDAR,
+				active: true,
+			});
+		}
+		const calendarLeaf = this.app.workspace.getLeavesOfType(VIEW_TYPE_CALENDAR)[0];
+		if (calendarLeaf) {
+			this.app.workspace.revealLeaf(calendarLeaf);
+		}
 	}
 
 	async loadSettings() {
@@ -155,6 +213,16 @@ export default class ElementCardComponentPlugin extends Plugin {
 		// Update managers with new settings
 		this.forceViewModeManager?.updateSettings(this.settings.forceViewMode);
 		this.cursorPositionManager?.updateSettings(this.settings.cursorPosition);
+		// Update calendar settings store
+		const calSettings = this.settings.calendar;
+		calendarSettings.set({
+			...defaultCalendarSettings,
+			wordsPerDot: calSettings.wordsPerDot,
+			weekStart: calSettings.weekStart as IWeekStartOption,
+			shouldConfirmBeforeCreate: calSettings.shouldConfirmBeforeCreate,
+			position: calSettings.position || "left",
+			highlightToday: calSettings.highlightToday !== false,
+		});
 	}
 
 	private registerGlobalRenderApi() {

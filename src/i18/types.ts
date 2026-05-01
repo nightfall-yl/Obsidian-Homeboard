@@ -189,4 +189,18 @@ export interface Local {
 	you_have_no_contributions_on: string;
 	you_have_contributed_to: string;
 	click_to_load_more: string;
+
+	/**
+	 * calendar
+	 */
+	calendar_display_name: string;
+	calendar_modal_title_daily: string;
+	calendar_modal_message_daily: string;
+	calendar_btn_create: string;
+	calendar_btn_cancel: string;
+	calendar_notice_create_daily_failed: string;
+	calendar_menu_open: string;
+	calendar_menu_open_in_new_pane: string;
+	calendar_menu_delete: string;
+	calendar_menu_create_daily: string;
 }

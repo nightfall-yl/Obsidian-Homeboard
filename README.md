@@ -8,6 +8,7 @@ Elements 是一款功能强大的 Obsidian 插件，为用户提供了多种实�
 
 - **元素卡片**：通过 `elementCard` 代码块构建多列导航卡片布局，支持自定义配色方案、链接布局和卡片样式，帮助用户快速访问常用笔记和资源。
 - **贡献热力图**：通过 `contributionGraph` 代码块渲染 GitHub 风格热力图，支持多种图表类型和数据源，帮助用户追踪笔记创作节奏和任务完成情况。
+- **侧边栏日历**：在左侧或右侧边栏显示月历视图，支持点击日期创建/打开日记，通过圆点直观展示每日笔记字数。
 - **强制视图模式**：允许用户为特定文件夹或文件设置默认视图模式（阅读模式或编辑模式），提高工作效率。
 - **光标位置记忆**：自动记忆并恢复用户在文件中的光标位置，避免重复定位，提升编辑体验。
 
@@ -229,6 +230,7 @@ dataSource:
 |------|------|
 | `New ElementCard` | 创建新的元素卡片 |
 | `New ContributionGraph` | 创建新的贡献图 |
+| `Open Elements Calendar` | 打开侧边栏日历 |
 
 编辑区右键可从上下文菜单访问 **新增 Elements 组件**，包含 **新建卡片** 和 **新建热力图** 选项。阅读模式下 `elementCard` 和 `contributionGraph` 代码块旁均有浮动编辑按钮。
 
@@ -247,6 +249,29 @@ Elements 集成以下实用功能：
 - 支持按文件模式设置视图模式
 - 可忽略已打开的文件，避免切换干扰
 - 可忽略强制视图全部设置，临时使用其他视图模式
+
+### 侧边栏日历
+
+移植自 [obsidian-calendar-plugin](https://github.com/liamcain/obsidian-calendar-plugin)，在侧边栏显示月历视图，与日记插件无缝集成。
+
+**功能特点：**
+- 支持显示在左侧或右侧边栏
+- 点击日期创建或打开日记（可开启创建前确认）
+- 通过圆点直观展示每日笔记字数（可自定义每个圆点代表的字数）
+- 今日日期高亮显示
+- 日历宽度随侧边栏自动缩放
+- 支持自定义星期起始日
+
+**日历设置：**
+
+| 设置项 | 说明 | 默认值 |
+|--------|------|--------|
+| 启用日历 | 在侧边栏显示日历视图 | 开启 |
+| 日历位置 | 左侧边栏 / 右侧边栏 | 左侧边栏 |
+| 创建前确认 | 创建日记前是否弹出确认对话框 | 开启 |
+| 每个圆点代表字数 | 日历中每个圆点对应的字数 | 250 |
+| 星期起始日 | 选择一周的起始日 | 跟随系统 |
+| 今日高亮 | 用背景颜色高亮今天的日期 | 开启 |
 
 ### 光标位置记忆
 
@@ -294,6 +319,7 @@ npm run build
 基于 [Obsidian](https://obsidian.md/) 插件 API 和 [Dataview](https://github.com/blacksmithgu/obsidian-dataview) 构建。
 
 -  [obsidian-contribution-graph](https://github.com/vran-dev/obsidian-contribution-graph)
+-  [obsidian-calendar-plugin](https://github.com/liamcain/obsidian-calendar-plugin)
 -  [obsidian-force-view-mode-of-note](https://github.com/bwydoogh/obsidian-force-view-mode-of-note)
 -  [obsidian-remember-cursor-position](https://github.com/dy-sh/obsidian-remember-cursor-position)
 

@@ -189,4 +189,18 @@ export class Zh implements Local {
     you_have_no_contributions_on = "你在 {date} 没有任何贡献";
     you_have_contributed_to = "你在 {date} 有 {value} 次贡献";
     click_to_load_more = "点击加载更多......";
+
+    /**
+     * calendar
+     */
+    calendar_display_name = "日历";
+    calendar_modal_title_daily = "新建日记";
+    calendar_modal_message_daily = "文件 {date} 不存在。是否要创建它？";
+    calendar_btn_create = "创建";
+    calendar_btn_cancel = "取消";
+    calendar_notice_create_daily_failed = "创建日记失败";
+    calendar_menu_open = "打开";
+    calendar_menu_open_in_new_pane = "在新面板中打开";
+    calendar_menu_delete = "删除";
+    calendar_menu_create_daily = "新建日记";
 }

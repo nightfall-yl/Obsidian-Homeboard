@@ -6,8 +6,10 @@ import {
 	ForceViewModeSettings,
 	CursorPositionSettings,
 	SAFE_DB_FLUSH_INTERVAL,
+	CalendarPluginSettings,
 } from "./elementCardTypes";
 import { convertToRGBA } from "./colorUtils";
+import { VIEW_TYPE_CALENDAR } from "./calendar/constants";
 
 export function applyElementCardStyles(settings: ElementCardComponentSettings) {
 	const rootStyle = document.documentElement.style;
@@ -355,6 +357,7 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			const sections: SettingsSection[] = [
 				{ id: "forceView", label: "Force View Mode", labelZh: "视图模式", icon: "eye" },
 				{ id: "cursorPosition", label: "Cursor Position", labelZh: "光标位置", icon: "mouse-pointer" },
+				{ id: "calendar", label: "Calendar", labelZh: "日历", icon: "calendar-days" },
 			];
 
 			// Create layout: nav + content
@@ -401,6 +404,8 @@ export class ElementCardSettingTab extends PluginSettingTab {
 				this.renderForceViewModeSection(sectionEl);
 			} else if (section.id === "cursorPosition") {
 				this.renderCursorPositionSection(sectionEl);
+			} else if (section.id === "calendar") {
+				this.renderCalendarSection(sectionEl);
 			}
 		});
 
@@ -711,5 +716,116 @@ export class ElementCardSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					})
 			);
+	}
+
+	private renderCalendarSection(containerEl: HTMLElement): void {
+		const isZhLang = isZh();
+
+		// 1. Enable toggle
+		new Setting(containerEl)
+			.setName(isZhLang ? "启用日历" : "Enable Calendar")
+			.setDesc(isZhLang ? "在侧边栏显示日历视图" : "Show calendar view in sidebar")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.calendar.enabled)
+					.onChange(async (value) => {
+						this.plugin.settings.calendar.enabled = value;
+						await this.plugin.saveSettings();
+						if (value) {
+							this.plugin.activateCalendarView();
+						} else {
+							this.plugin.app.workspace.detachLeavesOfType(VIEW_TYPE_CALENDAR);
+						}
+					})
+			);
+
+		// 2. Calendar position
+		new Setting(containerEl)
+			.setName(isZhLang ? "日历位置" : "Calendar position")
+			.setDesc(isZhLang ? "选择日历显示在哪个侧边栏" : "Choose which sidebar to display the calendar")
+			.addDropdown((dropdown) => {
+				dropdown.addOption("left", isZhLang ? "左侧边栏" : "Left sidebar");
+				dropdown.addOption("right", isZhLang ? "右侧边栏" : "Right sidebar");
+				dropdown.setValue(this.plugin.settings.calendar.position || "left");
+				dropdown.onChange(async (value) => {
+					this.plugin.settings.calendar.position = value as "left" | "right";
+					await this.plugin.saveSettings();
+					this.plugin.app.workspace.detachLeavesOfType(VIEW_TYPE_CALENDAR);
+					if (this.plugin.settings.calendar.enabled) {
+						this.plugin.activateCalendarView();
+					}
+				});
+			});
+
+		// 3. Confirm before create
+		new Setting(containerEl)
+			.setName(isZhLang ? "创建前确认" : "Confirm before creating new note")
+			.setDesc(isZhLang ? "创建日记前是否需要确认" : "Show a confirmation modal before creating a new note")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.calendar.shouldConfirmBeforeCreate)
+					.onChange(async (value) => {
+						this.plugin.settings.calendar.shouldConfirmBeforeCreate = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		// 4. Words per dot
+		new Setting(containerEl)
+			.setName(isZhLang ? "每个圆点代表字数" : "Words per dot")
+			.setDesc(isZhLang ? "日历中每个圆点代表的字数" : "How many words should be represented by a single dot?")
+			.addText((textfield) => {
+				textfield.inputEl.type = "number";
+				textfield.setPlaceholder("250");
+				textfield.setValue(String(this.plugin.settings.calendar.wordsPerDot));
+				textfield.onChange(async (value) => {
+					this.plugin.settings.calendar.wordsPerDot = value !== "" ? Number(value) : 250;
+					await this.plugin.saveSettings();
+				});
+			});
+
+		// 5. Week start
+		const { moment } = window;
+		const localeWeekStartNum = (window as any)._bundledLocaleWeekSpec?.dow || 0;
+		const localeWeekStart = moment.weekdays()[localeWeekStartNum];
+		const weekdays = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+		const weekdayLabels: Record<string, string> = {
+			monday: moment.weekdays()[1],
+			tuesday: moment.weekdays()[2],
+			wednesday: moment.weekdays()[3],
+			thursday: moment.weekdays()[4],
+			friday: moment.weekdays()[5],
+			saturday: moment.weekdays()[6],
+			sunday: moment.weekdays()[0],
+		};
+
+		new Setting(containerEl)
+			.setName(isZhLang ? "星期起始日" : "Start week on")
+			.setDesc(isZhLang ? "选择一周的起始日" : "Choose what day of the week to start")
+			.addDropdown((dropdown) => {
+				dropdown.addOption("locale", isZhLang ? `系统默认 (${localeWeekStart})` : `Locale default (${localeWeekStart})`);
+				weekdays.forEach((key: string) => {
+					dropdown.addOption(key, weekdayLabels[key]);
+				});
+				dropdown.setValue(this.plugin.settings.calendar.weekStart);
+				dropdown.onChange(async (value) => {
+					this.plugin.settings.calendar.weekStart = value as any;
+					await this.plugin.saveSettings();
+				});
+			});
+
+		// 6. Highlight today
+		new Setting(containerEl)
+			.setName(isZhLang ? "今日高亮" : "Highlight today")
+			.setDesc(isZhLang ? "用背景颜色和加粗文本高亮今天的日期" : "Highlight today's date with a background color and bold text")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.calendar.highlightToday !== false)
+					.onChange(async (value) => {
+						this.plugin.settings.calendar.highlightToday = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
 	}
 }

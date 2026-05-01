@@ -84,6 +84,25 @@ export const DEFAULT_CURSOR_POSITION_SETTINGS: CursorPositionSettings = {
 	saveTimer: SAFE_DB_FLUSH_INTERVAL,
 };
 
+// ===== Calendar Plugin Settings =====
+export interface CalendarPluginSettings {
+	enabled: boolean;
+	wordsPerDot: number;
+	weekStart: string;
+	shouldConfirmBeforeCreate: boolean;
+	position: "left" | "right";
+	highlightToday: boolean;
+}
+
+export const DEFAULT_CALENDAR_SETTINGS: CalendarPluginSettings = {
+	enabled: true,
+	wordsPerDot: 250,
+	weekStart: "locale",
+	shouldConfirmBeforeCreate: true,
+	position: "left",
+	highlightToday: true,
+};
+
 // ===== ElementCard Component Settings =====
 export interface ElementCardComponentSettings {
 	defaultColumns: number;
@@ -97,9 +116,9 @@ export interface ElementCardComponentSettings {
 	resizerColor: string;
 	resizerTransparency: number;
 	minColumnWidthPercent: number;
-	// Integrated plugin settings
 	forceViewMode: ForceViewModeSettings;
 	cursorPosition: CursorPositionSettings;
+	calendar: CalendarPluginSettings;
 }
 
 export const DEFAULT_ELEMENTCARD_SETTINGS: ElementCardComponentSettings = {
@@ -116,6 +135,7 @@ export const DEFAULT_ELEMENTCARD_SETTINGS: ElementCardComponentSettings = {
 	minColumnWidthPercent: 15,
 	forceViewMode: DEFAULT_FORCE_VIEW_MODE_SETTINGS,
 	cursorPosition: DEFAULT_CURSOR_POSITION_SETTINGS,
+	calendar: DEFAULT_CALENDAR_SETTINGS,
 };
 
 export const ELEMENTCARD_CARD_PALETTES: Record<ElementCardCardPalettePreset, ElementCardCardPalette> = {

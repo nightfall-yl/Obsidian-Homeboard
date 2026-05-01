@@ -191,4 +191,18 @@ export class En implements Local {
     you_have_no_contributions_on = "No contributions on {date}";
     you_have_contributed_to = "{value} contributions on {date}";
     click_to_load_more = "Click to load more...";
+
+    /**
+     * calendar
+     */
+    calendar_display_name = "Elements Calendar";
+    calendar_modal_title_daily = "New Daily Note";
+    calendar_modal_message_daily = "The file {date} does not exist. Would you like to create it?";
+    calendar_btn_create = "Create";
+    calendar_btn_cancel = "Cancel";
+    calendar_notice_create_daily_failed = "Failed to create daily note";
+    calendar_menu_open = "Open";
+    calendar_menu_open_in_new_pane = "Open in new pane";
+    calendar_menu_delete = "Delete";
+    calendar_menu_create_daily = "Create daily note";
 }

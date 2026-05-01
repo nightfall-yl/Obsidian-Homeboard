@@ -1753,3 +1753,63 @@ font-weight: 400;
 		margin-top: 2px;
 	}
 }
+
+.elements-calendar-outer {
+	width: 100%;
+	overflow: hidden;
+}
+
+.workspace-leaf-content[data-type="elements-calendar"] .view-content {
+	padding: 0;
+	overflow: hidden;
+}
+
+/* Calendar confirm create modal */
+.calendar-confirm-modal {
+	padding: 24px;
+}
+
+.calendar-confirm-modal__title {
+	margin: 0 0 16px 0;
+	font-size: 1.2em;
+	font-weight: 600;
+	color: var(--text-normal);
+}
+
+.calendar-confirm-modal__message {
+	margin: 0 0 24px 0;
+	font-size: 1em;
+	color: var(--text-normal);
+	line-height: 1.6;
+}
+
+.calendar-confirm-modal__buttons {
+	display: flex;
+	justify-content: flex-end;
+	gap: 12px;
+}
+
+.calendar-confirm-modal__btn {
+	padding: 6px 16px;
+	border-radius: 4px;
+	font-size: 0.9em;
+	cursor: pointer;
+	border: 1px solid var(--background-modifier-border);
+	background-color: var(--background-primary);
+	color: var(--text-normal);
+	transition: background-color 0.15s ease;
+}
+
+.calendar-confirm-modal__btn:hover {
+	background-color: var(--background-modifier-hover);
+}
+
+.calendar-confirm-modal__btn--confirm {
+	background-color: var(--interactive-accent);
+	color: var(--text-on-accent);
+	border-color: var(--interactive-accent);
+}
+
+.calendar-confirm-modal__btn--confirm:hover {
+	background-color: var(--interactive-accent-hover);
+}
