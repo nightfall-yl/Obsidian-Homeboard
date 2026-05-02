@@ -18,7 +18,7 @@ Elements 是一款功能强大的 Obsidian 插件，为用户提供了多种实�
 
 ### 手动安装
 
-1. 下载最新 [release](https://github.com/nightfall-yl/Trimmings/releases)
+1. 下载最新 [release](https://github.com/nightfall_yl/obsidian-elements/releases)
 2. 将以下文件放入 Obsidian 插件目录：
 
 ```
@@ -322,6 +322,7 @@ npm run build
 -  [obsidian-calendar-plugin](https://github.com/liamcain/obsidian-calendar-plugin)
 -  [obsidian-force-view-mode-of-note](https://github.com/bwydoogh/obsidian-force-view-mode-of-note)
 -  [obsidian-remember-cursor-position](https://github.com/dy-sh/obsidian-remember-cursor-position)
+
 
 ---
 

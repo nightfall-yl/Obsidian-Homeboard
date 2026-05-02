@@ -355,9 +355,9 @@ export class ElementCardSettingTab extends PluginSettingTab {
 
 			// Define navigation sections
 			const sections: SettingsSection[] = [
+				{ id: "calendar", label: "Calendar", labelZh: "日历", icon: "calendar-days" },
 				{ id: "forceView", label: "Force View Mode", labelZh: "视图模式", icon: "eye" },
 				{ id: "cursorPosition", label: "Cursor Position", labelZh: "光标位置", icon: "mouse-pointer" },
-				{ id: "calendar", label: "Calendar", labelZh: "日历", icon: "calendar-days" },
 			];
 
 			// Create layout: nav + content
