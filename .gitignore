@@ -20,4 +20,5 @@ test.sh
 **/.DS_Store
 
 dev/
+dist/
 
