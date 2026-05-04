@@ -71,7 +71,16 @@ async function updateVersionsJson() {
 	console.log(`Updated versions.json: added version ${currentVersion} with min Obsidian version ${minObsidianVersion}`);
 }
 
+async function copyPluginFilesToDist() {
+	const distDir = "dist";
+	const files = ["main.js", "manifest.json", "styles.css"];
 
+	await mkdir(distDir, { recursive: true });
+	await Promise.all(
+		files.map((file) => cp(file, `${distDir}/${file}`))
+	);
+	console.log(`Copied plugin files to ${distDir}/`);
+}
 
 const context = await esbuild.context({
 	banner: {
@@ -119,6 +128,7 @@ const context = await esbuild.context({
 if (prod) {
 	await context.rebuild();
 	await updateVersionsJson();
+	await copyPluginFilesToDist();
 	process.exit(0);
 } else {
 	await context.watch();

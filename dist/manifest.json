@@ -1,0 +1,10 @@
+{
+	"id": "obsidian-elements",
+	"name": "Elements",
+	"version": "26.5.1",
+	"minAppVersion": "1.3.0",
+	"description": "Light enhancements for Obsidian: elementCard cards, heatmaps, view mode, and cursor memory.",
+	"author": "nightfall_yl",
+	"authorUrl": "https://github.com/nightfall_yl",
+	"isDesktopOnly": false
+}

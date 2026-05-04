@@ -227,6 +227,7 @@ export class ElementCardBuilderModal extends Modal {
 			.setName(local.form_title)
 			.addText((text) => {
 				text.inputEl.addClass("elementCard-builder-modal__title-input");
+				text.setPlaceholder(local.form_title_placeholder);
 				return text.setValue(this.config.title ?? "").onChange((value) => {
 					this.config.title = value.trim() || undefined;
 					this.refreshDerivedViews();
