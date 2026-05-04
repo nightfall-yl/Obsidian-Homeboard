@@ -771,7 +771,73 @@ display:flex;align-items:center;justify-content:space-between;gap:12px;min-width
 		font-size: calc(var(--elementCard-settings-nav-font-size) - 1px);
 	}
 	.elementCard-settings-content {
-		padding: 16px;
+		padding: 14px 0;
+	}
+	.elementCard-settings-group-title {
+		margin: 22px 0 10px;
+		font-size: 1.05rem;
+	}
+	.elementCard-settings-group {
+		margin: 12px 0 22px;
+		padding: 0 14px;
+		border-radius: 28px;
+		background: var(--background-primary) !important;
+	}
+	.elementCard-settings-group > .setting-item,
+	.elementCard-settings-group > .force-view-mode-div {
+		margin: 0 !important;
+		padding: 18px 0;
+		border: 0 !important;
+		border-top: 1px solid var(--background-modifier-border) !important;
+		border-radius: 0 !important;
+		background: transparent !important;
+		box-shadow: none !important;
+	}
+	.elementCard-settings-group > .setting-item:first-child,
+	.elementCard-settings-group > .force-view-mode-div:first-child {
+		border-top: 0 !important;
+	}
+	.elementCard-settings-group > .setting-item {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 10px;
+	}
+	.elementCard-settings-group > .setting-item > .setting-item-info,
+	.elementCard-settings-group > .setting-item > .setting-item-control {
+		width: 100%;
+	}
+	.elementCard-settings-group > .setting-item > .setting-item-control {
+		justify-content: flex-start;
+		flex-wrap: wrap;
+	}
+	.elementCard-settings-group input,
+	.elementCard-settings-group select,
+	.elementCard-settings-group textarea {
+		width: 100%;
+		max-width: 100%;
+	}
+	.elementCard-settings-group > .force-view-mode-div > .setting-item > .setting-item-control {
+		flex-direction: column;
+		align-items: stretch;
+	}
+	.elementCard-settings-group > .force-view-mode-div > .setting-item {
+		margin: 0 !important;
+		border: 0 !important;
+		border-radius: 0 !important;
+		background: transparent !important;
+		box-shadow: none !important;
+	}
+	.force-view-mode-folder > .setting-item > .setting-item-control > .search-input-container,
+	.force-view-mode-file > .setting-item > .setting-item-control > .search-input-container,
+	.force-view-mode-folder > .setting-item > .setting-item-control > *:first-child,
+	.force-view-mode-file > .setting-item > .setting-item-control > *:first-child,
+	.force-view-mode-folder > .setting-item > .setting-item-control > *:nth-child(2),
+	.force-view-mode-file > .setting-item > .setting-item-control > *:nth-child(2) {
+		flex: 1 1 auto;
+		width: 100%;
+	}
+	.elementCard-settings-group > .force-view-mode-div .setting-item-control > .clickable-icon {
+		align-self: flex-end;
 	}
 }
 .contribution-graph-modal__theme-menu,
