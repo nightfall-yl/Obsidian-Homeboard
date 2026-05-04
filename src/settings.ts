@@ -346,23 +346,23 @@ export class ElementCardSettingTab extends PluginSettingTab {
 	}
 
 	display(): void {
-			// Save scroll position before re-render (fixes mobile jump-to-top)
-			const scrollTop = this.containerEl.scrollTop;
+		// Save scroll position before re-render (fixes mobile jump-to-top)
+		const scrollTop = this.containerEl.scrollTop;
 
-			const { containerEl } = this;
-			containerEl.empty();
-			containerEl.addClass("elementCard-settings-root");
+		const { containerEl } = this;
+		containerEl.empty();
+		containerEl.addClass("elementCard-settings-root");
 
-			// Define navigation sections
-			const sections: SettingsSection[] = [
-				{ id: "calendar", label: "Calendar", labelZh: "日历", icon: "calendar-days" },
-				{ id: "forceView", label: "Force View Mode", labelZh: "视图模式", icon: "eye" },
-				{ id: "cursorPosition", label: "Cursor Position", labelZh: "光标位置", icon: "mouse-pointer" },
-			];
+		// Define navigation sections
+		const sections: SettingsSection[] = [
+			{ id: "calendar", label: "Calendar", labelZh: "日历", icon: "calendar-days" },
+			{ id: "forceView", label: "Force View Mode", labelZh: "视图模式", icon: "eye" },
+			{ id: "cursorPosition", label: "Cursor Position", labelZh: "光标位置", icon: "mouse-pointer" },
+		];
 
-			// Create layout: nav + content
-			const navEl = containerEl.createDiv({ cls: "elementCard-settings-nav" });
-			const contentEl = containerEl.createDiv({ cls: "elementCard-settings-content" });
+		// Create layout: nav + content
+		const navEl = containerEl.createDiv({ cls: "elementCard-settings-nav" });
+		const contentEl = containerEl.createDiv({ cls: "elementCard-settings-content" });
 
 		const sectionEls = new Map<string, HTMLElement>();
 		const navButtons = new Map<string, HTMLButtonElement>();
@@ -377,21 +377,21 @@ export class ElementCardSettingTab extends PluginSettingTab {
 		};
 
 		// Create navigation buttons and content sections
-			sections.forEach((section, index) => {
-				// Navigation button
-				const button = navEl.createEl("button", {
-					cls: "elementCard-settings-nav-btn",
-					attr: { type: "button" },
-				});
-				const iconEl = button.createSpan({ cls: "elementCard-settings-nav-icon" });
-				setIcon(iconEl, section.icon);
-				button.createSpan({ text: isZh() ? section.labelZh : section.label });
-				button.addEventListener("click", () => setActiveSection(section.id));
-				navButtons.set(section.id, button);
+		sections.forEach((section, index) => {
+			// Navigation button
+			const button = navEl.createEl("button", {
+				cls: "elementCard-settings-nav-btn",
+				attr: { type: "button" },
+			});
+			const iconEl = button.createSpan({ cls: "elementCard-settings-nav-icon" });
+			setIcon(iconEl, section.icon);
+			button.createSpan({ text: isZh() ? section.labelZh : section.label });
+			button.addEventListener("click", () => setActiveSection(section.id));
+			navButtons.set(section.id, button);
 
-				// Content section
-				const sectionEl = contentEl.createDiv({ cls: "elementCard-settings-section" });
-				sectionEls.set(section.id, sectionEl);
+			// Content section
+			const sectionEl = contentEl.createDiv({ cls: "elementCard-settings-section" });
+			sectionEls.set(section.id, sectionEl);
 
 			// Set first section as active
 			if (index === 0) {
@@ -415,9 +415,21 @@ export class ElementCardSettingTab extends PluginSettingTab {
 		});
 	}
 
+	private createSettingsGroup(containerEl: HTMLElement, title?: string): HTMLElement {
+		if (title) {
+			containerEl.createEl("h2", {
+				cls: "elementCard-settings-group-title",
+				text: title,
+			});
+		}
+		return containerEl.createDiv({ cls: "elementCard-settings-group" });
+	}
+
 	private renderForceViewModeSection(containerEl: HTMLElement): void {
+		const basicGroup = this.createSettingsGroup(containerEl);
+
 		// Enable toggle
-		new Setting(containerEl)
+		new Setting(basicGroup)
 			.setName(tForceView("enable"))
 			.setDesc(tForceView("enableDesc"))
 			.addToggle((toggle) =>
@@ -448,10 +460,10 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			desc.createEl("code", { text: "source" }),
 			tForceView("descPart8")
 		);
-		new Setting(containerEl).setDesc(desc);
+		new Setting(basicGroup).setDesc(desc);
 
 		// Ignore opened files
-		new Setting(containerEl)
+		new Setting(basicGroup)
 			.setName(tForceView("ignoreOpenedFiles"))
 			.setDesc(tForceView("ignoreOpenedFilesDesc"))
 			.addToggle((toggle) =>
@@ -464,7 +476,7 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			);
 
 		// Ignore force view all
-		new Setting(containerEl)
+		new Setting(basicGroup)
 			.setName(tForceView("ignoreForceView"))
 			.setDesc(tForceView("ignoreForceViewDesc"))
 			.addToggle((toggle) =>
@@ -477,7 +489,7 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			);
 
 		// Debounce timeout
-		new Setting(containerEl)
+		new Setting(basicGroup)
 			.setName(tForceView("debounceTimeout"))
 			.setDesc(tForceView("debounceTimeoutDesc"))
 			.addText((text) =>
@@ -490,7 +502,7 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			);
 
 		// ===== Folders =====
-		containerEl.createEl("h2", { text: tForceView("foldersHeader") });
+		const folderGroup = this.createSettingsGroup(containerEl, tForceView("foldersHeader"));
 
 		const folderDesc = document.createDocumentFragment();
 		folderDesc.append(
@@ -500,9 +512,9 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			folderDesc.createEl("br"),
 			tForceView("foldersDesc3")
 		);
-		new Setting(containerEl).setDesc(folderDesc);
+		new Setting(folderGroup).setDesc(folderDesc);
 
-		new Setting(containerEl).setDesc(tForceView("addNewFolder")).addButton((button) => {
+		new Setting(folderGroup).setDesc(tForceView("addNewFolder")).addButton((button) => {
 			button
 				.setTooltip(tForceView("addAnotherFolder"))
 				.setButtonText("+")
@@ -523,11 +535,11 @@ export class ElementCardSettingTab extends PluginSettingTab {
 		];
 
 		this.plugin.settings.forceViewMode.folders.forEach((folderMode, index) => {
-			const div = containerEl.createDiv();
+			const div = folderGroup.createDiv();
 			div.addClass("force-view-mode-div");
 			div.addClass("force-view-mode-folder");
 
-			const s = new Setting(containerEl)
+			const s = new Setting(folderGroup)
 				.addText((cb) => {
 					this.decorateForceViewSearchInput(cb.inputEl);
 					cb.setPlaceholder(tForceView("folderPlaceholder"))
@@ -571,11 +583,11 @@ export class ElementCardSettingTab extends PluginSettingTab {
 				});
 
 			s.infoEl.remove();
-			div.appendChild(containerEl.lastChild as Node);
+			div.appendChild(folderGroup.lastChild as Node);
 		});
 
 		// ===== Files =====
-		containerEl.createEl("h2", { text: tForceView("filesHeader") });
+		const fileGroup = this.createSettingsGroup(containerEl, tForceView("filesHeader"));
 
 		const filesDesc = document.createDocumentFragment();
 		filesDesc.append(
@@ -587,9 +599,9 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			filesDesc.createEl("br"),
 			tForceView("filesDesc4")
 		);
-		new Setting(containerEl).setDesc(filesDesc);
+		new Setting(fileGroup).setDesc(filesDesc);
 
-		new Setting(containerEl).setDesc(tForceView("addNewFile")).addButton((button) => {
+		new Setting(fileGroup).setDesc(tForceView("addNewFile")).addButton((button) => {
 			button
 				.setTooltip(tForceView("addAnotherFile"))
 				.setButtonText("+")
@@ -602,11 +614,11 @@ export class ElementCardSettingTab extends PluginSettingTab {
 		});
 
 		this.plugin.settings.forceViewMode.files.forEach((file, index) => {
-			const div = containerEl.createDiv();
+			const div = fileGroup.createDiv();
 			div.addClass("force-view-mode-div");
 			div.addClass("force-view-mode-file");
 
-			const s = new Setting(containerEl)
+			const s = new Setting(fileGroup)
 				.addText((cb) => {
 					this.decorateForceViewSearchInput(cb.inputEl);
 					cb.setPlaceholder(tForceView("filePlaceholder"))
@@ -641,7 +653,7 @@ export class ElementCardSettingTab extends PluginSettingTab {
 				});
 
 			s.infoEl.remove();
-			div.appendChild(containerEl.lastChild as Node);
+			div.appendChild(fileGroup.lastChild as Node);
 		});
 	}
 
@@ -660,8 +672,10 @@ export class ElementCardSettingTab extends PluginSettingTab {
 	}
 
 	private renderCursorPositionSection(containerEl: HTMLElement): void {
+		const group = this.createSettingsGroup(containerEl);
+
 		// Enable toggle
-		new Setting(containerEl)
+		new Setting(group)
 			.setName(tCursor("enable"))
 			.setDesc(tCursor("enableDesc"))
 			.addToggle((toggle) =>
@@ -674,7 +688,7 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			);
 
 		// Data file name
-		new Setting(containerEl)
+		new Setting(group)
 			.setName(tCursor("dataFileName"))
 			.setDesc(tCursor("dataFileNameDesc"))
 			.addText((text) =>
@@ -688,7 +702,7 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			);
 
 		// Delay after opening
-		new Setting(containerEl)
+		new Setting(group)
 			.setName(tCursor("delayAfterOpening"))
 			.setDesc(tCursor("delayAfterOpeningDesc"))
 			.addSlider((slider) =>
@@ -703,7 +717,7 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			);
 
 		// Delay between saving
-		new Setting(containerEl)
+		new Setting(group)
 			.setName(tCursor("delayBetweenSaving"))
 			.setDesc(tCursor("delayBetweenSavingDesc"))
 			.addSlider((slider) =>
@@ -720,9 +734,10 @@ export class ElementCardSettingTab extends PluginSettingTab {
 
 	private renderCalendarSection(containerEl: HTMLElement): void {
 		const isZhLang = isZh();
+		const group = this.createSettingsGroup(containerEl);
 
 		// 1. Enable toggle
-		new Setting(containerEl)
+		new Setting(group)
 			.setName(isZhLang ? "启用日历" : "Enable Calendar")
 			.setDesc(isZhLang ? "在侧边栏显示日历视图" : "Show calendar view in sidebar")
 			.addToggle((toggle) =>
@@ -740,7 +755,7 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			);
 
 		// 2. Calendar position
-		new Setting(containerEl)
+		new Setting(group)
 			.setName(isZhLang ? "日历位置" : "Calendar position")
 			.setDesc(isZhLang ? "选择日历显示在哪个侧边栏" : "Choose which sidebar to display the calendar")
 			.addDropdown((dropdown) => {
@@ -758,7 +773,7 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			});
 
 		// 3. Confirm before create
-		new Setting(containerEl)
+		new Setting(group)
 			.setName(isZhLang ? "创建前确认" : "Confirm before creating new note")
 			.setDesc(isZhLang ? "创建日记前是否需要确认" : "Show a confirmation modal before creating a new note")
 			.addToggle((toggle) =>
@@ -771,7 +786,7 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			);
 
 		// 4. Words per dot
-		new Setting(containerEl)
+		new Setting(group)
 			.setName(isZhLang ? "每个圆点代表字数" : "Words per dot")
 			.setDesc(isZhLang ? "日历中每个圆点代表的字数" : "How many words should be represented by a single dot?")
 			.addText((textfield) => {
@@ -799,7 +814,7 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			sunday: moment.weekdays()[0],
 		};
 
-		new Setting(containerEl)
+		new Setting(group)
 			.setName(isZhLang ? "星期起始日" : "Start week on")
 			.setDesc(isZhLang ? "选择一周的起始日" : "Choose what day of the week to start")
 			.addDropdown((dropdown) => {
@@ -815,7 +830,7 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			});
 
 		// 6. Highlight today
-		new Setting(containerEl)
+		new Setting(group)
 			.setName(isZhLang ? "今日高亮" : "Highlight today")
 			.setDesc(isZhLang ? "用背景颜色和加粗文本高亮今天的日期" : "Highlight today's date with a background color and bold text")
 			.addToggle((toggle) =>
