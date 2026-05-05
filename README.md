@@ -97,9 +97,31 @@ cards:
 | `span` | 跨列数 |
 | `linksLayout` | `inline`（内联）或 `list`（列表） |
 | `palettePreset` | 配色方案：`sage`（苔绿）`mist`（雾蓝）`amber`（琥珀）`plum`（梅紫）`slate`（石墨） |
-| `links` | 链接列表，每项含 `label` 和 `url`，可选 `external` 标记外部链接 |
+| `links` | 链接列表，每项含 `label` 和 `url`（或 `action`），可选 `external` 标记外部链接 |
 
 阅读模式下可以拖动列分隔条调整列宽，宽度保存在 `localStorage`。建议给每个代码块设置固定 `id` 以确保持久化。
+
+### Action 链接
+
+链接项支持 `action` 字段，点击后触发插件内置功能（如打开主页、打开 Memoria 面板等），而非跳转到普通链接。
+
+```yaml
+links:
+  - label: 打开主页
+    action: open-homepage
+  - label: 打开微信读书书架
+    action: open-weread
+  - label: 打开 Memoria 面板
+    action: open-memoria
+```
+
+| action 值 | 功能 |
+|-----------|------|
+| `open-homepage` | 打开 Elements 主页 |
+| `open-weread` | 打开微信读书书架 |
+| `open-memoria` | 打开 Memoria 面板 |
+
+Action 链接在卡片中以 ⚡ 图标标识，与普通链接视觉区分。
 
 ---
 
@@ -230,7 +252,7 @@ dataSource:
 |------|------|
 | `New ElementCard` | 创建新的元素卡片 |
 | `New ContributionGraph` | 创建新的贡献图 |
-| `Open Elements Calendar` | 打开侧边栏日历 |
+| `Open Calendar` | 打开侧边栏日历 |
 
 编辑区右键可从上下文菜单访问 **新增 Elements 组件**，包含 **新建卡片** 和 **新建热力图** 选项。阅读模式下 `elementCard` 和 `contributionGraph` 代码块旁均有浮动编辑按钮。
 
@@ -323,6 +345,18 @@ npm run build
 -  [obsidian-force-view-mode-of-note](https://github.com/bwydoogh/obsidian-force-view-mode-of-note)
 -  [obsidian-remember-cursor-position](https://github.com/dy-sh/obsidian-remember-cursor-position)
 
+
+---
+
+## 更新日志
+
+### 26.5.4
+
+- **新增 Action 链接**：ElementCard 链接项支持 `action` 字段，可触发插件内置功能（`open-homepage`、`open-weread`、`open-memoria`），以 ⚡ 图标标识
+- **修复 BuilderModal 丢失 action 字段**：通过 Builder 编辑卡片后重新渲染，action 链接不再失效
+- **优化 weread 命令执行**：支持按 command ID 直接执行，提高命令匹配可靠性
+- **日历双语支持**：Ribbon 栏和命令面板的"打开日历"支持中英文切换
+- **链接输入框描述更新**：Builder 中链接文本域展示 URL 和 Action 两种格式说明
 
 ---
 

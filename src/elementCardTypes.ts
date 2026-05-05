@@ -16,7 +16,8 @@ export interface ElementCardCardPalette {
 
 export interface ElementCardLinkItem {
 	label: string;
-	url: string;
+	url?: string;
+	action?: string;
 }
 
 export interface ElementCardCardConfig {
@@ -84,6 +85,33 @@ export const DEFAULT_CURSOR_POSITION_SETTINGS: CursorPositionSettings = {
 	saveTimer: SAFE_DB_FLUSH_INTERVAL,
 };
 
+import { HomepageKind, OpenMode, ViewMode } from "./homepage/types";
+
+// ===== Homepage Settings =====
+export interface HomepagePluginSettings {
+	enabled: boolean;
+	kind: HomepageKind;
+	value: string;
+	openOnStartup: boolean;
+	openMode: OpenMode;
+	viewMode: ViewMode;
+	revertView: boolean;
+	openWhenEmpty: boolean;
+	autoCreate: boolean;
+}
+
+export const DEFAULT_HOMEPAGE_SETTINGS: HomepagePluginSettings = {
+	enabled: true,
+	kind: HomepageKind.File,
+	value: "Home",
+	openOnStartup: true,
+	openMode: OpenMode.ReplaceAll,
+	viewMode: ViewMode.Default,
+	revertView: true,
+	openWhenEmpty: false,
+	autoCreate: false,
+};
+
 // ===== Calendar Plugin Settings =====
 export interface CalendarPluginSettings {
 	enabled: boolean;
@@ -118,6 +146,7 @@ export interface ElementCardComponentSettings {
 	minColumnWidthPercent: number;
 	forceViewMode: ForceViewModeSettings;
 	cursorPosition: CursorPositionSettings;
+	homepage: HomepagePluginSettings;
 	calendar: CalendarPluginSettings;
 }
 
@@ -135,6 +164,7 @@ export const DEFAULT_ELEMENTCARD_SETTINGS: ElementCardComponentSettings = {
 	minColumnWidthPercent: 15,
 	forceViewMode: DEFAULT_FORCE_VIEW_MODE_SETTINGS,
 	cursorPosition: DEFAULT_CURSOR_POSITION_SETTINGS,
+	homepage: DEFAULT_HOMEPAGE_SETTINGS,
 	calendar: DEFAULT_CALENDAR_SETTINGS,
 };
 

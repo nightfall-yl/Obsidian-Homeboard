@@ -1,4 +1,4 @@
-import { App, PluginSettingTab, Setting, setIcon, getLanguage, TFolder } from "obsidian";
+import { App, PluginSettingTab, Setting, setIcon, getLanguage, TFolder, TAbstractFile, TFile, AbstractInputSuggest } from "obsidian";
 import ElementCardComponentPlugin from "./main";
 import {
 	DEFAULT_ELEMENTCARD_SETTINGS,
@@ -212,133 +212,69 @@ function tCursor(key: CursorLocaleKey): string {
 	return isZh() ? cursorZhCN[key] : cursorEn[key];
 }
 
-export class FolderSuggestDropdown {
-	private containerEl: HTMLElement;
-	private dropdownEl: HTMLDivElement | null = null;
-	private listEl: HTMLDivElement | null = null;
-	private inputEl: HTMLInputElement;
+export class FolderSuggestDropdown extends AbstractInputSuggest<TFolder> {
 	private allFolders: TFolder[];
-	private onSelect: (path: string) => void;
-	private activeIndex = -1;
-	private readonly handleOutsideClick = (event: MouseEvent) => {
-		const target = event.target as Node | null;
-		if (!target) {
-			return;
-		}
-		if (this.dropdownEl?.contains(target) || this.inputEl.contains(target)) {
-			return;
-		}
-		this.hide();
-	};
+	private input: HTMLInputElement;
 
 	constructor(
 		app: App,
 		inputEl: HTMLInputElement,
-		onSelect: (path: string) => void
 	) {
-		this.inputEl = inputEl;
-		this.containerEl = inputEl.closest(".setting-item") || inputEl.parentElement!;
+		super(app, inputEl);
+		this.input = inputEl;
 		this.allFolders = app.vault.getAllLoadedFiles().filter((f) => f instanceof TFolder) as TFolder[];
-		this.onSelect = onSelect;
-
-		this.inputEl.addEventListener("focus", () => {
-			if (!this.dropdownEl) this.show();
-			this.renderItems(this.inputEl.value);
-		});
-		this.inputEl.addEventListener("input", () => {
-			if (!this.dropdownEl) this.show();
-			this.renderItems(this.inputEl.value);
-		});
-		this.inputEl.addEventListener("keydown", (evt) => this.onKeydown(evt, this.listEl || undefined));
 	}
 
-	private highlightItem(items: NodeListOf<Element>) {
-		items.forEach((el, i) => el.toggleClass("is-active", i === this.activeIndex));
-		if (this.activeIndex >= 0) {
-			(items[this.activeIndex] as HTMLElement).scrollIntoView({ block: "nearest" });
-		}
-	}
-
-	show() {
-		this.hide();
-
-		if (this.allFolders.length === 0) return;
-		const host = this.inputEl.parentElement ?? this.containerEl;
-		this.dropdownEl = host.createDiv({
-			cls: "folder-suggest-dropdown folder-suggest-dropdown--inline",
-		});
-		this.listEl = this.dropdownEl.createDiv({ cls: "folder-suggest-list" });
-		this.renderItems(this.inputEl.value);
-		document.addEventListener("mousedown", this.handleOutsideClick, true);
-	}
-
-	private renderItems(query: string) {
-		if (!this.listEl) {
-			return;
-		}
-		this.listEl.empty();
+	getSuggestions(query: string): TFolder[] {
 		const q = query.toLowerCase();
-		const filtered = q
-			? this.allFolders.filter((f) => f.path.toLowerCase().includes(q))
-			: this.allFolders;
-		this.activeIndex = -1;
-		if (filtered.length === 0) {
-			this.listEl.createDiv({ cls: "folder-suggest-empty", text: "无匹配文件夹" });
-			return;
-		}
-		filtered.forEach((folder) => {
-			const item = this.listEl!.createDiv({ cls: "suggest-item" });
-			item.createDiv({ cls: "suggest-icon" }).innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>`;
-			item.createDiv({ cls: "suggest-text", text: folder.path });
-			item.addEventListener("mousedown", (evt) => {
-				evt.preventDefault();
-				this.inputEl.value = folder.path;
-				this.onSelect(folder.path);
-				this.hide();
-			});
-		});
+		if (!q) return this.allFolders;
+		return this.allFolders.filter((f) => f.path.toLowerCase().includes(q));
 	}
 
-	private onKeydown(evt: KeyboardEvent, listEl?: HTMLElement) {
-		const items = listEl?.querySelectorAll(".suggest-item");
-		if (!items || !items.length) return;
-		if (evt.key === "ArrowDown") {
-			evt.preventDefault();
-			evt.stopPropagation();
-			this.activeIndex = Math.min(this.activeIndex + 1, items.length - 1);
-			this.highlightItem(items);
-		} else if (evt.key === "ArrowUp") {
-			evt.preventDefault();
-			evt.stopPropagation();
-			this.activeIndex = Math.max(this.activeIndex - 1, 0);
-			this.highlightItem(items);
-		} else if (evt.key === "Enter" && this.activeIndex >= 0) {
-			evt.preventDefault();
-			evt.stopPropagation();
-			(items[this.activeIndex] as HTMLElement).click();
-		} else if (evt.key === "Escape") {
-			evt.stopPropagation();
-			this.hide();
-		}
+	renderSuggestion(folder: TFolder, el: HTMLElement): void {
+		el.setText(folder.path);
 	}
 
-	hide() {
-		if (this.dropdownEl) {
-			this.dropdownEl.remove();
-			this.dropdownEl = null;
-			this.listEl = null;
-		}
-		document.removeEventListener("mousedown", this.handleOutsideClick, true);
-		this.activeIndex = -1;
+	selectSuggestion(folder: TFolder, evt: MouseEvent | KeyboardEvent): void {
+		this.input.value = folder.path;
+		this.input.dispatchEvent(new Event("input"));
+	}
+}
+
+export class FileSuggestDropdown extends AbstractInputSuggest<TFile> {
+	private allFiles: TFile[];
+	private input: HTMLInputElement;
+
+	constructor(
+		app: App,
+		inputEl: HTMLInputElement,
+	) {
+		super(app, inputEl);
+		this.input = inputEl;
+		this.allFiles = app.vault.getMarkdownFiles();
 	}
 
-	destroy() {
-		this.hide();
+	getSuggestions(query: string): TFile[] {
+		const q = query.toLowerCase();
+		if (!q) return this.allFiles;
+		return this.allFiles.filter((f) =>
+			f.path.toLowerCase().includes(q) || f.basename.toLowerCase().includes(q)
+		);
+	}
+
+	renderSuggestion(file: TFile, el: HTMLElement): void {
+		el.setText(file.path.replace(/\.md$/, ""));
+	}
+
+	selectSuggestion(file: TFile, evt: MouseEvent | KeyboardEvent): void {
+		this.input.value = file.path.replace(/\.md$/, "");
+		this.input.dispatchEvent(new Event("input"));
 	}
 }
 
 export class ElementCardSettingTab extends PluginSettingTab {
 	plugin: ElementCardComponentPlugin;
+	private activeSectionId: string = "homepage";
 
 	constructor(app: App, plugin: ElementCardComponentPlugin) {
 		super(app, plugin);
@@ -346,19 +282,21 @@ export class ElementCardSettingTab extends PluginSettingTab {
 	}
 
 	display(): void {
-		// Save scroll position before re-render (fixes mobile jump-to-top)
+		// Save scroll position and active section before re-render
 		const scrollTop = this.containerEl.scrollTop;
+		const prevActiveSection = this.activeSectionId;
 
 		const { containerEl } = this;
 		containerEl.empty();
 		containerEl.addClass("elementCard-settings-root");
 
 		// Define navigation sections
-		const sections: SettingsSection[] = [
-			{ id: "calendar", label: "Calendar", labelZh: "日历", icon: "calendar-days" },
-			{ id: "forceView", label: "Force View Mode", labelZh: "视图模式", icon: "eye" },
-			{ id: "cursorPosition", label: "Cursor Position", labelZh: "光标位置", icon: "mouse-pointer" },
-		];
+			const sections: SettingsSection[] = [
+				{ id: "homepage", label: "Homepage", labelZh: "主页", icon: "home" },
+				{ id: "calendar", label: "Calendar", labelZh: "日历", icon: "calendar-days" },
+				{ id: "forceView", label: "Force View Mode", labelZh: "视图模式", icon: "eye" },
+				{ id: "cursorPosition", label: "Cursor Position", labelZh: "光标位置", icon: "mouse-pointer" },
+			];
 
 		// Create layout: nav + content
 		const navEl = containerEl.createDiv({ cls: "elementCard-settings-nav" });
@@ -368,6 +306,7 @@ export class ElementCardSettingTab extends PluginSettingTab {
 		const navButtons = new Map<string, HTMLButtonElement>();
 
 		const setActiveSection = (sectionId: string) => {
+			this.activeSectionId = sectionId;
 			sectionEls.forEach((el, id) => {
 				el.toggleClass("is-active", id === sectionId);
 			});
@@ -393,14 +332,15 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			const sectionEl = contentEl.createDiv({ cls: "elementCard-settings-section" });
 			sectionEls.set(section.id, sectionEl);
 
-			// Set first section as active
-			if (index === 0) {
-				sectionEl.addClass("is-active");
-				button.addClass("is-active");
+			// Restore previously active section (or default to first)
+			if (section.id === prevActiveSection || (index === 0 && !sections.find((s) => s.id === prevActiveSection))) {
+				setActiveSection(section.id);
 			}
 
 			// Render section content
-			if (section.id === "forceView") {
+			if (section.id === "homepage") {
+				this.renderHomepageSection(sectionEl);
+			} else if (section.id === "forceView") {
 				this.renderForceViewModeSection(sectionEl);
 			} else if (section.id === "cursorPosition") {
 				this.renderCursorPositionSection(sectionEl);
@@ -559,11 +499,7 @@ export class ElementCardSettingTab extends PluginSettingTab {
 							await this.plugin.saveSettings();
 						});
 					// Inline folder dropdown on focus
-					new FolderSuggestDropdown(this.app, cb.inputEl, (path) => {
-						cb.setValue(path);
-						this.plugin.settings.forceViewMode.folders[index].folder = path;
-						this.plugin.saveSettings();
-					});
+					new FolderSuggestDropdown(this.app, cb.inputEl);
 				})
 				.addDropdown((cb) => {
 					modes.forEach((mode) => cb.addOption(mode, mode));
@@ -727,6 +663,173 @@ export class ElementCardSettingTab extends PluginSettingTab {
 					.setValue(this.plugin.settings.cursorPosition.saveTimer)
 					.onChange(async (value) => {
 						this.plugin.settings.cursorPosition.saveTimer = value;
+						await this.plugin.saveSettings();
+					})
+			);
+	}
+
+	private renderHomepageSection(containerEl: HTMLElement): void {
+		const isZhLang = isZh();
+		const hp = this.plugin.settings.homepage;
+		const group = this.createSettingsGroup(containerEl);
+
+		new Setting(group)
+			.setName(isZhLang ? "启用主页" : "Enable Homepage")
+			.setDesc(isZhLang ? "开启主页功能，可在启动时自动打开指定笔记" : "Enable homepage feature to auto-open a specified note on startup")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(hp.enabled)
+					.onChange(async (value) => {
+						hp.enabled = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		new Setting(group)
+			.setName(isZhLang ? "首页类型" : "Homepage kind")
+			.setDesc(isZhLang ? "选择主页类型：指定文件或每日日记" : "Choose homepage type: a specific file or daily note")
+			.addDropdown((dropdown) => {
+				dropdown.addOption("file", isZhLang ? "指定文件" : "Specific file");
+				dropdown.addOption("daily-note", isZhLang ? "日记" : "Daily note");
+				dropdown.setValue(hp.kind);
+				dropdown.onChange(async (value) => {
+					hp.kind = value as any;
+					await this.plugin.saveSettings();
+					this.display();
+				});
+			});
+
+		if (hp.kind === "file") {
+			new Setting(group)
+				.setName(isZhLang ? "文件路径" : "File path")
+				.setDesc(isZhLang ? "输入主页文件的路径（不含 .md 后缀）" : "Enter the path of the homepage file (without .md extension)")
+				.addText((text) => {
+					text.setPlaceholder("Home").setValue(hp.value);
+					new FileSuggestDropdown(this.app, text.inputEl);
+					text.onChange(async (value) => {
+						hp.value = value;
+						await this.plugin.saveSettings();
+					});
+				});
+		} else {
+			new Setting(group)
+				.setName(isZhLang ? "日记格式" : "Daily note format")
+				.setDesc(isZhLang ? "日记文件名格式（由日记插件设置决定）" : "Daily note filename format (determined by Daily Notes plugin settings)")
+				.addText((text) => {
+					text.inputEl.disabled = true;
+					text.setValue(isZhLang ? "使用日记插件设置" : "Use Daily Notes plugin format");
+				});
+		}
+
+		new Setting(group)
+			.setName(isZhLang ? "启动时打开" : "Open on startup")
+			.setDesc(isZhLang ? "Obsidian 启动时自动打开主页" : "Automatically open homepage when Obsidian starts")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(hp.openOnStartup)
+					.onChange(async (value) => {
+						hp.openOnStartup = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		new Setting(group)
+			.setName(isZhLang ? "打开方式" : "Open mode")
+			.setDesc(
+				isZhLang
+					? createFragment((frag) => {
+						frag.createSpan({ text: "选择打开主页时的行为。假设工作区当前开着 3 个标签：" });
+						frag.createEl("b", { text: "笔记A / 笔记B / 笔记C" });
+						frag.createEl("br");
+						frag.createEl("br");
+						frag.createSpan({ text: "• " });
+						frag.createEl("b", { text: "替换全部" });
+						frag.createSpan({ text: " → 3 个标签全关，只剩主页" });
+						frag.createEl("br");
+						frag.createSpan({ text: "• " });
+						frag.createEl("b", { text: "保留" });
+						frag.createSpan({ text: " → 标签全保留，如果主页已在其中则跳转，否则不操作（除非当前是空标签）" });
+						frag.createEl("br");
+						frag.createSpan({ text: "• " });
+						frag.createEl("b", { text: "替换最后一个" });
+						frag.createSpan({ text: " → 变成 笔记A / 笔记B / 主页（笔记C 被替换）" });
+					})
+					: createFragment((frag) => {
+						frag.createSpan({ text: "Choose how to open the homepage. Assuming workspace has 3 tabs open: " });
+						frag.createEl("b", { text: "Note A / Note B / Note C" });
+						frag.createEl("br");
+						frag.createEl("br");
+						frag.createSpan({ text: "• " });
+						frag.createEl("b", { text: "Replace all" });
+						frag.createSpan({ text: " → Close all tabs, only homepage remains" });
+						frag.createEl("br");
+						frag.createSpan({ text: "• " });
+						frag.createEl("b", { text: "Retain" });
+						frag.createSpan({ text: " → Keep all tabs, navigate if already open, otherwise do nothing (unless current tab is empty)" });
+						frag.createEl("br");
+						frag.createSpan({ text: "• " });
+						frag.createEl("b", { text: "Replace last" });
+						frag.createSpan({ text: " → Becomes Note A / Note B / Homepage (Note C replaced)" });
+					})
+			)
+			.addDropdown((dropdown) => {
+				dropdown.addOption("replace-all", isZhLang ? "替换全部" : "Replace all");
+				dropdown.addOption("replace-last", isZhLang ? "替换最后一个" : "Replace last");
+				dropdown.addOption("retain", isZhLang ? "保留（已打开则跳转）" : "Retain (navigate if already open)");
+				dropdown.setValue(hp.openMode);
+				dropdown.onChange(async (value) => {
+					hp.openMode = value as any;
+					await this.plugin.saveSettings();
+				});
+			});
+
+		new Setting(group)
+			.setName(isZhLang ? "视图模式" : "View mode")
+			.setDesc(isZhLang ? "打开主页时使用的视图模式" : "View mode when opening homepage")
+			.addDropdown((dropdown) => {
+				dropdown.addOption("default", isZhLang ? "默认视图" : "Default");
+				dropdown.addOption("reading", isZhLang ? "阅读视图" : "Reading");
+				dropdown.addOption("source", isZhLang ? "编辑视图（源码模式）" : "Source");
+				dropdown.addOption("live-preview", isZhLang ? "编辑视图（实时预览）" : "Live Preview");
+				dropdown.setValue(hp.viewMode);
+				dropdown.onChange(async (value) => {
+					hp.viewMode = value as any;
+					await this.plugin.saveSettings();
+				});
+			});
+
+		new Setting(group)
+			.setName(isZhLang ? "离开后恢复视图" : "Revert view on leave")
+			.setDesc(isZhLang ? "离开主页文件时恢复为默认视图模式" : "Revert to default view mode when leaving the homepage file")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(hp.revertView)
+					.onChange(async (value) => {
+						hp.revertView = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		new Setting(group)
+			.setName(isZhLang ? "空标签页时自动打开" : "Open when empty tab")
+			.setDesc(isZhLang ? "当工作区只有空标签页时自动打开主页" : "Auto-open homepage when workspace only has empty tabs")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(hp.openWhenEmpty)
+					.onChange(async (value) => {
+						hp.openWhenEmpty = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		new Setting(group)
+			.setName(isZhLang ? "自动创建文件" : "Auto-create file")
+			.setDesc(isZhLang ? "当主页文件不存在时自动创建" : "Auto-create the homepage file if it doesn't exist")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(hp.autoCreate)
+					.onChange(async (value) => {
+						hp.autoCreate = value;
 						await this.plugin.saveSettings();
 					})
 			);

@@ -37,7 +37,12 @@ function pushLinks(lines: string[], links: ElementCardLinkItem[], level: number)
 	lines.push(`${indent(level)}links:`);
 	for (const link of links) {
 		lines.push(`${indent(level + 1)}- label: ${formatScalar(link.label)}`);
-		lines.push(`${indent(level + 2)}url: ${formatScalar(link.url)}`);
+		if (link.url !== undefined && link.url !== "") {
+			lines.push(`${indent(level + 2)}url: ${formatScalar(link.url)}`);
+		}
+		if (link.action) {
+			lines.push(`${indent(level + 2)}action: ${formatScalar(link.action)}`);
+		}
 	}
 }
 

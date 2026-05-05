@@ -1,9 +1,9 @@
-import { Editor, MarkdownFileInfo, MarkdownView, Menu, Notice, Plugin, TFile, setIcon, } from "obsidian";
+import { Editor, getLanguage, MarkdownFileInfo, MarkdownView, Menu, Notice, Plugin, TFile, setIcon, } from "obsidian";
 import { ElementCardBuilderModal } from "./elementCardBuilderModal";
 import { Locals } from "./i18/messages";
 import { parseElementCardConfig } from "./elementCardConfig";
 import { ElementCardError } from "./elementCardError";
-import { ElementCardProcessor } from "./elementCardProcessor";
+import { ElementCardProcessor } from "./elementCardProcessor"; 
 import { 
 	DEFAULT_ELEMENTCARD_SETTINGS, 
 	ELEMENTCARD_CARD_PALETTES, 
@@ -19,6 +19,7 @@ import { mountEditButtonToCodeblock } from "./view/codeblock/CodeblockEditButton
 import { ContributionGraphCreateModal } from "./view/form/GraphFormModal";
 import { ForceViewModeManager } from "./forceViewMode";
 import { CursorPositionManager } from "./cursorPosition";
+import { Homepage } from "./homepage/Homepage";
 import { CalendarView } from "./calendar/CalendarView";
 import { VIEW_TYPE_CALENDAR } from "./calendar/constants";
 import { calendarSettings } from "./calendar/ui/stores";
@@ -84,6 +85,7 @@ export default class ElementCardComponentPlugin extends Plugin {
 	settings: ElementCardComponentSettings;
 	forceViewModeManager: ForceViewModeManager;
 	cursorPositionManager: CursorPositionManager;
+	homepage: Homepage;
 
 	async onload() {
 		await this.loadSettings();
@@ -114,19 +116,53 @@ export default class ElementCardComponentPlugin extends Plugin {
 
 		// Add ribbon icon for calendar (only if enabled)
 		if (this.settings.calendar.enabled) {
-			this.addRibbonIcon("calendar-days", "Open Elements Calendar", () => {
+			const isZhLang = (getLanguage() || "en").startsWith("zh");
+			this.addRibbonIcon("calendar-days", isZhLang ? "打开日历" : "Open Calendar", () => {
 				this.activateCalendarView();
 			});
 		}
 
-		// Add command to open calendar
 		this.addCommand({
 			id: "open-elements-calendar",
-			name: "Open Elements Calendar",
+			name: (getLanguage() || "en").startsWith("zh") ? "打开日历" : "Open Calendar",
 			callback: () => {
 				this.activateCalendarView();
 			},
 		});
+
+		// Initialize Homepage
+		this.homepage = new Homepage(this.app);
+		const hpSettings = this.settings.homepage;
+		this.homepage.updateSettings(hpSettings);
+
+		if (hpSettings.enabled) {
+			const isZhLang = (getLanguage() || "en").startsWith("zh");
+			this.addRibbonIcon("home", isZhLang ? "打开主页" : "Open Homepage", (e) => {
+				const alternate = e.button === 1 || e.button === 2 || e.metaKey || e.ctrlKey;
+				this.homepage.open(alternate);
+			});
+
+			this.addCommand({
+				id: "open-homepage",
+				name: isZhLang ? "打开主页" : "Open Homepage",
+				callback: () => this.homepage.open(),
+			});
+		}
+
+		if (hpSettings.openOnStartup) {
+			this.app.workspace.onLayoutReady(async () => {
+				await new Promise((r) => setTimeout(r, 100));
+				await this.homepage.open();
+			});
+		}
+
+		this.registerEvent(
+			this.app.workspace.on("layout-change", async () => {
+				if (!hpSettings.enabled) return;
+				if (hpSettings.revertView) await this.homepage.revertViewIfNeeded();
+				if (hpSettings.openWhenEmpty) await this.homepage.openWhenEmpty();
+			})
+		);
 
 		// Register setting tab
 		this.addSettingTab(new ElementCardSettingTab(this.app, this));
@@ -140,7 +176,19 @@ export default class ElementCardComponentPlugin extends Plugin {
 		});
 
 		this.registerMarkdownCodeBlockProcessor("elementCard", (source, el, ctx) => {
-			const processor = new ElementCardProcessor(this, this.settings);
+			const processor = new ElementCardProcessor(this, this.settings, (action) => {
+				switch (action) {
+					case "open-homepage":
+						this.homepage?.open();
+						break;
+					case "open-memoria":
+						this.openMemoria();
+						break;
+					case "open-weread":
+						this.openWeread();
+						break;
+				}
+			});
 			processor.render(source, el, ctx, this.app);
 		});
 
@@ -223,6 +271,8 @@ export default class ElementCardComponentPlugin extends Plugin {
 			position: calSettings.position || "left",
 			highlightToday: calSettings.highlightToday !== false,
 		});
+		// Update homepage settings
+		this.homepage?.updateSettings(this.settings.homepage);
 	}
 
 	private registerGlobalRenderApi() {
@@ -537,5 +587,42 @@ export default class ElementCardComponentPlugin extends Plugin {
 
 		const nextContent = `${lines.join("\n")}${hasTrailingNewline ? "\n" : ""}`;
 		await this.app.vault.modify(file, nextContent);
+	}
+
+	private openWeread() {
+		this.executePluginCommand("weread", "打开微信读书书架", "打开微信读书书架", "obsidian-weread-plugin:open-weread-bookshelf-view");
+	}
+
+	private openMemoria() {
+		this.executePluginCommand("memoria", "打开 Memoria 面板", "打开 Memoria 面板");
+	}
+
+	private executePluginCommand(pluginHint: string, fallbackName: string, exactCmdName?: string, commandId?: string) {
+		const allCommands = (this.app as any).commands?.commands || {};
+
+		if (commandId && allCommands[commandId]) {
+			(this.app as any).commands.executeCommandById(commandId);
+			return;
+		}
+
+		if (exactCmdName) {
+			const exact = Object.values(allCommands).find((cmd: any) => cmd?.name === exactCmdName);
+			if (exact) {
+				(this.app as any).commands.executeCommandById((exact as { id: string }).id);
+				return;
+			}
+		}
+
+		const match = Object.values(allCommands).find((cmd: any) => {
+			if (!cmd?.name) return false;
+			return cmd.name.toLowerCase().includes(pluginHint.toLowerCase());
+		});
+
+		if (match) {
+			(this.app as any).commands.executeCommandById((match as { id: string }).id);
+			return;
+		}
+
+		new Notice(`未找到 ${fallbackName} 命令`);
 	}
 }

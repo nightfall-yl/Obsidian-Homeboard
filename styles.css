@@ -70,6 +70,17 @@ appearance:none;border:none;background:transparent;color:inherit;font:inherit;fo
 .elementCard__link-button:hover {
 background:color-mix(in srgb,var(--elementCard-card-link-color,#1d86ea) 10%,transparent);color:color-mix(in srgb,var(--elementCard-card-link-color,#1d86ea) 82%,black)
 }
+.elementCard__link-button--action {
+font-weight: 600;
+gap: 4px;
+display: inline-flex;
+align-items: center;
+}
+.elementCard__link-button--action::before {
+content: "⚡";
+margin-right: 2px;
+opacity: .7;
+}
 .elementCard__links-inline-separator {
 color:var(--elementCard-card-separator-color,#77ba61);opacity:.72;font-size:.92em;pointer-events:none;
 color: color-mix(in srgb, var(--elementCard-card-separator-color, #77ba61) 72%, white);

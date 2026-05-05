@@ -48,17 +48,28 @@ function parseLinks(text: string): ElementCardLinkItem[] {
 		.map((line) => line.trim())
 		.filter(Boolean)
 		.map((line) => {
-			const [label, url] = line.split("|").map((part) => part.trim());
+			const parts = line.split("|").map((part) => part.trim());
+			const label = parts[0] || "";
+			const url = parts[1] || "";
+			const action = parts[2] || "";
 			return {
 				label: label || url,
-				url: url || label,
+				...(url ? { url } : {}),
+				...(action ? { action } : {}),
 			};
 		});
 }
 
 function stringifyLinks(links: ElementCardLinkItem[] | undefined): string {
 	return (links ?? [])
-		.map((item) => `${item.label} | ${item.url}`)
+		.map((item) => {
+			const url = item.url ?? "";
+			const action = item.action ?? "";
+			if (action) {
+				return `${item.label} | ${url} | ${action}`;
+			}
+			return `${item.label} | ${url}`;
+		})
 		.join("\n");
 }
 
@@ -444,7 +455,15 @@ export class ElementCardBuilderModal extends Modal {
 			(value) => {
 				card.links = parseLinks(value);
 			},
-			local.elementCard_links_desc
+			(() => {
+				const frag = document.createDocumentFragment();
+				frag.appendText("每行一条，格式如下：");
+				frag.appendChild(document.createElement("br"));
+				frag.appendText("标题 | 链接地址");
+				frag.appendChild(document.createElement("br"));
+				frag.appendText("标题 | | action名称（如 open-weread）");
+				return frag;
+			})()
 		);
 	}
 
@@ -453,7 +472,7 @@ export class ElementCardBuilderModal extends Modal {
 		name: string,
 		value: string,
 		onChange: (value: string) => void,
-		desc?: string
+		desc?: string | DocumentFragment
 	) {
 		const setting = new Setting(container).setName(name);
 		if (desc) {

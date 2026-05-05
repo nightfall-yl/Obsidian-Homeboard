@@ -96,9 +96,31 @@ To edit an existing block, place your cursor inside a `elementCard` code block a
 | `span` | Number of columns to span |
 | `linksLayout` | `inline` or `list` |
 | `palettePreset` | Color scheme: `sage` `mist` `amber` `plum` `slate` |
-| `links` | List of links, each with `label` and `url`. Set `external: true` for external links |
+| `links` | List of links, each with `label` and `url` (or `action`). Set `external: true` for external links |
 
 Column widths can be dragged to resize in reading mode. Widths are saved to `localStorage` — set a fixed `id` on each block to ensure persistence.
+
+### Action Links
+
+Link items support an optional `action` field that triggers built-in plugin functions (e.g., open homepage, open Memoria panel) instead of navigating to a regular link.
+
+```yaml
+links:
+  - label: Open Homepage
+    action: open-homepage
+  - label: Open WeRead Bookshelf
+    action: open-weread
+  - label: Open Memoria Panel
+    action: open-memoria
+```
+
+| action value | Function |
+|-------------|----------|
+| `open-homepage` | Open Elements homepage |
+| `open-weread` | Open WeRead bookshelf |
+| `open-memoria` | Open Memoria panel |
+
+Action links are visually distinguished with a ⚡ icon prefix in the card.
 
 ---
 
@@ -229,6 +251,7 @@ Cell shape supports rounded (default), square (`borderRadius: "0%"`), and circle
 |---------|-------------|
 | `New ElementCard` | Create a new element card |
 | `New ContributionGraph` | Create a new contribution graph |
+| `Open Calendar` | Open sidebar calendar |
 
 Right-click in the editor to access **Add Elements Component** from the context menu, which includes **Add Card** and **Add Graph** options. Floating edit buttons are available in reading mode for both `elementCard` and `contributionGraph` blocks.
 
@@ -286,6 +309,18 @@ src/
 npm install
 npm run build
 ```
+
+---
+
+## Changelog
+
+### 26.5.4
+
+- **Action Links**: ElementCard link items now support an `action` field to trigger built-in plugin functions (`open-homepage`, `open-weread`, `open-memoria`), visually distinguished with a ⚡ icon
+- **Fix: BuilderModal action field loss**: Editing a card via Builder and re-rendering no longer breaks action links — the full action round-trip (parse → edit → save → render) is now preserved
+- **Improved weread command execution**: Supports direct command ID execution for more reliable command matching
+- **Calendar i18n**: Ribbon icon and command palette "Open Calendar" now support Chinese/English switching
+- **Updated link input description**: Builder link textarea now shows both URL and Action format examples
 
 ---
 

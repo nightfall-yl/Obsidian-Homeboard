@@ -147,7 +147,7 @@ export class En implements Local {
 	elementCard_column_span = "Column / Span";
 	elementCard_column_span_desc = "Column starts from 1; span means how many columns to cross";
 	elementCard_links = "Links";
-	elementCard_links_desc = "One per line, format: Title | Note path or Obsidian link";
+	elementCard_links_desc = "One per line, format: Title | URL or Title | | action name (e.g. open-homepage)";
 	elementCard_move_up = "Move up";
 	elementCard_move_down = "Move down";
 	elementCard_remove = "Remove";

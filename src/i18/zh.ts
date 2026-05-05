@@ -145,7 +145,7 @@ export class Zh implements Local {
 	elementCard_column_span = "列号 / 跨列";
 	elementCard_column_span_desc = "列号从 1 开始；span 表示跨几列";
 	elementCard_links = "链接";
-	elementCard_links_desc = "每行一个，格式：标题 | 笔记路径或 Obsidian 内链";
+	elementCard_links_desc = "每行一个，格式：标题 | 链接地址 或 标题 | | action名称（如 open-homepage）";
 	elementCard_move_up = "上移";
 	elementCard_move_down = "下移";
 	elementCard_remove = "删除";

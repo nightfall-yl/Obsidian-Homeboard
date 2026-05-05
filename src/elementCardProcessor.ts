@@ -22,10 +22,16 @@ const DEFAULT_GAP = "2px";
 export class ElementCardProcessor {
 	private plugin: ElementsPlugin;
 	private settings: ElementCardComponentSettings;
+	private onAction: ((action: string) => void) | undefined;
 
-	constructor(plugin: ElementsPlugin, settings: ElementCardComponentSettings) {
+	constructor(
+		plugin: ElementsPlugin,
+		settings: ElementCardComponentSettings,
+		onAction?: (action: string) => void
+	) {
 		this.plugin = plugin;
 		this.settings = settings;
+		this.onAction = onAction;
 	}
 
 	render(
@@ -209,15 +215,40 @@ export class ElementCardProcessor {
 	}
 
 	private createLinkButton(container: HTMLElement, link: ElementCardLinkItem) {
+		const cls = link.action
+			? "elementCard__link-button elementCard__link-button--action internal-link"
+			: "elementCard__link-button internal-link";
 		return container.createEl("button", {
 			text: link.label,
-			cls: "elementCard__link-button internal-link",
+			cls,
 			attr: { type: "button" },
 		});
 	}
 
 	private bindInternalLink(element: HTMLElement, link: ElementCardLinkItem, sourcePath: string) {
-		element.dataset.href = link.url;
+		if (link.action) {
+			element.dataset.action = link.action;
+			element.setAttribute("aria-label", link.label);
+
+			let lastHandledAt = 0;
+			const handleAction = (event: Event) => {
+				event.preventDefault();
+				event.stopPropagation();
+
+				const now = Date.now();
+				if (now - lastHandledAt < 250) return;
+				lastHandledAt = now;
+
+				this.onAction?.(link.action!);
+			};
+
+			element.addEventListener("click", handleAction);
+			element.addEventListener("pointerup", handleAction);
+			element.addEventListener("touchend", handleAction, { passive: false });
+			return;
+		}
+
+		element.dataset.href = link.url ?? "";
 		element.setAttribute("aria-label", link.label);
 
 		let lastHandledAt = 0;
@@ -231,7 +262,7 @@ export class ElementCardProcessor {
 			}
 			lastHandledAt = now;
 
-			void this.plugin.app.workspace.openLinkText(link.url, sourcePath, false);
+			void this.plugin.app.workspace.openLinkText(link.url ?? "", sourcePath, false);
 		};
 
 		element.addEventListener("click", openLink);
