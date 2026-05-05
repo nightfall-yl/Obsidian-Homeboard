@@ -6,8 +6,10 @@
 
 Elements is a powerful Obsidian plugin that offers multiple useful features:
 
-- **Element Card**: Build multi-column navigation card layouts through `elementCard` code blocks, supporting custom color schemes, link layouts, and card styles to help users quickly access frequently used notes and resources.
+- **Element Card**: Build multi-column navigation card layouts through `elementCard` code blocks, supporting custom color schemes, link layouts, and card styles to help users quickly access frequently used notes and resources. Links support Action triggers for one-click access to homepage, WeRead bookshelf, etc.
 - **Contribution Heatmap**: Render GitHub-style heatmaps through `contributionGraph` code blocks, supporting multiple chart types and data sources to help users track note creation rhythm and task completion status.
+- **Homepage**: Designate a specific note as your homepage with auto-open on startup, auto-open on empty tabs, multiple open modes (replace all / keep / replace last), and view mode control.
+- **Sidebar Calendar**: Display a monthly calendar in the left or right sidebar, allowing you to create/open daily notes by clicking dates and visualize daily note counts with dots.
 - **Force View Mode**: Allow users to set default view modes (reading mode or editing mode) for specific folders or files, improving work efficiency.
 - **Remember Cursor Position**: Automatically remember and restore users' cursor positions in files, avoiding repeated positioning and enhancing editing experience.
 
@@ -121,6 +123,36 @@ links:
 | `open-memoria` | Open Memoria panel |
 
 Action links are visually distinguished with a ⚡ icon prefix in the card.
+
+---
+
+## Homepage
+
+Designate a specific note as your homepage with flexible open modes and view mode control. Inspired by [obsidian-homepage-main](https://github.com/nicepkg/obsidian-homepage-main).
+
+### Features
+
+- **Auto-open on startup**: Automatically opens the homepage note when Obsidian starts
+- **Auto-open on empty tabs**: Opens homepage when the workspace only has empty tabs
+- **Auto-create**: Automatically creates the homepage file if it doesn't exist
+- **View mode control**: Supports default view, reading mode, editing mode (source), and editing mode (live preview)
+- **Multiple open modes**: Replace all tabs / Keep existing tabs / Replace last tab
+- **Ribbon shortcut**: Left-click for normal open; right-click/Ctrl/Meta for alternate open mode
+- **Action link integration**: Open homepage directly from ElementCard via `action: open-homepage`
+
+### Settings
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| Enable Homepage | Enable the homepage feature | Off |
+| Homepage Type | Specific file / Daily note | Specific file |
+| Homepage Path | Path to the homepage note | — |
+| Auto-open on Startup | Open homepage when Obsidian starts | Off |
+| Open Mode | Replace all / Keep / Replace last | Replace all |
+| View Mode | Default / Reading / Editing (Source) / Editing (Live Preview) | Default |
+| Restore View on Leave | Revert to default view when leaving the homepage | Off |
+| Auto-open on Empty Tabs | Auto-open when workspace has only empty tabs | Off |
+| Auto-create File | Create homepage file if it doesn't exist | On |
 
 ---
 
@@ -251,6 +283,7 @@ Cell shape supports rounded (default), square (`borderRadius: "0%"`), and circle
 |---------|-------------|
 | `New ElementCard` | Create a new element card |
 | `New ContributionGraph` | Create a new contribution graph |
+| `Open Homepage` | Open homepage |
 | `Open Calendar` | Open sidebar calendar |
 
 Right-click in the editor to access **Add Elements Component** from the context menu, which includes **Add Card** and **Add Graph** options. Floating edit buttons are available in reading mode for both `elementCard` and `contributionGraph` blocks.
@@ -320,7 +353,9 @@ npm run build
 - **Fix: BuilderModal action field loss**: Editing a card via Builder and re-rendering no longer breaks action links — the full action round-trip (parse → edit → save → render) is now preserved
 - **Improved weread command execution**: Supports direct command ID execution for more reliable command matching
 - **Calendar i18n**: Ribbon icon and command palette "Open Calendar" now support Chinese/English switching
+- **Homepage i18n**: Ribbon icon and command palette "Open Homepage" now support Chinese/English switching
 - **Updated link input description**: Builder link textarea now shows both URL and Action format examples
+- **Documentation**: Added complete Homepage documentation and Action Links usage guide to README
 
 ---
 
