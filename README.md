@@ -126,36 +126,6 @@ Action 链接在卡片中以 ⚡ 图标标识，与普通链接视觉区分。
 
 ---
 
-## 主页（Homepage）
-
-将指定笔记设为主页，提供多种打开方式和视图模式控制。移植自 [obsidian-homepage-main](https://github.com/nicepkg/obsidian-homepage-main)。
-
-### 功能特点
-
-- **启动自动打开**：Obsidian 启动时自动打开主页笔记
-- **空标签页自动打开**：工作区只剩空标签页时自动打开主页
-- **自动创建**：主页文件不存在时自动创建
-- **视图模式控制**：支持默认视图、阅读模式、编辑模式（源码）、编辑模式（实时预览）
-- **多种打开模式**：替换全部标签 / 保留现有标签 / 替换最后一个标签
-- **Ribbon 栏快捷入口**：左键正常打开，右键/Ctrl/Meta 键使用备用打开方式
-- **Action 链接集成**：ElementCard 中可通过 `action: open-homepage` 一键打开主页
-
-### 配置说明
-
-| 设置项 | 说明 | 默认值 |
-|--------|------|--------|
-| 启用主页 | 开启主页功能 | 关闭 |
-| 主页类型 | 指定文件 / 每日日记 | 指定文件 |
-| 主页路径 | 主页笔记的文件路径 | — |
-| 启动时自动打开 | Obsidian 启动时自动打开主页 | 关闭 |
-| 打开方式 | 替换全部 / 保留 / 替换最后一个 | 替换全部 |
-| 视图模式 | 默认 / 阅读 / 编辑（源码）/ 编辑（实时预览） | 默认 |
-| 离开后恢复视图 | 离开主页时恢复为默认视图模式 | 关闭 |
-| 空标签页自动打开 | 工作区只有空标签时自动打开 | 关闭 |
-| 自动创建 | 主页文件不存在时自动创建 | 开启 |
-
----
-
 ## 贡献热力图（Contribution Graph）
 
 基于 Dataview 查询数据，渲染 GitHub 风格的贡献热力图。移植自 [obsidian-contribution-graph](https://github.com/vran-dev/obsidian-contribution-graph)。
@@ -294,15 +264,18 @@ dataSource:
 
 Elements 集成以下实用功能：
 
-### 强制视图模式
+### 主页（Homepage）
 
-移植自 [obsidian-force-view-mode-of-note](https://github.com/bwydoogh/obsidian-force-view-mode-of-note)，允许你为特定文件夹或文件设置默认视图模式（阅读模式或编辑模式）。
+移植自 [obsidian-homepage](https://github.com/mirnovov/obsidian-homepage)，将指定笔记设为主页，提供多种打开方式和视图模式控制。
 
 **功能特点：**
-- 支持按文件夹设置视图模式
-- 支持按文件模式设置视图模式
-- 可忽略已打开的文件，避免切换干扰
-- 可忽略强制视图全部设置，临时使用其他视图模式
+- 启动自动打开：Obsidian 启动时自动打开主页笔记
+- 空标签页自动打开：工作区只剩空标签页时自动打开主页
+- 自动创建：主页文件不存在时自动创建
+- 视图模式控制：支持默认视图、阅读模式、编辑模式（源码）、编辑模式（实时预览）
+- 多种打开模式：替换全部标签 / 保留现有标签 / 替换最后一个标签
+- Ribbon 栏快捷入口：左键正常打开，右键/Ctrl/Meta 键使用备用打开方式
+- Action 链接集成：ElementCard 中可通过 `action: open-homepage` 一键打开主页
 
 ### 侧边栏日历
 
@@ -326,6 +299,16 @@ Elements 集成以下实用功能：
 | 每个圆点代表字数 | 日历中每个圆点对应的字数 | 250 |
 | 星期起始日 | 选择一周的起始日 | 跟随系统 |
 | 今日高亮 | 用背景颜色高亮今天的日期 | 开启 |
+
+### 强制视图模式
+
+移植自 [obsidian-force-view-mode-of-note](https://github.com/bwydoogh/obsidian-force-view-mode-of-note)，允许你为特定文件夹或文件设置默认视图模式（阅读模式或编辑模式）。
+
+**功能特点：**
+- 支持按文件夹设置视图模式
+- 支持按文件模式设置视图模式
+- 可忽略已打开的文件，避免切换干扰
+- 可忽略强制视图全部设置，临时使用其他视图模式
 
 ### 光标位置记忆
 
@@ -373,6 +356,7 @@ npm run build
 基于 [Obsidian](https://obsidian.md/) 插件 API 和 [Dataview](https://github.com/blacksmithgu/obsidian-dataview) 构建。
 
 -  [obsidian-contribution-graph](https://github.com/vran-dev/obsidian-contribution-graph)
+-  [obsidian-homepage](https://github.com/mirnovov/obsidian-homepage)
 -  [obsidian-calendar-plugin](https://github.com/liamcain/obsidian-calendar-plugin)
 -  [obsidian-force-view-mode-of-note](https://github.com/bwydoogh/obsidian-force-view-mode-of-note)
 -  [obsidian-remember-cursor-position](https://github.com/dy-sh/obsidian-remember-cursor-position)

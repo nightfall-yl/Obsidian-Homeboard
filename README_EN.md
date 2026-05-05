@@ -126,36 +126,6 @@ Action links are visually distinguished with a ⚡ icon prefix in the card.
 
 ---
 
-## Homepage
-
-Designate a specific note as your homepage with flexible open modes and view mode control. Inspired by [obsidian-homepage-main](https://github.com/nicepkg/obsidian-homepage-main).
-
-### Features
-
-- **Auto-open on startup**: Automatically opens the homepage note when Obsidian starts
-- **Auto-open on empty tabs**: Opens homepage when the workspace only has empty tabs
-- **Auto-create**: Automatically creates the homepage file if it doesn't exist
-- **View mode control**: Supports default view, reading mode, editing mode (source), and editing mode (live preview)
-- **Multiple open modes**: Replace all tabs / Keep existing tabs / Replace last tab
-- **Ribbon shortcut**: Left-click for normal open; right-click/Ctrl/Meta for alternate open mode
-- **Action link integration**: Open homepage directly from ElementCard via `action: open-homepage`
-
-### Settings
-
-| Setting | Description | Default |
-|---------|-------------|---------|
-| Enable Homepage | Enable the homepage feature | Off |
-| Homepage Type | Specific file / Daily note | Specific file |
-| Homepage Path | Path to the homepage note | — |
-| Auto-open on Startup | Open homepage when Obsidian starts | Off |
-| Open Mode | Replace all / Keep / Replace last | Replace all |
-| View Mode | Default / Reading / Editing (Source) / Editing (Live Preview) | Default |
-| Restore View on Leave | Revert to default view when leaving the homepage | Off |
-| Auto-open on Empty Tabs | Auto-open when workspace has only empty tabs | Off |
-| Auto-create File | Create homepage file if it doesn't exist | On |
-
----
-
 ## Contribution Graph
 
 Render GitHub-style contribution heatmaps based on Dataview queries. Inspired by [obsidian-contribution-graph](https://github.com/vran-dev/obsidian-contribution-graph).
@@ -294,6 +264,31 @@ Right-click in the editor to access **Add Elements Component** from the context 
 
 Elements also integrates the following utility features:
 
+### Homepage
+
+Based on [obsidian-homepage](https://github.com/mirnovov/obsidian-homepage), designate a specific note as your homepage with flexible open modes and view mode control.
+
+**Features:**
+- Auto-open on startup: Automatically opens the homepage note when Obsidian starts
+- Auto-open on empty tabs: Opens homepage when the workspace only has empty tabs
+- Auto-create: Automatically creates the homepage file if it doesn't exist
+- View mode control: Supports default view, reading mode, editing mode (source), and editing mode (live preview)
+- Multiple open modes: Replace all tabs / Keep existing tabs / Replace last tab
+- Ribbon shortcut: Left-click for normal open; right-click/Ctrl/Meta for alternate open mode
+- Action link integration: Open homepage directly from ElementCard via `action: open-homepage`
+
+### Sidebar Calendar
+
+Based on [obsidian-calendar-plugin](https://github.com/liamcain/obsidian-calendar-plugin), display a monthly calendar in the left or right sidebar.
+
+**Features:**
+- Display in left or right sidebar
+- Click dates to create or open daily notes (with optional confirmation)
+- Visualize daily note counts with dots (customizable threshold)
+- Today's date highlighted
+- Calendar width scales with sidebar
+- Customizable week start day
+
 ### Force View Mode
 
 Based on [obsidian-force-view-mode-of-note](https://github.com/bwydoogh/obsidian-force-view-mode-of-note), this feature allows you to set default view modes (reading or editing) for specific folders or files.
@@ -368,5 +363,7 @@ npm run build
 Built on the [Obsidian](https://obsidian.md/) plugin API and [Dataview](https://github.com/blacksmithgu/obsidian-dataview).
 
 - [obsidian-contribution-graph](https://github.com/vran-dev/obsidian-contribution-graph)
+- [obsidian-homepage](https://github.com/mirnovov/obsidian-homepage)
+- [obsidian-calendar-plugin](https://github.com/liamcain/obsidian-calendar-plugin)
 - [obsidian-force-view-mode-of-note](https://github.com/bwydoogh/obsidian-force-view-mode-of-note)
 - [obsidian-remember-cursor-position](https://github.com/dy-sh/obsidian-remember-cursor-position)
