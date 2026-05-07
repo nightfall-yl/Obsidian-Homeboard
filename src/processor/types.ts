@@ -3,7 +3,7 @@ import { DataSource } from "src/query/types";
 import {
 	Contribution,
 	CellStyleRule,
-	ContributionGraphConfig,
+	HeatmapConfig,
 } from "src/types";
 import {
 	MISS_CONFIG,
@@ -78,9 +78,9 @@ export class YamlGraphConfig {
 		this.days = undefined;
 	}
 
-	static toContributionGraphConfig(
+	static toHeatmapConfig(
 		config: YamlGraphConfig
-	): ContributionGraphConfig {
+	): HeatmapConfig {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const { query, dateField, ...rest } = config;
 		
@@ -89,7 +89,7 @@ export class YamlGraphConfig {
 				return {
 					days: config.dateRangeValue,
 					...rest,
-				} as ContributionGraphConfig;
+				} as HeatmapConfig;
 			}
 
 			if (config.dateRangeType == "LATEST_MONTH") {
@@ -101,7 +101,7 @@ export class YamlGraphConfig {
 					days: undefined,
 					fromDate: toFormattedDate(start),
 					toDate: toFormattedDate(end),
-				} as ContributionGraphConfig;
+				} as HeatmapConfig;
 			}
 
 			if (config.dateRangeType == "LATEST_YEAR") {
@@ -113,10 +113,10 @@ export class YamlGraphConfig {
 					days: undefined,
 					fromDate: toFormattedDate(start),
 					toDate: toFormattedDate(end),
-				} as ContributionGraphConfig;
+				} as HeatmapConfig;
 			}
 		}
-		return rest as ContributionGraphConfig;
+		return rest as HeatmapConfig;
 	}
 
 	static validate(config: YamlGraphConfig): void {

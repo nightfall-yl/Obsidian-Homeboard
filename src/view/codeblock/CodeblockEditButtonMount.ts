@@ -1,5 +1,5 @@
 import { App, MarkdownView, Notice } from "obsidian";
-import { ContributionGraphCreateModal } from "../form/GraphFormModal";
+import { HeatmapCreateModal } from "../form/GraphFormModal";
 import { mountFloatingEditButton } from "./floatingEditButton";
 import { Locals } from "src/i18/messages";
 
@@ -14,10 +14,10 @@ export function mountEditButtonToCodeblock(
 	return mountFloatingEditButton({
 		app,
 		codeblockDom,
-		className: "contribution-graph-codeblock-edit-button",
+		className: "heatmap-codeblock-edit-button",
 		iconName: "gantt-chart",
 		onClick: () => {
-			new ContributionGraphCreateModal(app, currentCode, (content) => {
+			new HeatmapCreateModal(app, currentCode, (content) => {
 				const markdownView =
 					app.workspace.getActiveViewOfType(MarkdownView);
 				if (!markdownView) {
@@ -39,7 +39,7 @@ export function mountEditButtonToCodeblock(
 				}
 				if (currentStart == null) {
 					const pos = editorView.posAtDOM(codeblockDom);
-					currentStart = pos + "```contributionGraph\n".length;
+					currentStart = pos + "```heatmap\n".length;
 				}
 				editorView.dispatch({
 					changes: {

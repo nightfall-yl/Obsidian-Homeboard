@@ -27,7 +27,6 @@ function createDefaultCard(index?: number, existingCards?: ElementCardCardConfig
 	const palette = ELEMENTCARD_CARD_PALETTES[randomKey];
 	return {
 		type: "links",
-		title: index ? `卡片 ${index}` : undefined,
 		palettePreset: randomKey,
 		linksLayout: "inline",
 		cardBackgroundColor: palette.background,
@@ -112,6 +111,8 @@ function getPaletteLabel(local: Local, preset: ElementCardCardPalettePreset): st
 			return local.elementCard_palette_plum;
 		case "slate":
 			return local.elementCard_palette_slate;
+		case "transparent":
+			return local.elementCard_palette_transparent;
 		default:
 			return local.elementCard_palette_custom;
 	}
@@ -181,7 +182,7 @@ export class ElementCardBuilderModal extends Modal {
 		const tabTitles = tabContainer.createDiv({ cls: "tab-titles" });
 		this.renderTabTitle(tabTitles, local.elementCard_tab_basic, "basic");
 		this.renderTabTitle(tabTitles, local.elementCard_tab_cards, "cards");
-		const divider = tabContainer.createDiv({ cls: "contribution-graph-divider elementCard-builder-modal__divider" });
+		const divider = tabContainer.createDiv({ cls: "heatmap-divider elementCard-builder-modal__divider" });
 		divider.createDiv();
 		const tabItems = tabContainer.createDiv({ cls: "tab-items" });
 
@@ -358,15 +359,6 @@ export class ElementCardBuilderModal extends Modal {
 			});
 
 		new Setting(cardEl)
-			.setName(local.form_title)
-			.addText((text) =>
-				text.setValue(card.title ?? "").onChange((value) => {
-					card.title = value;
-					this.refreshDerivedViews();
-				})
-			);
-
-		new Setting(cardEl)
 			.setName(local.elementCard_palette)
 			.setDesc(local.elementCard_palette_desc)
 			.addButton((button) => {
@@ -377,58 +369,60 @@ export class ElementCardBuilderModal extends Modal {
 				});
 			});
 
-		const backgroundSetting = new Setting(cardEl)
-			.setName(local.elementCard_background)
-			.setDesc(local.elementCard_background_desc);
-		
-		backgroundSetting.settingEl.addClass("elementCard-builder-modal__background");
-		
-		backgroundSetting
-			.addColorPicker((picker) =>
-				picker
-					.setValue(card.cardBackgroundColor ?? "#ffffff")
-					.onChange((value) => this.updateCardColors(card, () => {
-						card.cardBackgroundColor = value;
-					}))
-			)
-			.addText((text) =>
-				text
-					.setPlaceholder("100")
-					.setValue(String(card.cardBackgroundTransparency ?? 100))
-					.onChange((value) => {
-						card.cardBackgroundTransparency = Number(value) || 100;
-						this.refreshDerivedViews();
-					})
-			);
+		if (card.palettePreset !== "transparent") {
+			const backgroundSetting = new Setting(cardEl)
+				.setName(local.elementCard_background)
+				.setDesc(local.elementCard_background_desc);
 
-		const accentColorSetting = new Setting(cardEl)
-			.setName(local.elementCard_accent_colors)
-			.setDesc(local.elementCard_accent_colors_desc);
-		
-		accentColorSetting.settingEl.addClass("elementCard-builder-modal__accent-colors");
-		
-		accentColorSetting
-			.addColorPicker((picker) =>
-				picker
-					.setValue(card.titleColor ?? "#61b94d")
-					.onChange((value) => this.updateCardColors(card, () => {
-						card.titleColor = value;
-					}))
-			)
-			.addColorPicker((picker) =>
-				picker
-					.setValue(card.linkColor ?? "#1d86ea")
-					.onChange((value) => this.updateCardColors(card, () => {
-						card.linkColor = value;
-					}))
-			)
-			.addColorPicker((picker) =>
-				picker
-					.setValue(card.separatorColor ?? "#77ba61")
-					.onChange((value) => this.updateCardColors(card, () => {
-						card.separatorColor = value;
-					}))
-			);
+			backgroundSetting.settingEl.addClass("elementCard-builder-modal__background");
+
+			backgroundSetting
+				.addColorPicker((picker) =>
+					picker
+						.setValue(card.cardBackgroundColor ?? "#ffffff")
+						.onChange((value) => this.updateCardColors(card, () => {
+							card.cardBackgroundColor = value;
+						}))
+				)
+				.addText((text) =>
+					text
+						.setPlaceholder("100")
+						.setValue(String(card.cardBackgroundTransparency ?? 100))
+						.onChange((value) => {
+							card.cardBackgroundTransparency = Number(value) || 100;
+							this.refreshDerivedViews();
+						})
+				);
+
+			const accentColorSetting = new Setting(cardEl)
+				.setName(local.elementCard_accent_colors)
+				.setDesc(local.elementCard_accent_colors_desc);
+
+			accentColorSetting.settingEl.addClass("elementCard-builder-modal__accent-colors");
+
+			accentColorSetting
+				.addColorPicker((picker) =>
+					picker
+						.setValue(card.titleColor ?? "#61b94d")
+						.onChange((value) => this.updateCardColors(card, () => {
+							card.titleColor = value;
+						}))
+				)
+				.addColorPicker((picker) =>
+					picker
+						.setValue(card.linkColor ?? "#1d86ea")
+						.onChange((value) => this.updateCardColors(card, () => {
+							card.linkColor = value;
+						}))
+				)
+				.addColorPicker((picker) =>
+					picker
+						.setValue(card.separatorColor ?? "#77ba61")
+						.onChange((value) => this.updateCardColors(card, () => {
+							card.separatorColor = value;
+						}))
+				);
+		}
 
 		new Setting(cardEl)
 			.setName(local.elementCard_column_span)
@@ -447,6 +441,21 @@ export class ElementCardBuilderModal extends Modal {
 			);
 
 
+
+		new Setting(cardEl)
+			.setName(local.elementCard_links_layout)
+			.setDesc(local.elementCard_links_layout_desc)
+			.addDropdown((dropdown) =>
+				dropdown
+					.addOption("stack", local.elementCard_links_layout_stack)
+					.addOption("inline", local.elementCard_links_layout_inline)
+					.addOption("justify", local.elementCard_links_layout_justify)
+					.setValue(card.linksLayout ?? "inline")
+					.onChange((value: string) => {
+						card.linksLayout = value as ElementCardCardConfig["linksLayout"];
+						this.refreshDerivedViews();
+					})
+			);
 
 		this.addTextareaSetting(
 			cardEl,

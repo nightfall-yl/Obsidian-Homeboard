@@ -1,6 +1,6 @@
 import { DEFAULT_RULES } from "./constants";
 
-export class ContributionGraphConfig {
+export class HeatmapConfig {
 	/**
 	 * the title of the graph
 	 */

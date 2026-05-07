@@ -108,8 +108,7 @@ export class ElementCardProcessor {
 		const grid = shell.createDiv({ cls: "elementCard__grid" });
 		const cards = config.cards ?? [];
 		const widths = this.loadColumnWidths(blockId, columns);
-		const heights = this.loadRowHeights(blockId, 1);
-		this.applyGridTemplate(grid, widths, heights);
+		this.applyGridTemplate(grid, widths);
 		const isSourceMode =
 			this.plugin.app.workspace.getActiveViewOfType(MarkdownView)?.getMode?.() === "source";
 
@@ -117,6 +116,9 @@ export class ElementCardProcessor {
 			const cardEl = grid.createDiv({ cls: "elementCard__card" });
 			const palette = resolveElementCardCardPalette(card);
 			cardEl.dataset.type = "links";
+			if (card.palettePreset) {
+				cardEl.dataset.palettePreset = card.palettePreset;
+			}
 			cardEl.style.gridColumn = `span ${this.normalizeSpan(card.span, columns)}`;
 			cardEl.style.background = convertToRGBA(
 				palette.background,
@@ -149,7 +151,7 @@ export class ElementCardProcessor {
 		}
 
 		if (isSourceMode) {
-			this.mountResizers(shell, grid, widths, heights, blockId);
+			this.mountResizers(shell, grid, widths, blockId);
 		}
 	}
 
@@ -191,7 +193,7 @@ export class ElementCardProcessor {
 
 	private renderLinksCard(container: HTMLElement, card: ElementCardCardConfig, sourcePath: string) {
 		const links = card.links ?? [];
-		if (card.linksLayout === "inline") {
+		if (card.linksLayout === "inline" || card.linksLayout === "justify") {
 			const nav = container.createDiv({ cls: "elementCard__links-inline" });
 			links.forEach((link, index) => {
 				const button = this.createLinkButton(nav, link);
@@ -286,7 +288,7 @@ export class ElementCardProcessor {
 		mountFloatingEditButton({
 			app: this.plugin.app,
 			codeblockDom,
-			className: "contribution-graph-codeblock-edit-button",
+			className: "heatmap-codeblock-edit-button",
 			iconName: "gantt-chart",
 			onClick: () => {
 				this.plugin.openBuilderForBlock(ctx.sourcePath, startLine, endLine, content);
@@ -369,46 +371,15 @@ export class ElementCardProcessor {
 		this.plugin.app.saveLocalStorage(this.getWidthsStorageKey(blockId), JSON.stringify(widths));
 	}
 
-	private getHeightsStorageKey(blockId: string): string {
-		return `elementCard-heights-${blockId}`;
-	}
-
-	private loadRowHeights(blockId: string, rows: number): number[] {
-		const storageKey = this.getHeightsStorageKey(blockId);
-		const stored = this.plugin.app.loadLocalStorage(storageKey);
-		if (stored) {
-			try {
-				const parsed = JSON.parse(stored) as number[];
-				if (Array.isArray(parsed) && parsed.length === rows) {
-					return parsed;
-				}
-			} catch (error) {
-				console.warn("Failed to parse elementCard heights", error);
-			}
-		}
-
-		return Array.from({ length: rows }, () => 100);
-	}
-
-	private saveRowHeights(blockId: string, heights: number[]) {
-		this.plugin.app.saveLocalStorage(this.getHeightsStorageKey(blockId), JSON.stringify(heights));
-	}
-
-	private applyGridTemplate(grid: HTMLElement, widths: number[], heights?: number[]) {
-		grid.style.gridTemplateColumns = widths.map((value) => `${value}%`).join(" ");
-		// 使用固定高度，实现同步调整
-		if (heights && heights.length > 0) {
-			grid.style.gridTemplateRows = heights.map((value) => `${value}px`).join(" ");
-		} else {
-			grid.style.gridTemplateRows = "100px";
-		}
+	private applyGridTemplate(grid: HTMLElement, widths: number[]) {
+		grid.style.gridTemplateColumns = widths.map((value) => `${value}fr`).join(" ");
+		grid.style.gridTemplateRows = "auto";
 	}
 
 	private mountResizers(
 		shell: HTMLElement,
 		grid: HTMLElement,
 		initialWidths: number[],
-		initialHeights: number[],
 		blockId: string
 	) {
 		if (!this.settings.showResizers) {
@@ -419,24 +390,20 @@ export class ElementCardProcessor {
 		const columnResizers: HTMLElement[] = [];
 		const minWidth = this.settings.minColumnWidthPercent ?? DEFAULT_ELEMENTCARD_SETTINGS.minColumnWidthPercent;
 
-		let heights = [...initialHeights];
-		const rowResizers: HTMLElement[] = [];
-		const minHeight = 100;
-
 		const syncResizers = () => {
-			let cumulativeWidth = 0;
-			columnResizers.forEach((resizer, index) => {
-				cumulativeWidth += widths[index];
-				resizer.style.left = `calc(${cumulativeWidth}% - var(--elementCard-resizer-width, 4px) / 2)`;
+			this.applyGridTemplate(grid, widths);
+			requestAnimationFrame(() => {
+				const shellRect = shell.getBoundingClientRect();
+				if (shellRect.width === 0) return;
+				const cards = grid.querySelectorAll<HTMLElement>(":scope > .elementCard__card");
+				columnResizers.forEach((resizer, index) => {
+					const card = cards[index];
+					if (card) {
+						const cardRight = card.getBoundingClientRect().right - shellRect.left;
+						resizer.style.left = `${cardRight}px`;
+					}
+				});
 			});
-			
-			let cumulativeHeight = 0;
-			rowResizers.forEach((resizer, index) => {
-				cumulativeHeight += heights[index];
-				resizer.style.top = `calc(${cumulativeHeight}px - var(--elementCard-resizer-width, 4px) / 2)`;
-			});
-			
-			this.applyGridTemplate(grid, widths, heights);
 		};
 
 		// Column resizers (horizontal)
@@ -487,43 +454,6 @@ export class ElementCardProcessor {
 				});
 			}
 		}
-
-		// Row resizer (vertical) - single row for all cards
-		const resizer = shell.createDiv({ cls: "elementCard__resizer elementCard__resizer-row elementCard__resizer-single" });
-		resizer.dataset.index = "0";
-		resizer.dataset.direction = "row";
-		resizer.style.top = "100%";
-		rowResizers.push(resizer);
-
-		let startY = 0;
-		let currentHeight = 0;
-
-		const onMouseMove = (event: MouseEvent) => {
-			const delta = event.clientY - startY;
-			const nextHeight = currentHeight + delta;
-			if (nextHeight < minHeight) {
-				return;
-			}
-
-			heights[0] = nextHeight;
-			syncResizers();
-		};
-
-		const onMouseUp = () => {
-			document.body.classList.remove("cursor-row-resize");
-			document.removeEventListener("mousemove", onMouseMove);
-			document.removeEventListener("mouseup", onMouseUp);
-			this.saveRowHeights(blockId, heights);
-		};
-
-		resizer.addEventListener("mousedown", (event) => {
-			startY = event.clientY;
-			currentHeight = heights[0];
-			document.body.classList.add("cursor-row-resize");
-			document.addEventListener("mousemove", onMouseMove);
-			document.addEventListener("mouseup", onMouseUp);
-			event.preventDefault();
-		});
 
 		syncResizers();
 	}

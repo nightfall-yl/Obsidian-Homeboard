@@ -7,7 +7,7 @@
 Elements 是一款功能强大的 Obsidian 插件，为用户提供了多种实用功能：
 
 - **元素卡片**：通过 `elementCard` 代码块构建多列导航卡片布局，支持自定义配色方案、链接布局和卡片样式，帮助用户快速访问常用笔记和资源。链接支持 Action 触发器，可一键打开主页、微信读书书架等。
-- **贡献热力图**：通过 `contributionGraph` 代码块渲染 GitHub 风格热力图，支持多种图表类型和数据源，帮助用户追踪笔记创作节奏和任务完成情况。
+- **贡献热力图**：通过 `heatmap` 代码块渲染 GitHub 风格热力图，支持多种图表类型和数据源，帮助用户追踪笔记创作节奏和任务完成情况。
 - **主页**：将指定笔记设为主页，支持启动自动打开、空标签页自动打开、多种打开模式（替换全部/保留/替换最后一个）及视图模式控制。
 - **侧边栏日历**：在左侧或右侧边栏显示月历视图，支持点击日期创建/打开日记，通过圆点直观展示每日笔记字数。
 - **强制视图模式**：允许用户为特定文件夹或文件设置默认视图模式（阅读模式或编辑模式），提高工作效率。
@@ -133,7 +133,7 @@ Action 链接在卡片中以 ⚡ 图标标识，与普通链接视觉区分。
 ### 快速创建
 
 ````markdown
-```contributionGraph
+```heatmap
 title: Contributions
 graphType: default
 dateRangeType: LATEST_DAYS
@@ -143,12 +143,12 @@ dataSource:
   value: '""'
   dateField:
     type: FILE_CTIME
-  countField:
-    type: DEFAULT
+    countField:
+      type: DEFAULT
 ```
 ````
 
-也可以通过命令面板运行 `New ContributionGraph` 或右键菜单选择 **新增 Elements 组件** → **新建热力图**，会打开可视化配置表单。
+也可以通过命令面板运行 `New Heatmap` 或右键菜单选择 **新增 Elements 组件** → **新建热力图**，会打开可视化配置表单。
 
 ### 图表类型
 
@@ -252,11 +252,11 @@ dataSource:
 | 命令 | 说明 |
 |------|------|
 | `New ElementCard` | 创建新的元素卡片 |
-| `New ContributionGraph` | 创建新的贡献图 |
+| `New Heatmap` | 创建新的贡献图 |
 | `Open Homepage` | 打开主页 |
 | `Open Calendar` | 打开侧边栏日历 |
 
-编辑区右键可从上下文菜单访问 **新增 Elements 组件**，包含 **新建卡片** 和 **新建热力图** 选项。阅读模式下 `elementCard` 和 `contributionGraph` 代码块旁均有浮动编辑按钮。
+编辑区右键可从上下文菜单访问 **新增 Elements 组件**，包含 **新建卡片** 和 **新建热力图** 选项。阅读模式下 `elementCard` 和 `heatmap` 代码块旁均有浮动编辑按钮。
 
 ---
 

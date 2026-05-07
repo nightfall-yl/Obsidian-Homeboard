@@ -138,6 +138,7 @@ export interface Local {
 	elementCard_palette_amber: string;
 	elementCard_palette_plum: string;
 	elementCard_palette_slate: string;
+	elementCard_palette_transparent: string;
 	elementCard_background: string;
 	elementCard_background_desc: string;
 	elementCard_accent_colors: string;
@@ -146,6 +147,11 @@ export interface Local {
 	elementCard_column_span_desc: string;
 	elementCard_links: string;
 	elementCard_links_desc: string;
+	elementCard_links_layout: string;
+	elementCard_links_layout_desc: string;
+	elementCard_links_layout_stack: string;
+	elementCard_links_layout_inline: string;
+	elementCard_links_layout_justify: string;
 	elementCard_move_up: string;
 	elementCard_move_down: string;
 	elementCard_remove: string;

@@ -4,7 +4,8 @@ export type ElementCardCardPalettePreset =
 	| "mist"
 	| "amber"
 	| "plum"
-	| "slate";
+	| "slate"
+	| "transparent";
 
 export interface ElementCardCardPalette {
 	label: string;
@@ -26,7 +27,7 @@ export interface ElementCardCardConfig {
 	column?: number;
 	span?: number;
 	row?: number;
-	linksLayout?: "stack" | "inline";
+	linksLayout?: "stack" | "inline" | "justify";
 	palettePreset?: ElementCardCardPalettePreset;
 	cardBackgroundColor?: string;
 	cardBackgroundTransparency?: number;
@@ -203,6 +204,13 @@ export const ELEMENTCARD_CARD_PALETTES: Record<ElementCardCardPalettePreset, Ele
 		title: "#465361",
 		link: "#36424f",
 		separator: "#aeb7bf",
+	},
+	transparent: {
+		label: "全透明",
+		background: "transparent",
+		title: "var(--text-normal)",
+		link: "var(--text-normal)",
+		separator: "var(--text-muted)",
 	},
 };
 

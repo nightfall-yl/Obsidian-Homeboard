@@ -1,4 +1,4 @@
-import { ContributionCellData, ContributionGraphConfig } from "src/types";
+import { ContributionCellData, HeatmapConfig } from "src/types";
 import { mapBy } from "src/util/utils";
 import { BaseGraphRender } from "./graphRender";
 import { distanceBeforeTheStartOfWeek } from "src/util/dateUtils";
@@ -16,7 +16,7 @@ export class GitStyleTrackGraphRender extends BaseGraphRender {
 		return "default";
 	}
 
-	render(root: HTMLElement, graphConfig: ContributionGraphConfig): void {
+	render(root: HTMLElement, graphConfig: HeatmapConfig): void {
 		const graphEl = this.createGraphEl(root)
 
 		// main
@@ -134,7 +134,7 @@ export class GitStyleTrackGraphRender extends BaseGraphRender {
 		chartsEl.appendChild(fragment);
 	}
 
-	renderWeekIndicator(weekdayContainer: HTMLDivElement,graphConfig: ContributionGraphConfig) {
+	renderWeekIndicator(weekdayContainer: HTMLDivElement,graphConfig: HeatmapConfig) {
 		const startOfWeek = graphConfig.startOfWeek || 0;
 		for (let i = 0; i < 7; i++) {
 			const weekdayCell = document.createElement("div");

@@ -138,6 +138,7 @@ export class Zh implements Local {
 	elementCard_palette_amber = "琥珀米纸";
 	elementCard_palette_plum = "梅紫晚霞";
 	elementCard_palette_slate = "石墨冷灰";
+	elementCard_palette_transparent = "全透明";
 	elementCard_background = "背景";
 	elementCard_background_desc = "当前卡片自己的背景色";
 	elementCard_accent_colors = "强调色";
@@ -146,6 +147,11 @@ export class Zh implements Local {
 	elementCard_column_span_desc = "列号从 1 开始；span 表示跨几列";
 	elementCard_links = "链接";
 	elementCard_links_desc = "每行一个，格式：标题 | 链接地址 或 标题 | | action名称（如 open-homepage）";
+	elementCard_links_layout = "链接布局";
+	elementCard_links_layout_desc = "inline 模式下链接在一行显示，可选择居中或两端对齐";
+	elementCard_links_layout_stack = "堆叠（每行一条）";
+	elementCard_links_layout_inline = "居中（inline）";
+	elementCard_links_layout_justify = "两端对齐（justify）";
 	elementCard_move_up = "上移";
 	elementCard_move_down = "下移";
 	elementCard_remove = "删除";

@@ -51,7 +51,7 @@ export class CodeBlockProcessor {
 				// render
 				Renders.render(
 					el,
-					YamlGraphConfig.toContributionGraphConfig(graphConfig)
+					YamlGraphConfig.toHeatmapConfig(graphConfig)
 				);
 			} catch (e) {
 				if (e instanceof GraphProcessError) {

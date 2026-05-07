@@ -14,9 +14,9 @@ import { stringifyElementCardConfig } from "./elementCardYaml";
 import { CodeBlockProcessor } from "./processor/codeBlockProcessor";
 import { Renders } from "./render/renders";
 import { applyElementCardStyles, ElementCardSettingTab } from "./settings";
-import { ContributionGraphConfig } from "./types";
+import { HeatmapConfig } from "./types";
 import { mountEditButtonToCodeblock } from "./view/codeblock/CodeblockEditButtonMount";
-import { ContributionGraphCreateModal } from "./view/form/GraphFormModal";
+import { HeatmapCreateModal } from "./view/form/GraphFormModal";
 import { ForceViewModeManager } from "./forceViewMode";
 import { CursorPositionManager } from "./cursorPosition";
 import { Homepage } from "./homepage/Homepage";
@@ -37,9 +37,9 @@ const loadCss = () => {
 
 declare global {
 	interface Window {
-		renderContributionGraph?: (
+		renderHeatmap?: (
 			container: HTMLElement,
-			graphConfig: ContributionGraphConfig
+			graphConfig: HeatmapConfig
 		) => void;
 	}
 }
@@ -167,7 +167,7 @@ export default class ElementCardComponentPlugin extends Plugin {
 		// Register setting tab
 		this.addSettingTab(new ElementCardSettingTab(this.app, this));
 
-		this.registerMarkdownCodeBlockProcessor("contributionGraph", (code, el, ctx) => {
+		this.registerMarkdownCodeBlockProcessor("heatmap", (code, el, ctx) => {
 			const processor = new CodeBlockProcessor();
 			processor.renderFromCodeBlock(code, el, ctx, this.app);
 			if (el.parentElement) {
@@ -201,10 +201,10 @@ export default class ElementCardComponentPlugin extends Plugin {
 		});
 
 		this.addCommand({
-			id: "create-contribution-graph",
-			name: "New ContributionGraph",
+			id: "create-heatmap",
+			name: "New Heatmap",
 			editorCallback: () => {
-				this.openContributionGraphModal();
+				this.openHeatmapModal();
 			},
 		});
 
@@ -276,9 +276,9 @@ export default class ElementCardComponentPlugin extends Plugin {
 	}
 
 	private registerGlobalRenderApi() {
-		window.renderContributionGraph = (
+		window.renderHeatmap = (
 			container: HTMLElement,
-			graphConfig: ContributionGraphConfig
+			graphConfig: HeatmapConfig
 		): void => {
 			Renders.render(container, graphConfig);
 		};
@@ -288,8 +288,8 @@ export default class ElementCardComponentPlugin extends Plugin {
 		editor.replaceSelection(`\`\`\`elementCard\n${generateElementCardSample()}\n\`\`\`\n`);
 	}
 
-	private openContributionGraphModal() {
-		new ContributionGraphCreateModal(this.app).open();
+	private openHeatmapModal() {
+		new HeatmapCreateModal(this.app).open();
 	}
 
 	private attachElementCardSubmenuHover(menu: Menu, editor: Editor) {
@@ -380,7 +380,7 @@ export default class ElementCardComponentPlugin extends Plugin {
 			);
 			submenuEl.appendChild(
 				createSubmenuItem(local.context_menu_create, "lucide-chart-no-axes-combined", () => {
-					this.openContributionGraphModal();
+					this.openHeatmapModal();
 				})
 			);
 			document.body.appendChild(submenuEl);

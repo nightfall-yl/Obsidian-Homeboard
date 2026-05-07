@@ -6,7 +6,7 @@ import { YamlGraphConfig } from "src/processor/types";
 import { YamlConfigReconciler } from "src/processor/yamlConfigReconciler";
 import { Locals } from "src/i18/messages";
 
-export class ContributionGraphCreateModal extends Modal {
+export class HeatmapCreateModal extends Modal {
 	root: Root | null = null;
 
 	onSave?: (content: string) => void;
@@ -25,11 +25,11 @@ export class ContributionGraphCreateModal extends Modal {
 
 	async onOpen() {
 		const { contentEl } = this;
-		this.modalEl.addClass("contribution-graph-modal-container");
+		this.modalEl.addClass("heatmap-modal-container");
 		contentEl.addClass("plugin-config-modal");
 		const rootContainer = createDiv({
 			parent: contentEl,
-			cls: "contribution-graph-modal-content plugin-config-modal__workspace plugin-config-form",
+			cls: "heatmap-modal-content plugin-config-modal__workspace plugin-config-form",
 		});
 
 		let yamlConfig: YamlGraphConfig;
@@ -66,7 +66,7 @@ export class ContributionGraphCreateModal extends Modal {
 				if (ignoreLanguagePrefix) {
 					editor.replaceSelection(stringifyYaml(yamlGraphConfig));
 				} else {
-					const codeblock = `\`\`\`contributionGraph\n${stringifyYaml(
+					const codeblock = `\`\`\`heatmap\n${stringifyYaml(
 						yamlGraphConfig
 					)}\n\`\`\`\n`;
 					editor.replaceSelection(codeblock);

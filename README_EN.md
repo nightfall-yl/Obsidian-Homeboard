@@ -7,7 +7,7 @@
 Elements is a powerful Obsidian plugin that offers multiple useful features:
 
 - **Element Card**: Build multi-column navigation card layouts through `elementCard` code blocks, supporting custom color schemes, link layouts, and card styles to help users quickly access frequently used notes and resources. Links support Action triggers for one-click access to homepage, WeRead bookshelf, etc.
-- **Contribution Heatmap**: Render GitHub-style heatmaps through `contributionGraph` code blocks, supporting multiple chart types and data sources to help users track note creation rhythm and task completion status.
+- **Contribution Heatmap**: Render GitHub-style heatmaps through `heatmap` code blocks, supporting multiple chart types and data sources to help users track note creation rhythm and task completion status.
 - **Homepage**: Designate a specific note as your homepage with auto-open on startup, auto-open on empty tabs, multiple open modes (replace all / keep / replace last), and view mode control.
 - **Sidebar Calendar**: Display a monthly calendar in the left or right sidebar, allowing you to create/open daily notes by clicking dates and visualize daily note counts with dots.
 - **Force View Mode**: Allow users to set default view modes (reading mode or editing mode) for specific folders or files, improving work efficiency.
@@ -133,7 +133,7 @@ Render GitHub-style contribution heatmaps based on Dataview queries. Inspired by
 ### Quick Start
 
 ````markdown
-```contributionGraph
+```heatmap
 title: Contributions
 graphType: default
 dateRangeType: LATEST_DAYS
@@ -143,12 +143,12 @@ dataSource:
   value: '""'
   dateField:
     type: FILE_CTIME
-  countField:
-    type: DEFAULT
+    countField:
+      type: DEFAULT
 ```
 ````
 
-You can also create graphs via the command palette (`New ContributionGraph`) or select **Add Elements Component** → **Add Graph** from the right-click menu, which opens a visual configuration form.
+You can also create graphs via the command palette (`New Heatmap`) or select **Add Elements Component** → **Add Graph** from the right-click menu, which opens a visual configuration form.
 
 ### Graph Types
 
@@ -252,11 +252,11 @@ Cell shape supports rounded (default), square (`borderRadius: "0%"`), and circle
 | Command | Description |
 |---------|-------------|
 | `New ElementCard` | Create a new element card |
-| `New ContributionGraph` | Create a new contribution graph |
+| `New Heatmap` | Create a new contribution graph |
 | `Open Homepage` | Open homepage |
 | `Open Calendar` | Open sidebar calendar |
 
-Right-click in the editor to access **Add Elements Component** from the context menu, which includes **Add Card** and **Add Graph** options. Floating edit buttons are available in reading mode for both `elementCard` and `contributionGraph` blocks.
+Right-click in the editor to access **Add Elements Component** from the context menu, which includes **Add Card** and **Add Graph** options. Floating edit buttons are available in reading mode for both `elementCard` and `heatmap` blocks.
 
 ---
 

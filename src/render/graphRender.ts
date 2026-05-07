@@ -1,6 +1,6 @@
 import { DEFAULT_RULES } from "src/constants";
 import {
-	ContributionGraphConfig,
+	HeatmapConfig,
 	ContributionCellData,
 	CellStyleRule,
 	ContributionItem,
@@ -15,7 +15,7 @@ import { matchCellStyleRule } from "src/util/utils";
 import { Locals } from "src/i18/messages";
 
 export interface GraphRender {
-	render(container: HTMLElement, graphConfig: ContributionGraphConfig): void;
+	render(container: HTMLElement, graphConfig: HeatmapConfig): void;
 
 	graphType(): string;
 }
@@ -23,7 +23,7 @@ export interface GraphRender {
 export abstract class BaseGraphRender implements GraphRender {
 	constructor() { }
 
-	render(container: HTMLElement, graphConfig: ContributionGraphConfig): void {
+	render(container: HTMLElement, graphConfig: HeatmapConfig): void {
 		throw new Error("Method not implemented.");
 	}
 
@@ -31,14 +31,14 @@ export abstract class BaseGraphRender implements GraphRender {
 
 	createGraphEl(root: HTMLElement): HTMLDivElement {
 		return createDiv({
-			cls: "contribution-graph",
+			cls: "heatmap",
 			parent: root,
 		});
 	}
 
 	createMainEl(
 		parent: HTMLElement,
-		graphConfig: ContributionGraphConfig
+		graphConfig: HeatmapConfig
 	): HTMLDivElement {
 		let cls = "main";
 		if (graphConfig.fillTheScreen && this.graphType() != "calendar") {
@@ -67,7 +67,7 @@ export abstract class BaseGraphRender implements GraphRender {
 	}
 
 	renderTitle(
-		graphConfig: ContributionGraphConfig,
+		graphConfig: HeatmapConfig,
 		parent: HTMLElement
 	): HTMLElement {
 		const titleEl = document.createElement("div");
@@ -83,7 +83,7 @@ export abstract class BaseGraphRender implements GraphRender {
 	}
 
 	renderCellRuleIndicator(
-		graphConfig: ContributionGraphConfig,
+		graphConfig: HeatmapConfig,
 		parent: HTMLElement
 	) {
 		if (graphConfig.showCellRuleIndicators === false) {
@@ -122,7 +122,7 @@ export abstract class BaseGraphRender implements GraphRender {
 	}
 
 	renderActivityContainer(
-		graphConfig: ContributionGraphConfig,
+		graphConfig: HeatmapConfig,
 		parent: HTMLElement
 	): HTMLElement {
 		const activityContainer = createDiv({
@@ -133,7 +133,7 @@ export abstract class BaseGraphRender implements GraphRender {
 	}
 
 	renderActivity(
-		graphConfig: ContributionGraphConfig,
+		graphConfig: HeatmapConfig,
 		cellData: ContributionCellData,
 		contaienr: HTMLElement
 	) {
@@ -211,7 +211,7 @@ export abstract class BaseGraphRender implements GraphRender {
 		}
 	}
 
-	generateContributionData(graphConfig: ContributionGraphConfig) {
+	generateContributionData(graphConfig: HeatmapConfig) {
 		if (graphConfig.days) {
 			return generateByLatestDays(graphConfig.days, graphConfig.data);
 		} else if (graphConfig.fromDate && graphConfig.toDate) {
@@ -223,7 +223,7 @@ export abstract class BaseGraphRender implements GraphRender {
 		}
 	}
 
-	getCellRules(graphConfig: ContributionGraphConfig) {
+	getCellRules(graphConfig: HeatmapConfig) {
 		return graphConfig.cellStyleRules &&
 			graphConfig.cellStyleRules.length > 0
 			? graphConfig.cellStyleRules
@@ -244,7 +244,7 @@ export abstract class BaseGraphRender implements GraphRender {
 
 	applyCellGlobalStyle(
 		cellEl: HTMLElement,
-		graphConfig: ContributionGraphConfig
+		graphConfig: HeatmapConfig
 	) {
 		if (graphConfig.cellStyle) {
 			Object.assign(cellEl.style, graphConfig.cellStyle);
@@ -253,7 +253,7 @@ export abstract class BaseGraphRender implements GraphRender {
 
 	applyCellGlobalStylePartial(
 		cellEl: HTMLElement,
-		graphConfig: ContributionGraphConfig,
+		graphConfig: HeatmapConfig,
 		props: string[]
 	) {
 		if (graphConfig.cellStyle) {
@@ -299,7 +299,7 @@ export abstract class BaseGraphRender implements GraphRender {
 	bindCellClickEvent(
 		cellEl: HTMLElement,
 		contributionItem: ContributionCellData,
-		graphConfig: ContributionGraphConfig,
+		graphConfig: HeatmapConfig,
 		activityContainer?: HTMLElement
 	) {
 		cellEl.onclick = (event: MouseEvent) => {

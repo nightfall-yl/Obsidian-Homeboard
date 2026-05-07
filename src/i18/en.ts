@@ -140,6 +140,7 @@ export class En implements Local {
 	elementCard_palette_amber = "Amber Rice";
 	elementCard_palette_plum = "Plum Dusk";
 	elementCard_palette_slate = "Slate Gray";
+	elementCard_palette_transparent = "Transparent";
 	elementCard_background = "Background";
 	elementCard_background_desc = "Background color for this card";
 	elementCard_accent_colors = "Accent colors";
@@ -148,6 +149,11 @@ export class En implements Local {
 	elementCard_column_span_desc = "Column starts from 1; span means how many columns to cross";
 	elementCard_links = "Links";
 	elementCard_links_desc = "One per line, format: Title | URL or Title | | action name (e.g. open-homepage)";
+	elementCard_links_layout = "Links Layout";
+	elementCard_links_layout_desc = "Inline mode shows links in one row; choose center or justified alignment";
+	elementCard_links_layout_stack = "Stack (one per line)";
+	elementCard_links_layout_inline = "Center (inline)";
+	elementCard_links_layout_justify = "Justified (space-between)";
 	elementCard_move_up = "Move up";
 	elementCard_move_down = "Move down";
 	elementCard_remove = "Remove";

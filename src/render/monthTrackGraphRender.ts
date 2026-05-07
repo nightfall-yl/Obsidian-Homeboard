@@ -1,4 +1,4 @@
-import { ContributionGraphConfig } from "src/types";
+import { HeatmapConfig } from "src/types";
 import { mapBy } from "src/util/utils";
 import { BaseGraphRender } from "./graphRender";
 import {
@@ -16,7 +16,7 @@ export class MonthTrackGraphRender extends BaseGraphRender {
 		return "month-track";
 	}
 
-	render(root: HTMLElement, graphConfig: ContributionGraphConfig): void {
+	render(root: HTMLElement, graphConfig: HeatmapConfig): void {
 		const graphEl = this.createGraphEl(root)
 
 		// main
@@ -159,7 +159,7 @@ export class MonthTrackGraphRender extends BaseGraphRender {
 		chartsEl.appendChild(fragment);
 	}
 
-	renderMonthDateIndicator(dateIndicatorRow: HTMLDivElement, graphConfig: ContributionGraphConfig) {
+	renderMonthDateIndicator(dateIndicatorRow: HTMLDivElement, graphConfig: HeatmapConfig) {
 		for (let i = 0; i < 31; i++) {
 			const dateIndicatorCell = document.createElement("div");
 			dateIndicatorCell.className = "cell date-indicator";

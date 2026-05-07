@@ -1,4 +1,4 @@
-import { ContributionGraphConfig } from "src/types";
+import { HeatmapConfig } from "src/types";
 import {
 	distanceBeforeTheStartOfWeek,
 	distanceBeforeTheEndOfWeek,
@@ -21,7 +21,7 @@ export class CalendarGraphRender extends BaseGraphRender {
 		return "calendar";
 	}
 
-	render(root: HTMLElement, graphConfig: ContributionGraphConfig): void {
+	render(root: HTMLElement, graphConfig: HeatmapConfig): void {
 		const graphEl = this.createGraphEl(root)
 
 		// main

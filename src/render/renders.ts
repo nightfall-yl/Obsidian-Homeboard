@@ -1,4 +1,4 @@
-import { ContributionGraphConfig } from "src/types";
+import { HeatmapConfig } from "src/types";
 import { CalendarGraphRender } from "./calendarGraphRender";
 import { MonthTrackGraphRender } from "./monthTrackGraphRender";
 import { GitStyleTrackGraphRender } from "./gitStyleTrackGraphRender";
@@ -12,7 +12,7 @@ export class Renders {
 
 	static render(
 		container: HTMLElement,
-		graphConfig: ContributionGraphConfig
+		graphConfig: HeatmapConfig
 	): void {
 		if (graphConfig.graphType === undefined) {
 			graphConfig.graphType = "default";
@@ -38,7 +38,7 @@ export class Renders {
 	static renderErrorTips(container: HTMLElement, summary: string, recommends?: string[]): void {
 		container.empty();
 		const errDiv = createDiv({
-			cls: "contribution-graph-render-error-container",
+			cls: "heatmap-render-error-container",
 			parent: container
 		});
 
