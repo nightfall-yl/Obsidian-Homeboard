@@ -214,5 +214,50 @@ export class En implements Local {
     calendar_menu_open = "Open";
     calendar_menu_open_in_new_pane = "Open in new pane";
     calendar_menu_delete = "Delete";
-    calendar_menu_create_daily = "Create daily note";
+	calendar_menu_create_daily = "Create daily note";
+
+	settings_forceView_enable = "Enable Force View Mode";
+	settings_forceView_enableDesc = "Automatically set view mode based on frontmatter or folder/file rules";
+	settings_forceView_descPart1 = "You can change view mode by setting ";
+	settings_forceView_descPart2 = ", whose value can be either ";
+	settings_forceView_descPart3 = " or ";
+	settings_forceView_descPart4 = ".";
+	settings_forceView_descPart5 = "You can change edit mode by setting ";
+	settings_forceView_descPart6 = ", whose value can be either ";
+	settings_forceView_descPart7 = " or ";
+	settings_forceView_descPart8 = ".";
+	settings_forceView_ignoreOpenedFiles = "Ignore opened files";
+	settings_forceView_ignoreOpenedFilesDesc = "Don't change the view mode of already opened notes.";
+	settings_forceView_ignoreForceView = "Ignore force view when not specified in frontmatter";
+	settings_forceView_ignoreForceViewDesc = "Don't change the view mode of notes opened from other views.";
+	settings_forceView_debounceTimeout = "Debounce timeout (ms)";
+	settings_forceView_debounceTimeoutDesc = 'Debounce timeout is the time (in milliseconds) before setting the view mode. Set it to "0" to disable debounce (default value is "300"). If you encounter issues, try increasing this value.';
+	settings_forceView_foldersHeader = "Folders";
+	settings_forceView_foldersDesc1 = "Set a view mode for notes in specific folders.";
+	settings_forceView_foldersDesc2 = "Note: This will force all notes in that folder to use the specified view mode, even if they have a different view mode set in their frontmatter.";
+	settings_forceView_foldersDesc3 = "Priority increases from bottom to top (bottom-most has highest priority), so if you specify subfolders make sure they are below their parent folders.";
+	settings_forceView_addNewFolder = "Add new folder";
+	settings_forceView_addAnotherFolder = "Add another folder to list";
+	settings_forceView_folderPlaceholder = "Example: folder1/templates";
+	settings_forceView_delete = "Delete";
+	settings_forceView_filesHeader = "Files";
+	settings_forceView_filesDesc1 = 'Set a view mode for files matching a pattern (regex; example " - All$" for all notes ending with " - All" or "1900-01" for all daily notes starting with "1900-01").';
+	settings_forceView_filesDesc2 = "Note: This will force using the specified view mode, even if it has a different view mode set in its frontmatter.";
+	settings_forceView_filesDesc3 = "Priority increases from bottom to top (bottom-most has highest priority).";
+	settings_forceView_filesDesc4 = "Note that file patterns will override folder settings for the same file.";
+	settings_forceView_addNewFile = "Add new file";
+	settings_forceView_addAnotherFile = "Add another file to list";
+	settings_forceView_filePlaceholder = 'Example: " - All$" or "1900-01"';
+
+	settings_cursor_enable = "Enable Remember Cursor Position";
+	settings_cursor_enableDesc = "Remember and restore cursor and scroll position for each file";
+	settings_cursor_dataFileName = "Data file name";
+	settings_cursor_dataFileNameDesc = "Save position info to this file";
+	settings_cursor_dataFileNamePlaceholder = "Example: cursor-positions.json";
+	settings_cursor_delayAfterOpening = "Delay after opening new note";
+	settings_cursor_delayAfterOpeningDesc = "If you use links pointing to headings inside notes (like [link](note.md#heading)), this plugin should not scroll. Increase delay if you experience this. Set to zero if you don't use links pointing to sections within pages (move slider to the left). Range: 0-300 ms (default 100 ms).";
+	settings_cursor_delayBetweenSaving = "Interval between saving cursor position to file";
+	settings_cursor_delayBetweenSavingDesc = "For multi-device users. Shorten if you don't want to wait until Obsidian closes to save positions.";
+
+	notice_command_not_found = "Command '{0}' not found";
 }

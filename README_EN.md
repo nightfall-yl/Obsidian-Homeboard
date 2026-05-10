@@ -1,13 +1,13 @@
 # Elements
 
-> An Obsidian plugin that provides configurable navigation cards and contribution heatmaps for your homepage.
+> An Obsidian plugin that provides configurable navigation cards and heatmaps for your homepage.
 
 ## Plugin Feature Summary
 
 Elements is a powerful Obsidian plugin that offers multiple useful features:
 
 - **Element Card**: Build multi-column navigation card layouts through `elementCard` code blocks, supporting custom color schemes, link layouts, and card styles to help users quickly access frequently used notes and resources. Links support Action triggers for one-click access to homepage, WeRead bookshelf, etc.
-- **Contribution Heatmap**: Render GitHub-style heatmaps through `heatmap` code blocks, supporting multiple chart types and data sources to help users track note creation rhythm and task completion status.
+- **Heatmap**: Render GitHub-style heatmaps through `heatmap` code blocks, supporting multiple chart types and data sources to help users track note creation rhythm and task completion status.
 - **Homepage**: Designate a specific note as your homepage with auto-open on startup, auto-open on empty tabs, multiple open modes (replace all / keep / replace last), and view mode control.
 - **Sidebar Calendar**: Display a monthly calendar in the left or right sidebar, allowing you to create/open daily notes by clicking dates and visualize daily note counts with dots.
 - **Force View Mode**: Allow users to set default view modes (reading mode or editing mode) for specific folders or files, improving work efficiency.
@@ -33,7 +33,7 @@ The plugin provides intuitive command palette and right-click menu operations, s
 
 ### Prerequisites
 
-- [Dataview](https://github.com/blacksmithgu/obsidian-dataview) plugin (required for Contribution Graph queries)
+- [Dataview](https://github.com/blacksmithgu/obsidian-dataview) plugin (required for Heatmap queries)
 
 ---
 
@@ -126,9 +126,9 @@ Action links are visually distinguished with a ⚡ icon prefix in the card.
 
 ---
 
-## Contribution Graph
+## Heatmap
 
-Render GitHub-style contribution heatmaps based on Dataview queries. Inspired by [obsidian-contribution-graph](https://github.com/vran-dev/obsidian-contribution-graph).
+Render GitHub-style heatmaps based on Dataview queries. Inspired by [obsidian-contribution-graph](https://github.com/vran-dev/obsidian-contribution-graph).
 
 ### Quick Start
 
@@ -255,7 +255,7 @@ Cell shape supports rounded (default), square (`borderRadius: "0%"`), and circle
 | Command | Description |
 |---------|-------------|
 | `New ElementCard` | Create a new element card |
-| `New Heatmap` | Create a new contribution graph |
+| `New Heatmap` | Create a new heatmap |
 | `Open Homepage` | Open homepage |
 | `Open Calendar` | Open sidebar calendar |
 
@@ -327,11 +327,11 @@ src/
 ├── elementCardConfig.ts       # elementCard configuration
 ├── elementCardTypes.ts        # elementCard type definitions
 ├── elementCardYaml.ts         # elementCard YAML serialization
-├── types.ts                   # Contribution graph core types
+├── types.ts                   # Heatmap core types
 ├── i18/                       # i18n (zh / en)
-├── processor/                 # Graph data processing & validation
+├── processor/                 # Heatmap data processing & validation
 ├── query/                     # Dataview query layer
-├── render/                    # Graph rendering (git-style, month-track, calendar)
+├── render/                    # Chart rendering (git-style, month-track, calendar)
 ├── view/                      # React UI components
 └── util/                      # Utilities
 ```

@@ -309,12 +309,6 @@ export class ElementCardProcessor {
 		// 这样可以确保在编辑模式和预览模式下保持一致
 		const codeHash = this.generateCodeHash(ctx.sourcePath, code);
 		const blockId = `${ctx.sourcePath}::${codeHash}`;
-		
-		// 添加调试日志
-		console.log('ElementCard blockId:', blockId);
-		console.log('Code length:', code.length);
-		console.log('First 100 chars:', code.substring(0, 100));
-		
 		return blockId;
 	}
 

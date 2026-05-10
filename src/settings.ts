@@ -1,4 +1,4 @@
-import { App, PluginSettingTab, Setting, setIcon, getLanguage, TFolder, TAbstractFile, TFile, AbstractInputSuggest } from "obsidian";
+import { App, PluginSettingTab, Setting, setIcon, TFolder, TAbstractFile, TFile, AbstractInputSuggest } from "obsidian";
 import ElementCardComponentPlugin from "./main";
 import {
 	DEFAULT_ELEMENTCARD_SETTINGS,
@@ -36,184 +36,14 @@ type SettingsSection = {
 	icon: string;
 };
 
-// ===== i18n for Force View Mode =====
-type ForceViewLocaleKey =
-	| "enable"
-	| "enableDesc"
-	| "descPart1"
-	| "descPart2"
-	| "descPart3"
-	| "descPart4"
-	| "descPart5"
-	| "descPart6"
-	| "descPart7"
-	| "descPart8"
-	| "ignoreOpenedFiles"
-	| "ignoreOpenedFilesDesc"
-	| "ignoreForceView"
-	| "ignoreForceViewDesc"
-	| "debounceTimeout"
-	| "debounceTimeoutDesc"
-	| "foldersHeader"
-	| "foldersDesc1"
-	| "foldersDesc2"
-	| "foldersDesc3"
-	| "addNewFolder"
-	| "addAnotherFolder"
-	| "folderPlaceholder"
-	| "delete"
-	| "filesHeader"
-	| "filesDesc1"
-	| "filesDesc2"
-	| "filesDesc3"
-	| "filesDesc4"
-	| "addNewFile"
-	| "addAnotherFile"
-	| "filePlaceholder";
-
-const forceViewEn: Record<ForceViewLocaleKey, string> = {
-	enable: "Enable Force View Mode",
-	enableDesc: "Automatically set view mode based on frontmatter or folder/file rules",
-	descPart1: "Changing the view mode can be done through the key ",
-	descPart2: ", which can have the value ",
-	descPart3: " or ",
-	descPart4: ".",
-	descPart5: "Changing the editing mode happens by declaring the key ",
-	descPart6: "; it takes ",
-	descPart7: " or ",
-	descPart8: " as value.",
-	ignoreOpenedFiles: "Ignore opened files",
-	ignoreOpenedFilesDesc: "Never change the view mode on a note which was already open.",
-	ignoreForceView: "Ignore force view when not in frontmatter",
-	ignoreForceViewDesc: "Never change the view mode on a note that was opened from another one in a certain view mode",
-	debounceTimeout: "Debounce timeout in milliseconds",
-	debounceTimeoutDesc:
-		'Debounce timeout is the time in milliseconds after which the view mode is set. Set "0" to disable debouncing (default value is "300"). If you experience issues with the plugin, try increasing this value.',
-	foldersHeader: "Folders",
-	foldersDesc1: "Specify a view mode for notes in a given folder.",
-	foldersDesc2:
-		"Note that this will force the view mode on all the notes in the folder, even if they have a different view mode set in their frontmatter.",
-	foldersDesc3:
-		"Precedence is from bottom (highest) to top (lowest), so if you have child folders specified, make sure to put them below their parent folder.",
-	addNewFolder: "Add new folder",
-	addAnotherFolder: "Add another folder to the list",
-	folderPlaceholder: "Example: folder1/templates",
-	delete: "Delete",
-	filesHeader: "Files",
-	filesDesc1:
-		'Specify a view mode for notes with specific patterns (regular expression; example " - All$" for all notes ending with " - All" or "1900-01" for all daily notes starting with "1900-01"',
-	filesDesc2:
-		"Note that this will force the view mode, even if it have a different view mode set in its frontmatter.",
-	filesDesc3: "Precedence is from bottom (highest) to top (lowest).",
-	filesDesc4:
-		"Notice that configuring a file pattern will override the folder configuration for the same file.",
-	addNewFile: "Add new file",
-	addAnotherFile: "Add another file to the list",
-	filePlaceholder: 'Example: " - All$" or "1900-01")',
-};
-
-const forceViewZhCN: Record<ForceViewLocaleKey, string> = {
-	enable: "启用强制视图模式",
-	enableDesc: "根据 frontmatter 或文件夹/文件规则自动设置视图模式",
-	descPart1: "可以通过键 ",
-	descPart2: " 来更改视图模式，其值可以是 ",
-	descPart3: " 或 ",
-	descPart4: "。",
-	descPart5: "通过声明键 ",
-	descPart6: " 来更改编辑模式；其值可以是 ",
-	descPart7: " 或 ",
-	descPart8: "。",
-	ignoreOpenedFiles: "忽略已打开的文件",
-	ignoreOpenedFilesDesc: "不要更改已打开笔记的视图模式。",
-	ignoreForceView: "未在 frontmatter 中指定时忽略强制视图",
-	ignoreForceViewDesc: "不要更改从其他视图模式中打开的笔记的视图模式。",
-	debounceTimeout: "防抖超时（毫秒）",
-	debounceTimeoutDesc:
-		'防抖超时是指设置视图模式之前的等待时间（毫秒）。设为 "0" 可禁用防抖（默认值为 "300"）。如果遇到问题，请尝试增大此值。',
-	foldersHeader: "文件夹",
-	foldersDesc1: "为指定文件夹中的笔记设定视图模式。",
-	foldersDesc2:
-		"注意：这将强制该文件夹中所有笔记使用指定的视图模式，即使笔记的 frontmatter 中设置了不同的视图模式。",
-	foldersDesc3: "优先级从下到上递增（最下面的优先级最高），因此如果指定了子文件夹，请确保将其放在父文件夹下方。",
-	addNewFolder: "添加新文件夹",
-	addAnotherFolder: "添加另一个文件夹到列表",
-	folderPlaceholder: "示例：folder1/templates",
-	delete: "删除",
-	filesHeader: "文件",
-	filesDesc1:
-		"为匹配特定模式（正则表达式）的笔记设定视图模式，例如 \" - All$\" 匹配所有以 \" - All\" 结尾的笔记，\"1900-01\" 匹配以 \"1900-01\" 开头的日记。",
-	filesDesc2: "注意：这将强制使用指定的视图模式，即使笔记的 frontmatter 中设置了不同的视图模式。",
-	filesDesc3: "优先级从下到上递增（最下面的优先级最高）。",
-	filesDesc4: "请注意，文件模式的配置将覆盖同一文件的文件夹配置。",
-	addNewFile: "添加新文件",
-	addAnotherFile: "添加另一个文件到列表",
-	filePlaceholder: "示例：\" - All$\" 或 \"1900-01\")",
-};
-
-// ===== i18n for Cursor Position =====
-type CursorLocaleKey =
-	| "enable"
-	| "enableDesc"
-	| "dataFileName"
-	| "dataFileNameDesc"
-	| "dataFileNamePlaceholder"
-	| "delayAfterOpening"
-	| "delayAfterOpeningDesc"
-	| "delayBetweenSaving"
-	| "delayBetweenSavingDesc";
-
-const cursorEn: Record<CursorLocaleKey, string> = {
-	enable: "Enable Remember Cursor Position",
-	enableDesc: "Remember and restore cursor position and scroll position for each file",
-	dataFileName: "Data file name",
-	dataFileNameDesc: "Save positions to this file",
-	dataFileNamePlaceholder: "Example: cursor-positions.json",
-	delayAfterOpening: "Delay after opening a new note",
-	delayAfterOpeningDesc:
-		"This plugin shouldn't scroll if you used a link to the note header like [link](note.md#header). " +
-		"If it did, then increase the delay until everything works. If you are not using links to page sections, " +
-		"set the delay to zero (slider to the left). Slider values: 0-300 ms (default value: 100 ms).",
-	delayBetweenSaving: "Delay between saving the cursor position to file",
-	delayBetweenSavingDesc:
-		"Useful for multi-device users. If you don't want to wait until closing Obsidian to the cursor position been saved.",
-};
-
-const cursorZhCN: Record<CursorLocaleKey, string> = {
-	enable: "启用记住光标位置",
-	enableDesc: "记住并恢复每个文件的光标位置和滚动位置",
-	dataFileName: "数据文件名",
-	dataFileNameDesc: "将位置信息保存到此文件",
-	dataFileNamePlaceholder: "例如：cursor-positions.json",
-	delayAfterOpening: "打开新笔记后的延迟",
-	delayAfterOpeningDesc:
-		"如果你使用了指向笔记标题的链接（如 [链接](笔记.md#标题)），本插件不应滚动页面。" +
-		"如果出现此问题，请增加延迟时间。如果你不使用指向页面内章节的链接，可将延迟设为零（滑块调至最左）。" +
-		"滑块范围：0-300 毫秒（默认值：100 毫秒）。",
-	delayBetweenSaving: "光标位置保存到文件的间隔",
-	delayBetweenSavingDesc:
-		"适用于多设备用户。如果你不想等到关闭 Obsidian 才保存光标位置，可以缩短此间隔。",
-};
-
-function getLocale(): string {
-	const lang = getLanguage();
-	return lang || "en";
-}
+import { Locals, getLanguage } from "src/i18/messages";
 
 function isZh(): boolean {
-	const locale = getLocale();
-	return locale.startsWith("zh");
-}
-
-function tForceView(key: ForceViewLocaleKey): string {
-	return isZh() ? forceViewZhCN[key] : forceViewEn[key];
-}
-
-function tCursor(key: CursorLocaleKey): string {
-	return isZh() ? cursorZhCN[key] : cursorEn[key];
+	return getLanguage() === "zh";
 }
 
 export class FolderSuggestDropdown extends AbstractInputSuggest<TFolder> {
-	private allFolders: TFolder[];
+	private allFolders: TFolder[] | null = null;
 	private input: HTMLInputElement;
 
 	constructor(
@@ -222,13 +52,18 @@ export class FolderSuggestDropdown extends AbstractInputSuggest<TFolder> {
 	) {
 		super(app, inputEl);
 		this.input = inputEl;
-		this.allFolders = app.vault.getAllLoadedFiles().filter((f) => f instanceof TFolder) as TFolder[];
+	}
+
+	private ensureLoaded(): void {
+		if (this.allFolders) return;
+		this.allFolders = this.app.vault.getAllLoadedFiles().filter((f) => f instanceof TFolder) as TFolder[];
 	}
 
 	getSuggestions(query: string): TFolder[] {
+		this.ensureLoaded();
 		const q = query.toLowerCase();
-		if (!q) return this.allFolders;
-		return this.allFolders.filter((f) => f.path.toLowerCase().includes(q));
+		if (!q) return this.allFolders!;
+		return this.allFolders!.filter((f) => f.path.toLowerCase().includes(q));
 	}
 
 	renderSuggestion(folder: TFolder, el: HTMLElement): void {
@@ -370,8 +205,8 @@ export class ElementCardSettingTab extends PluginSettingTab {
 
 		// Enable toggle
 		new Setting(basicGroup)
-			.setName(tForceView("enable"))
-			.setDesc(tForceView("enableDesc"))
+			.setName(Locals.get().settings_forceView_enable)
+			.setDesc(Locals.get().settings_forceView_enableDesc)
 			.addToggle((toggle) =>
 				toggle
 					.setValue(this.plugin.settings.forceViewMode.enabled)
@@ -384,28 +219,28 @@ export class ElementCardSettingTab extends PluginSettingTab {
 		// Description
 		const desc = document.createDocumentFragment();
 		desc.append(
-			tForceView("descPart1"),
+			Locals.get().settings_forceView_descPart1,
 			desc.createEl("code", { text: "obsidianUIMode" }),
-			tForceView("descPart2"),
+			Locals.get().settings_forceView_descPart2,
 			desc.createEl("code", { text: "source" }),
-			tForceView("descPart3"),
+			Locals.get().settings_forceView_descPart3,
 			desc.createEl("code", { text: "preview" }),
-			tForceView("descPart4"),
+			Locals.get().settings_forceView_descPart4,
 			desc.createEl("br"),
-			tForceView("descPart5"),
+			Locals.get().settings_forceView_descPart5,
 			desc.createEl("code", { text: "obsidianEditingMode" }),
-			tForceView("descPart6"),
+			Locals.get().settings_forceView_descPart6,
 			desc.createEl("code", { text: "live" }),
-			tForceView("descPart7"),
+			Locals.get().settings_forceView_descPart7,
 			desc.createEl("code", { text: "source" }),
-			tForceView("descPart8")
+			Locals.get().settings_forceView_descPart8
 		);
 		new Setting(basicGroup).setDesc(desc);
 
 		// Ignore opened files
 		new Setting(basicGroup)
-			.setName(tForceView("ignoreOpenedFiles"))
-			.setDesc(tForceView("ignoreOpenedFilesDesc"))
+			.setName(Locals.get().settings_forceView_ignoreOpenedFiles)
+			.setDesc(Locals.get().settings_forceView_ignoreOpenedFilesDesc)
 			.addToggle((toggle) =>
 				toggle
 					.setValue(this.plugin.settings.forceViewMode.ignoreOpenFiles)
@@ -417,8 +252,8 @@ export class ElementCardSettingTab extends PluginSettingTab {
 
 		// Ignore force view all
 		new Setting(basicGroup)
-			.setName(tForceView("ignoreForceView"))
-			.setDesc(tForceView("ignoreForceViewDesc"))
+			.setName(Locals.get().settings_forceView_ignoreForceView)
+			.setDesc(Locals.get().settings_forceView_ignoreForceViewDesc)
 			.addToggle((toggle) =>
 				toggle
 					.setValue(this.plugin.settings.forceViewMode.ignoreForceViewAll)
@@ -430,8 +265,8 @@ export class ElementCardSettingTab extends PluginSettingTab {
 
 		// Debounce timeout
 		new Setting(basicGroup)
-			.setName(tForceView("debounceTimeout"))
-			.setDesc(tForceView("debounceTimeoutDesc"))
+			.setName(Locals.get().settings_forceView_debounceTimeout)
+			.setDesc(Locals.get().settings_forceView_debounceTimeoutDesc)
 			.addText((text) =>
 				text
 					.setValue(String(this.plugin.settings.forceViewMode.debounceTimeout))
@@ -442,21 +277,21 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			);
 
 		// ===== Folders =====
-		const folderGroup = this.createSettingsGroup(containerEl, tForceView("foldersHeader"));
+		const folderGroup = this.createSettingsGroup(containerEl, Locals.get().settings_forceView_foldersHeader);
 
 		const folderDesc = document.createDocumentFragment();
 		folderDesc.append(
-			tForceView("foldersDesc1"),
+			Locals.get().settings_forceView_foldersDesc1,
 			folderDesc.createEl("br"),
-			tForceView("foldersDesc2"),
+			Locals.get().settings_forceView_foldersDesc2,
 			folderDesc.createEl("br"),
-			tForceView("foldersDesc3")
+			Locals.get().settings_forceView_foldersDesc3
 		);
 		new Setting(folderGroup).setDesc(folderDesc);
 
-		new Setting(folderGroup).setDesc(tForceView("addNewFolder")).addButton((button) => {
+		new Setting(folderGroup).setDesc(Locals.get().settings_forceView_addNewFolder).addButton((button) => {
 			button
-				.setTooltip(tForceView("addAnotherFolder"))
+				.setTooltip(Locals.get().settings_forceView_addAnotherFolder)
 				.setButtonText("+")
 				.setCta()
 				.onClick(async () => {
@@ -482,7 +317,7 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			const s = new Setting(folderGroup)
 				.addText((cb) => {
 					this.decorateForceViewSearchInput(cb.inputEl);
-					cb.setPlaceholder(tForceView("folderPlaceholder"))
+					cb.setPlaceholder(Locals.get().settings_forceView_folderPlaceholder)
 						.setValue(folderMode.folder)
 						.onChange(async (newFolder) => {
 							if (
@@ -510,7 +345,7 @@ export class ElementCardSettingTab extends PluginSettingTab {
 				})
 				.addExtraButton((cb) => {
 					cb.setIcon("cross")
-						.setTooltip(tForceView("delete"))
+						.setTooltip(Locals.get().settings_forceView_delete)
 						.onClick(async () => {
 							this.plugin.settings.forceViewMode.folders.splice(index, 1);
 							await this.plugin.saveSettings();
@@ -523,23 +358,23 @@ export class ElementCardSettingTab extends PluginSettingTab {
 		});
 
 		// ===== Files =====
-		const fileGroup = this.createSettingsGroup(containerEl, tForceView("filesHeader"));
+		const fileGroup = this.createSettingsGroup(containerEl, Locals.get().settings_forceView_filesHeader);
 
 		const filesDesc = document.createDocumentFragment();
 		filesDesc.append(
-			tForceView("filesDesc1"),
+			Locals.get().settings_forceView_filesDesc1,
 			filesDesc.createEl("br"),
-			tForceView("filesDesc2"),
+			Locals.get().settings_forceView_filesDesc2,
 			filesDesc.createEl("br"),
-			tForceView("filesDesc3"),
+			Locals.get().settings_forceView_filesDesc3,
 			filesDesc.createEl("br"),
-			tForceView("filesDesc4")
+			Locals.get().settings_forceView_filesDesc4
 		);
 		new Setting(fileGroup).setDesc(filesDesc);
 
-		new Setting(fileGroup).setDesc(tForceView("addNewFile")).addButton((button) => {
+		new Setting(fileGroup).setDesc(Locals.get().settings_forceView_addNewFile).addButton((button) => {
 			button
-				.setTooltip(tForceView("addAnotherFile"))
+				.setTooltip(Locals.get().settings_forceView_addAnotherFile)
 				.setButtonText("+")
 				.setCta()
 				.onClick(async () => {
@@ -557,7 +392,7 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			const s = new Setting(fileGroup)
 				.addText((cb) => {
 					this.decorateForceViewSearchInput(cb.inputEl);
-					cb.setPlaceholder(tForceView("filePlaceholder"))
+					cb.setPlaceholder(Locals.get().settings_forceView_filePlaceholder)
 						.setValue(file.filePattern)
 						.onChange(async (value) => {
 							if (
@@ -580,7 +415,7 @@ export class ElementCardSettingTab extends PluginSettingTab {
 				})
 				.addExtraButton((cb) => {
 					cb.setIcon("cross")
-						.setTooltip(tForceView("delete"))
+						.setTooltip(Locals.get().settings_forceView_delete)
 						.onClick(async () => {
 							this.plugin.settings.forceViewMode.files.splice(index, 1);
 							await this.plugin.saveSettings();
@@ -612,8 +447,8 @@ export class ElementCardSettingTab extends PluginSettingTab {
 
 		// Enable toggle
 		new Setting(group)
-			.setName(tCursor("enable"))
-			.setDesc(tCursor("enableDesc"))
+			.setName(Locals.get().settings_cursor_enable)
+			.setDesc(Locals.get().settings_cursor_enableDesc)
 			.addToggle((toggle) =>
 				toggle
 					.setValue(this.plugin.settings.cursorPosition.enabled)
@@ -625,11 +460,11 @@ export class ElementCardSettingTab extends PluginSettingTab {
 
 		// Data file name
 		new Setting(group)
-			.setName(tCursor("dataFileName"))
-			.setDesc(tCursor("dataFileNameDesc"))
+			.setName(Locals.get().settings_cursor_dataFileName)
+			.setDesc(Locals.get().settings_cursor_dataFileNameDesc)
 			.addText((text) =>
 				text
-					.setPlaceholder(tCursor("dataFileNamePlaceholder"))
+					.setPlaceholder(Locals.get().settings_cursor_dataFileNamePlaceholder)
 					.setValue(this.plugin.settings.cursorPosition.dbFileName)
 					.onChange(async (value) => {
 						this.plugin.settings.cursorPosition.dbFileName = value;
@@ -639,8 +474,8 @@ export class ElementCardSettingTab extends PluginSettingTab {
 
 		// Delay after opening
 		new Setting(group)
-			.setName(tCursor("delayAfterOpening"))
-			.setDesc(tCursor("delayAfterOpeningDesc"))
+			.setName(Locals.get().settings_cursor_delayAfterOpening)
+			.setDesc(Locals.get().settings_cursor_delayAfterOpeningDesc)
 			.addSlider((slider) =>
 				slider
 					.setLimits(0, 300, 10)
@@ -654,8 +489,8 @@ export class ElementCardSettingTab extends PluginSettingTab {
 
 		// Delay between saving
 		new Setting(group)
-			.setName(tCursor("delayBetweenSaving"))
-			.setDesc(tCursor("delayBetweenSavingDesc"))
+			.setName(Locals.get().settings_cursor_delayBetweenSaving)
+			.setDesc(Locals.get().settings_cursor_delayBetweenSavingDesc)
 			.addSlider((slider) =>
 				slider
 					.setLimits(SAFE_DB_FLUSH_INTERVAL, SAFE_DB_FLUSH_INTERVAL * 10, 100)

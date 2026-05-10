@@ -26,12 +26,15 @@ import { calendarSettings } from "./calendar/ui/stores";
 import { defaultCalendarSettings } from "./calendar/settings";
 import type { IWeekStartOption } from "obsidian-calendar-ui";
 
-// Load CSS dynamically
+const CSS_ID = 'obsidian-elements-styles';
+
 const loadCss = () => {
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = 'styles.css';
-  document.head.appendChild(link);
+	if (document.getElementById(CSS_ID)) return;
+	const link = document.createElement('link');
+	link.id = CSS_ID;
+	link.rel = 'stylesheet';
+	link.href = 'styles.css';
+	document.head.appendChild(link);
 };
 
 
@@ -228,6 +231,7 @@ export default class ElementCardComponentPlugin extends Plugin {
 		this.forceViewModeManager?.onunload();
 		this.cursorPositionManager?.onunload();
 		this.app.workspace.detachLeavesOfType(VIEW_TYPE_CALENDAR);
+		document.getElementById(CSS_ID)?.remove();
 	}
 
 	async activateCalendarView() {
@@ -623,6 +627,6 @@ export default class ElementCardComponentPlugin extends Plugin {
 			return;
 		}
 
-		new Notice(`未找到 ${fallbackName} 命令`);
+		new Notice(Locals.get().notice_command_not_found.replace("{0}", fallbackName));
 	}
 }

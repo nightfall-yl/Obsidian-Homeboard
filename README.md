@@ -1,13 +1,13 @@
 # Elements
 
-> 一款 Obsidian 插件，为首页配置分栏导航卡片，并支持贡献热力图追踪。
+> 一款 Obsidian 插件，为首页配置分栏导航卡片，并支持热力图追踪。
 
 ## 插件功能总结
 
 Elements 是一款功能强大的 Obsidian 插件，为用户提供了多种实用功能：
 
 - **元素卡片**：通过 `elementCard` 代码块构建多列导航卡片布局，支持自定义配色方案、链接布局和卡片样式，帮助用户快速访问常用笔记和资源。链接支持 Action 触发器，可一键打开主页、微信读书书架等。
-- **贡献热力图**：通过 `heatmap` 代码块渲染 GitHub 风格热力图，支持多种图表类型和数据源，帮助用户追踪笔记创作节奏和任务完成情况。
+- **热力图（Heatmap）**：通过 `heatmap` 代码块渲染 GitHub 风格热力图，支持多种图表类型和数据源，帮助用户追踪笔记创作节奏和任务完成情况。
 - **主页**：将指定笔记设为主页，支持启动自动打开、空标签页自动打开、多种打开模式（替换全部/保留/替换最后一个）及视图模式控制。
 - **侧边栏日历**：在左侧或右侧边栏显示月历视图，支持点击日期创建/打开日记，通过圆点直观展示每日笔记字数。
 - **强制视图模式**：允许用户为特定文件夹或文件设置默认视图模式（阅读模式或编辑模式），提高工作效率。
@@ -33,7 +33,7 @@ Elements 是一款功能强大的 Obsidian 插件，为用户提供了多种实�
 
 ### 前置依赖
 
-- [Dataview](https://github.com/blacksmithgu/obsidian-dataview) 插件（贡献图数据查询需要）
+- [Dataview](https://github.com/blacksmithgu/obsidian-dataview) 插件（热力图数据查询需要）
 
 ---
 
@@ -126,9 +126,9 @@ Action 链接在卡片中以 ⚡ 图标标识，与普通链接视觉区分。
 
 ---
 
-## 贡献热力图（Contribution Graph）
+## 热力图（Heatmap）
 
-基于 Dataview 查询数据，渲染 GitHub 风格的贡献热力图。移植自 [obsidian-contribution-graph](https://github.com/vran-dev/obsidian-contribution-graph)。
+基于 Dataview 查询数据，渲染 GitHub 风格的热力图。移植自 [obsidian-contribution-graph](https://github.com/vran-dev/obsidian-contribution-graph)。
 
 ### 快速创建
 
@@ -143,7 +143,7 @@ dataSource:
   value: '""'
   dateField:
     type: FILE_CTIME
-    countField:
+  countField:
       type: DEFAULT
 ```
 ````
@@ -255,7 +255,7 @@ dataSource:
 | 命令 | 说明 |
 |------|------|
 | `New ElementCard` | 创建新的元素卡片 |
-| `New Heatmap` | 创建新的贡献图 |
+| `New Heatmap` | 创建新的热力图 |
 | `Open Homepage` | 打开主页 |
 | `Open Calendar` | 打开侧边栏日历 |
 
@@ -338,9 +338,9 @@ src/
 ├── elementCardConfig.ts       # elementCard 配置
 ├── elementCardTypes.ts        # elementCard 类型定义
 ├── elementCardYaml.ts         # elementCard YAML 序列化
-├── types.ts                   # 贡献图核心类型
+├── types.ts                   # 热力图核心类型
 ├── i18/                       # 国际化（中/英）
-├── processor/                 # 贡献图数据处理与验证
+├── processor/                 # 热力图数据处理与验证
 ├── query/                     # Dataview 查询层
 ├── render/                    # 图表渲染（Git 风格、月度追踪、日历）
 ├── view/                      # React UI 组件
@@ -396,5 +396,3 @@ npm run build
 ## 许可证
 
 [MIT](LICENSE)
-
-

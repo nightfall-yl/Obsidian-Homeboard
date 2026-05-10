@@ -212,4 +212,58 @@ export interface Local {
 	calendar_menu_open_in_new_pane: string;
 	calendar_menu_delete: string;
 	calendar_menu_create_daily: string;
+
+	/**
+	 * settings - force view mode
+	 */
+	settings_forceView_enable: string;
+	settings_forceView_enableDesc: string;
+	settings_forceView_descPart1: string;
+	settings_forceView_descPart2: string;
+	settings_forceView_descPart3: string;
+	settings_forceView_descPart4: string;
+	settings_forceView_descPart5: string;
+	settings_forceView_descPart6: string;
+	settings_forceView_descPart7: string;
+	settings_forceView_descPart8: string;
+	settings_forceView_ignoreOpenedFiles: string;
+	settings_forceView_ignoreOpenedFilesDesc: string;
+	settings_forceView_ignoreForceView: string;
+	settings_forceView_ignoreForceViewDesc: string;
+	settings_forceView_debounceTimeout: string;
+	settings_forceView_debounceTimeoutDesc: string;
+	settings_forceView_foldersHeader: string;
+	settings_forceView_foldersDesc1: string;
+	settings_forceView_foldersDesc2: string;
+	settings_forceView_foldersDesc3: string;
+	settings_forceView_addNewFolder: string;
+	settings_forceView_addAnotherFolder: string;
+	settings_forceView_folderPlaceholder: string;
+	settings_forceView_delete: string;
+	settings_forceView_filesHeader: string;
+	settings_forceView_filesDesc1: string;
+	settings_forceView_filesDesc2: string;
+	settings_forceView_filesDesc3: string;
+	settings_forceView_filesDesc4: string;
+	settings_forceView_addNewFile: string;
+	settings_forceView_addAnotherFile: string;
+	settings_forceView_filePlaceholder: string;
+
+	/**
+	 * settings - cursor position
+	 */
+	settings_cursor_enable: string;
+	settings_cursor_enableDesc: string;
+	settings_cursor_dataFileName: string;
+	settings_cursor_dataFileNameDesc: string;
+	settings_cursor_dataFileNamePlaceholder: string;
+	settings_cursor_delayAfterOpening: string;
+	settings_cursor_delayAfterOpeningDesc: string;
+	settings_cursor_delayBetweenSaving: string;
+	settings_cursor_delayBetweenSavingDesc: string;
+
+	/**
+	 * commands
+	 */
+	notice_command_not_found: string;
 }

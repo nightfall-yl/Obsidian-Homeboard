@@ -212,5 +212,50 @@ export class Zh implements Local {
     calendar_menu_open = "打开";
     calendar_menu_open_in_new_pane = "在新面板中打开";
     calendar_menu_delete = "删除";
-    calendar_menu_create_daily = "新建日记";
+	calendar_menu_create_daily = "新建日记";
+
+	settings_forceView_enable = "启用强制视图模式";
+	settings_forceView_enableDesc = "根据 frontmatter 或文件夹/文件规则自动设置视图模式";
+	settings_forceView_descPart1 = "可以通过键 ";
+	settings_forceView_descPart2 = " 来更改视图模式，其值可以是 ";
+	settings_forceView_descPart3 = " 或 ";
+	settings_forceView_descPart4 = "。";
+	settings_forceView_descPart5 = "通过声明键 ";
+	settings_forceView_descPart6 = " 来更改编辑模式；其值可以是 ";
+	settings_forceView_descPart7 = " 或 ";
+	settings_forceView_descPart8 = " 作为值。";
+	settings_forceView_ignoreOpenedFiles = "忽略已打开的文件";
+	settings_forceView_ignoreOpenedFilesDesc = "不要更改已打开笔记的视图模式。";
+	settings_forceView_ignoreForceView = "未在 frontmatter 中指定时忽略强制视图";
+	settings_forceView_ignoreForceViewDesc = "不要更改从其他视图模式中打开的笔记的视图模式。";
+	settings_forceView_debounceTimeout = "防抖超时（毫秒）";
+	settings_forceView_debounceTimeoutDesc = '防抖超时是指设置视图模式之前的等待时间（毫秒）。设为 "0" 可禁用防抖（默认值为 "300"）。如果遇到问题，请尝试增大此值。';
+	settings_forceView_foldersHeader = "文件夹";
+	settings_forceView_foldersDesc1 = "为指定文件夹中的笔记设定视图模式。";
+	settings_forceView_foldersDesc2 = "注意：这将强制该文件夹中所有笔记使用指定的视图模式，即使笔记的 frontmatter 中设置了不同的视图模式。";
+	settings_forceView_foldersDesc3 = "优先级从下到上递增（最下面的优先级最高），因此如果指定了子文件夹，请确保将其放在父文件夹下方。";
+	settings_forceView_addNewFolder = "添加新文件夹";
+	settings_forceView_addAnotherFolder = "添加另一个文件夹到列表";
+	settings_forceView_folderPlaceholder = "示例：folder1/templates";
+	settings_forceView_delete = "删除";
+	settings_forceView_filesHeader = "文件";
+	settings_forceView_filesDesc1 = '为匹配特定模式（正则表达式；example " - All$" for all notes ending with " - All" or "1900-01" for all daily notes starting with "1900-01"';
+	settings_forceView_filesDesc2 = "注意：这将强制使用指定的视图模式，即使它 have a different view mode set in its frontmatter.";
+	settings_forceView_filesDesc3 = "优先级从下到上递增（最下面的优先级最高）。";
+	settings_forceView_filesDesc4 = "请注意，配置文件模式的配置将覆盖同一文件的文件夹配置。";
+	settings_forceView_addNewFile = "添加新文件";
+	settings_forceView_addAnotherFile = "添加另一个文件到列表";
+	settings_forceView_filePlaceholder = '示例：" - All$" 或 "1900-01"';
+
+	settings_cursor_enable = "启用记住光标位置";
+	settings_cursor_enableDesc = "记住并恢复每个文件的光标位置和滚动位置";
+	settings_cursor_dataFileName = "数据文件名";
+	settings_cursor_dataFileNameDesc = "将位置信息保存到此文件";
+	settings_cursor_dataFileNamePlaceholder = "例如：cursor-positions.json";
+	settings_cursor_delayAfterOpening = "打开新笔记后的延迟";
+	settings_cursor_delayAfterOpeningDesc = "如果你使用了指向笔记标题的链接（如 [链接](笔记.md#标题)），本插件不应滚动页面。如果出现此问题，请增加延迟时间。如果你不使用指向页面内章节的链接，可将延迟设为零（滑块调至最左）。滑块范围：0-300 毫秒（默认值：100 毫秒）。";
+	settings_cursor_delayBetweenSaving = "光标位置保存到文件的间隔";
+	settings_cursor_delayBetweenSavingDesc = "适用于多设备用户。如果你不想等到关闭 Obsidian 才保存光标位置，可以缩短此间隔。";
+
+	notice_command_not_found = "未找到 {0} 命令";
 }
