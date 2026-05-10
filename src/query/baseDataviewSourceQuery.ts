@@ -115,12 +115,23 @@ export abstract class BaseDataviewDataSourceQuery {
 			const dateFieldType = source.dateField.type;
 			const dateFieldFormat = source.dateField.format;
 			return data
-				.filter((item) => {
-					return dataviewDataFilterChain.every((filter) =>
-						filter.filter(source, item, this)
+			.filter((item) => {
+				return dataviewDataFilterChain.every((filter) =>
+					filter.filter(source, item, this)
+				);
+			})
+			// 排除指定文件夹中的笔记
+			.filter((item) => {
+				if (source.excludeFolders && source.excludeFolders.length > 0) {
+					// @ts-ignore - dataview item has file property with path
+					const filePath = (item as any).file?.path || "";
+					return !source.excludeFolders!.some(
+						(folder) => filePath.startsWith(folder)
 					);
-				})
-				.map((item) => {
+				}
+				return true;
+			})
+			.map((item) => {
 					// @ts-ignore
 					const fileName = item.file.name;
 					if (dateFieldType == "FILE_CTIME") {

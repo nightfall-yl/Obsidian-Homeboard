@@ -80,6 +80,10 @@ export class Zh implements Local {
 
     form_count_field_count_field_input_placeholder = "请输入属性名称";
 
+	form_exclude_folders = "排除文件夹";
+	form_exclude_folders_placeholder = "如: templates/, Archive/, 多个用逗号分隔";
+	form_exclude_folders_description = "这些文件夹中的笔记将不参与热力图数据统计";
+
     form_count_field_count_field_type_default = "默认";
 
     form_count_field_count_field_type_page_prop = "文档属性";

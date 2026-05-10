@@ -14,6 +14,7 @@ import {
 } from "./options";
 import { App } from "obsidian";
 import { InputTags, TagOption } from "../suggest/SuggestTagInput";
+import { SuggestFolderInput } from "../suggest/SuggestFolderInput";
 
 export function DataSourceFormItem(props: {
 	dataSource: DataSource;
@@ -516,6 +517,28 @@ export function DataSourceFormItem(props: {
 							}}
 						/>
 					) : null}
+				</div>
+			</div>
+
+			<div className="form-item">
+				<span className="label">{local.form_exclude_folders}</span>
+				<div className="form-content contribution-graph-modal__field-stack">
+					<SuggestFolderInput
+						app={props.app}
+						value={dataSource.excludeFolders || []}
+						onChange={(folders) => {
+							if (folders.length === 0) {
+								changeDataSource("excludeFolders", undefined);
+							} else {
+								changeDataSource("excludeFolders", folders);
+							}
+						}}
+						placeholder={local.form_exclude_folders_placeholder}
+						className="contribution-graph-modal__stretch-input"
+					/>
+					<div className="form-description">
+						{local.form_exclude_folders_description}
+					</div>
 				</div>
 			</div>
 		</Fragment>

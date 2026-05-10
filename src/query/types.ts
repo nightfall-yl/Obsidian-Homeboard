@@ -14,6 +14,7 @@ export class DataSource {
 	filters?: DataFilter[];
 	dateField?: DateField;
 	countField?: CountField;
+	excludeFolders?: string[];
 }
 
 export class DataFilter {

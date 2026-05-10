@@ -132,11 +132,11 @@ export function GraphForm(props: {
 		if (!triggerEl) return;
 
 		const triggerRect = triggerEl.getBoundingClientRect();
-		const modalEl = document.querySelector('.contribution-graph-modal-container');
+		const modalEl = document.querySelector('.heatmap-modal-container');
 		if (!modalEl) return;
 
 		const menuEl = document.createElement('div');
-		menuEl.className = 'contribution-graph-modal__theme-menu plugin-config-palette-menu elementCard-builder-modal__palette-menu';
+		menuEl.className = 'heatmap-modal__theme-menu plugin-config-palette-menu elementCard-builder-modal__palette-menu';
 		menuEl.style.position = 'fixed';
 		menuEl.style.left = `${triggerRect.left}px`;
 		menuEl.style.top = `${triggerRect.bottom + 5}px`;
@@ -166,7 +166,7 @@ export function GraphForm(props: {
 		themes.forEach((theme) => {
 			const button = document.createElement('button');
 			button.type = 'button';
-			button.className = `contribution-graph-modal__theme-option plugin-config-palette-option elementCard-builder-modal__palette-option ${activeTheme?.name === theme.name ? 'is-active' : ''}`;
+			button.className = `heatmap-modal__theme-option plugin-config-palette-option elementCard-builder-modal__palette-option ${activeTheme?.name === theme.name ? 'is-active' : ''}`;
 			
 			// Create label span
 			const labelSpan = document.createElement('span');
@@ -222,20 +222,20 @@ export function GraphForm(props: {
 	};
 
 	return (
-		<div className="contribution-graph-modal-content plugin-config-modal">
+		<div className="heatmap-modal-content plugin-config-modal">
 			<Tab
 				activeIndex={0}
 				tabs={[
 					{
 						title: local.form_basic_settings,
 						children: (
-							<div className="contribution-graph-modal-form plugin-config-form">
-								<div className="form-group contribution-graph-modal__basic-group">
+							<div className="heatmap-modal-form plugin-config-form">
+								<div className="form-group heatmap-modal__basic-group">
 									<div className="form-item">
 										<span className="label">
 											{local.form_title}
 										</span>
-										<div className="form-content contribution-graph-modal__title-row">
+										<div className="form-content heatmap-modal__title-row">
 											<input
 												name="title"
 												type="text"
@@ -244,7 +244,7 @@ export function GraphForm(props: {
 													local.form_title_placeholder
 												}
 												onChange={handleInputChange}
-												className="contribution-graph-modal__title-input elementCard-builder-modal__title-input"
+												className="heatmap-modal__title-input elementCard-builder-modal__title-input"
 												style={{
 													...formData.titleStyle,
 													fontSize: "inherits",
@@ -274,7 +274,7 @@ export function GraphForm(props: {
 												}}
 												min={1}
 												max={128}
-												className="contribution-graph-modal__title-size elementCard-builder-modal__title-size-input"
+												className="heatmap-modal__title-size elementCard-builder-modal__title-size-input"
 											/>
 										</div>
 									</div>
@@ -283,7 +283,7 @@ export function GraphForm(props: {
 										<span className="label">
 											{local.form_title_align_label}
 										</span>
-										<div className="form-content contribution-graph-modal__title-align-row">
+										<div className="form-content heatmap-modal__title-align-row">
 											<Choose
 												options={
 													titleAlignChooseOptions
@@ -312,7 +312,7 @@ export function GraphForm(props: {
 										</span>
 										<div className="form-content">
 											<select
-											className="contribution-graph-modal__compact-select elementCard-builder-modal__select"
+											className="heatmap-modal__compact-select elementCard-builder-modal__select"
 											name="graphType"
 											defaultValue={
 												formData.graphType ||
@@ -338,9 +338,9 @@ export function GraphForm(props: {
 										<span className="label">
 											{local.form_date_range}
 										</span>
-										<div className="form-content contribution-graph-modal__date-range-row">
+										<div className="form-content heatmap-modal__date-range-row">
 											<select
-											className="contribution-graph-modal__date-range-type elementCard-builder-modal__select"
+											className="heatmap-modal__date-range-type elementCard-builder-modal__select"
 											defaultValue={
 												formData.dateRangeType ||
 												"LATEST_DAYS"
@@ -386,7 +386,7 @@ export function GraphForm(props: {
 										{formData.dateRangeType !=
 										"FIXED_DATE_RANGE" ? (
 											<input
-												className="contribution-graph-modal__date-range-value elementCard-builder-modal__input"
+												className="heatmap-modal__date-range-value elementCard-builder-modal__input"
 												type="number"
 												defaultValue={
 													formData.dateRangeValue
@@ -407,7 +407,7 @@ export function GraphForm(props: {
 										) : (
 											<>
 												<input
-													className="contribution-graph-modal__date-range-date elementCard-builder-modal__input"
+													className="heatmap-modal__date-range-date elementCard-builder-modal__input"
 													id="fromDate"
 													name="fromDate"
 													type="date"
@@ -419,11 +419,11 @@ export function GraphForm(props: {
 														handleInputChange
 													}
 												/>
-												<span className="contribution-graph-modal__date-range-separator">
+												<span className="heatmap-modal__date-range-separator">
 													-
 												</span>
 												<input
-													className="contribution-graph-modal__date-range-date elementCard-builder-modal__input"
+													className="heatmap-modal__date-range-date elementCard-builder-modal__input"
 													id="toDate"
 													name="toDate"
 													type="date"
@@ -458,7 +458,7 @@ export function GraphForm(props: {
 					{
 						title: local.form_style_settings,
 						children: (
-							<div className="contribution-graph-modal-form plugin-config-form">
+							<div className="heatmap-modal-form plugin-config-form">
 								<div className="form-group">
 									<div className="form-item">
 												<span className="label">
@@ -467,12 +467,12 @@ export function GraphForm(props: {
 												<div className="form-content">
 													<div
 													ref={themeWrapperRef}
-													className="contribution-graph-modal__theme-picker"
+													className="heatmap-modal__theme-picker"
 												>
 													<button
 														type="button"
 														ref={themeTriggerRef}
-														className="contribution-graph-modal__theme-trigger plugin-config-palette-trigger-row elementCard-builder-modal__palette-trigger-row"
+														className="heatmap-modal__theme-trigger plugin-config-palette-trigger-row elementCard-builder-modal__palette-trigger-row"
 														onClick={() => {
 															togglePaletteMenu();
 														}}

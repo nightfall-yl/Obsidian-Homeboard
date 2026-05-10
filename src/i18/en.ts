@@ -82,6 +82,10 @@ export class En implements Local {
 
     form_count_field_count_field_input_placeholder = "Please input property name";
 
+	form_exclude_folders = "Exclude Folders";
+	form_exclude_folders_placeholder = "e.g.: templates/, Archive/, comma separated";
+	form_exclude_folders_description = "Notes in these folders will be excluded from heatmap statistics";
+
     form_count_field_count_field_type_default = "Default";
 
     form_count_field_count_field_type_page_prop = "Page Property";
