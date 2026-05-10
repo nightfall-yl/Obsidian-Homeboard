@@ -353,7 +353,6 @@ npm run build
 
 ### 26.5.5
 
-- **Global rename `contributionGraph` → `heatmap`**: All CSS class names, TypeScript types/methods, and documentation updated (~275 occurrences)
 - **Visual refinements**: Removed heatmap outer border shadow; adjusted desktop/mobile week font sizes and cell dimensions; fixed week indicator / data cell row alignment; optimized mobile legend spacing and reading view bottom margin
 - **ElementCard 4-column layout fix**: Drag resizer lines now align with card right edges; 4th card right border visible; column width unit changed from `%` to `fr`
 
