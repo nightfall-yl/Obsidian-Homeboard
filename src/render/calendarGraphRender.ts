@@ -1,4 +1,4 @@
-import { HeatmapConfig } from "src/types";
+import { HeatmapConfig, ContributionCellData } from "src/types";
 import {
 	distanceBeforeTheStartOfWeek,
 	distanceBeforeTheEndOfWeek,
@@ -37,6 +37,7 @@ export class CalendarGraphRender extends BaseGraphRender {
 			cls: ["charts", "calendar"],
 			parent: main,
 		});
+		this.applyCellGlobalStyleToContainer(chartsEl, graphConfig);
 
 		this.renderCellRuleIndicator(graphConfig, main);
 
@@ -90,11 +91,12 @@ export class CalendarGraphRender extends BaseGraphRender {
 			(a, b) => a + b
 		);
 		const cellRules = this.getCellRules(graphConfig);
+		const cellDataMap = new Map<string, ContributionCellData>();
 		let currentYearMonth = "";
 		let monthContainer;
 		let rowContainer = null;
 		const fragment = document.createDocumentFragment();
-		
+
 		for (let i = 0; i < contributionData.length; i++) {
 			const item = contributionData[i];
 			const yearMonth = `${item.year}-${item.month + 1}`;
@@ -127,11 +129,10 @@ export class CalendarGraphRender extends BaseGraphRender {
 				const weekDateIndicators = document.createElement("div");
 				weekDateIndicators.className = "row week-indicator-container";
 				monthContainer.appendChild(weekDateIndicators);
-				
+
 				for (let i = 0; i < 7; i++) {
 					const dateIndicatorCell = document.createElement("div");
 					dateIndicatorCell.className = "cell week-indicator";
-					this.applyCellGlobalStylePartial(dateIndicatorCell, graphConfig, ['minWidth', 'minHeight']);
 					const weekText = localizedWeekDayMapping(
 						((graphConfig.startOfWeek || 0) + 7 + i) % 7,
 						2
@@ -144,7 +145,6 @@ export class CalendarGraphRender extends BaseGraphRender {
 				rowContainer.className = "row";
 				monthContainer?.appendChild(rowContainer);
 
-				// fill start month, if start month date is not 1
 				const distance = distanceBeforeTheStartOfWeek(
 					graphConfig.startOfWeek || 0,
 					item.weekDay
@@ -152,7 +152,6 @@ export class CalendarGraphRender extends BaseGraphRender {
 				for (let j = 0; j < distance; j++) {
 					const cellEl = document.createElement("div");
 					cellEl.className = "cell";
-					this.applyCellGlobalStylePartial(cellEl, graphConfig, ['minWidth', 'minHeight']);
 					rowContainer?.appendChild(cellEl);
 				}
 			}
@@ -166,27 +165,23 @@ export class CalendarGraphRender extends BaseGraphRender {
 				monthContainer?.appendChild(rowContainer);
 			}
 
-			// render cell
 			const cellEl = document.createElement("div");
-			
+
 			if (item.date == "$HOLE$") {
 				cellEl.innerText = "···";
 				cellEl.className = "cell";
-				this.applyCellGlobalStylePartial(cellEl, graphConfig, ['minWidth', 'minHeight']);
 			} else if (item.value == 0) {
 				cellEl.className = "cell empty";
 				this.applyCellStyleRule(cellEl, item, cellRules);
 				this.bindCellAttribute(cellEl, item);
-				this.applyCellGlobalStyle(cellEl, graphConfig);
 			} else {
 				cellEl.className = "cell";
 				this.applyCellStyleRule(cellEl, item, cellRules, () => cellRules[0]);
 				this.bindCellAttribute(cellEl, item);
-				this.bindCellClickEvent(cellEl, item, graphConfig, activityContainer);
 				this.bindCellTips(cellEl, item);
-				this.applyCellGlobalStyle(cellEl, graphConfig);
+				cellDataMap.set(item.date, item);
 			}
-			
+
 			rowContainer?.appendChild(cellEl);
 
 			if (i + 1 < contributionData.length) {
@@ -199,7 +194,6 @@ export class CalendarGraphRender extends BaseGraphRender {
 					for (let j = 0; j < distance; j++) {
 						const cellEl = document.createElement("div");
 						cellEl.className = "cell";
-						this.applyCellGlobalStylePartial(cellEl, graphConfig, ['minWidth', 'minHeight']);
 						rowContainer?.appendChild(cellEl);
 					}
 				}
@@ -211,13 +205,26 @@ export class CalendarGraphRender extends BaseGraphRender {
 				for (let j = 0; j < distance; j++) {
 					const cellEl = document.createElement("div");
 					cellEl.className = "cell";
-					this.applyCellGlobalStylePartial(cellEl, graphConfig, ['minWidth', 'minHeight']);
 					rowContainer?.appendChild(cellEl);
 				}
 			}
 		}
-		
-		// 一次性添加所有元素到DOM
+
 		chartsEl.appendChild(fragment);
+
+		chartsEl.addEventListener("click", (e: MouseEvent) => {
+			const target = (e.target as HTMLElement).closest(".cell:not(.empty):not(.week-indicator):not(.month-indicator):not(.date-indicator)");
+			if (!target) return;
+			const date = (target as HTMLElement).dataset.date;
+			if (!date) return;
+			const item = cellDataMap.get(date);
+			if (!item) return;
+			if (graphConfig.onCellClick) {
+				graphConfig.onCellClick(item, e);
+			}
+			if (activityContainer) {
+				this.renderActivity(graphConfig, item, activityContainer);
+			}
+		});
 	}
 }

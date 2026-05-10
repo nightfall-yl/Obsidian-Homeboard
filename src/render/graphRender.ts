@@ -242,29 +242,31 @@ export abstract class BaseGraphRender implements GraphRender {
 		monthCell.ariaLabel = `${yearMonthValue} contributions on ${yearMonth}.`;
 	}
 
+	applyCellGlobalStyleToContainer(
+		containerEl: HTMLElement,
+		graphConfig: HeatmapConfig
+	) {
+		if (!graphConfig.cellStyle) return;
+		const style = containerEl.style;
+		const cs = graphConfig.cellStyle;
+		for (const key in cs) {
+			const val = cs[key as keyof CSSStyleDeclaration];
+			if (val != null && val !== "") {
+				style.setProperty(`--heatmap-cell-${camelToKebab(key)}`, String(val));
+			}
+		}
+	}
+
 	applyCellGlobalStyle(
 		cellEl: HTMLElement,
 		graphConfig: HeatmapConfig
-	) {
-		if (graphConfig.cellStyle) {
-			Object.assign(cellEl.style, graphConfig.cellStyle);
-		}
-	}
+	) {}
 
 	applyCellGlobalStylePartial(
 		cellEl: HTMLElement,
 		graphConfig: HeatmapConfig,
 		props: string[]
-	) {
-		if (graphConfig.cellStyle) {
-			const partialStyle = props.reduce((acc, cur) => {
-				// @ts-ignore
-				acc[cur] = graphConfig.cellStyle[cur];
-				return acc;
-			}, {});
-			Object.assign(cellEl.style, partialStyle);
-		}
-	}
+	) {}
 
 	applyCellStyleRule(
 		cellEl: HTMLElement,
@@ -323,6 +325,10 @@ export abstract class BaseGraphRender implements GraphRender {
 			: `${contributionItem.value} contributions on ${contributionItem.date}.`;
 		cellEl.ariaLabel = summary;
 	}
+}
+
+function camelToKebab(str: string): string {
+	return str.replace(/[A-Z]/g, (m) => "-" + m.toLowerCase());
 }
 
 function renderActivityItem(items: ContributionItem[], listMain: HTMLElement) {

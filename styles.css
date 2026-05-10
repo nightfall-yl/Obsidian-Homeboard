@@ -1192,7 +1192,7 @@ min-width:8px;min-height:8px;width:8px;height:8px;font-size:8px;border-radius:2p
 flex-grow:1
 }
 .heatmap .cell {
-min-width:7px;min-height:7px;height:10px;font-size:8px;border-radius:2px;background-color:transparent;margin-top:1.5px;margin-right:1.5px;flex-grow:1;cursor:pointer;position:relative;display:flex;justify-content:center;align-items:center
+min-width:var(--heatmap-cell-min-width,7px);min-height:var(--heatmap-cell-min-height,7px);width:var(--heatmap-cell-width);height:var(--heatmap-cell-height,10px);font-size:var(--heatmap-cell-font-size,8px);border-radius:var(--heatmap-cell-border-radius,2px);background-color:transparent;margin-top:var(--heatmap-cell-margin-top,1.5px);margin-right:var(--heatmap-cell-margin-right,1.5px);flex-grow:1;cursor:pointer;position:relative;display:flex;justify-content:center;align-items:center
 }
 .heatmap .cell.empty {
 background-color:#ebedf0d9
@@ -1687,12 +1687,12 @@ font-weight: 400;
 		align-items: center;
 	}
 	.heatmap .cell {
-		min-width: 5px;
-		min-height: 5px;
-		height: 5px;
-		margin-top: 1px;
-		margin-right: 1px;
-		border-radius: 1px;
+		min-width: var(--heatmap-cell-min-width, 5px);
+		min-height: var(--heatmap-cell-min-height, 5px);
+		height: var(--heatmap-cell-height, 5px);
+		margin-top: var(--heatmap-cell-margin-top, 1px);
+		margin-right: var(--heatmap-cell-margin-right, 1px);
+		border-radius: var(--heatmap-cell-border-radius, 1px);
 	}
 	.heatmap .cell-rule-indicator-container {
 		margin-top: 4px;

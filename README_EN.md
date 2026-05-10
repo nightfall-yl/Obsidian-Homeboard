@@ -185,6 +185,9 @@ You can also create graphs via the command palette (`New Heatmap`) or select **A
 dataSource:
   type: PAGE                    # PAGE | ALL_TASK | TASK_IN_SPECIFIC_PAGE
   value: '#tag'                 # Dataview query expression
+  excludeFolders:               # Optional, exclude notes in specific folders
+    - templates/
+    - Archive/
   dateField:
     type: FILE_CTIME            # Date field type
     value: propertyName         # Property name (for PAGE_PROPERTY/TASK_PROPERTY)
@@ -341,6 +344,18 @@ npm run build
 ---
 
 ## Changelog
+
+### 26.5.6
+
+- **New "Exclude Folders" config**: Heatmap data source now supports `excludeFolders` field to exclude specific folders (e.g., template folders) from Dataview queries; UI includes folder path autocomplete
+- **Rendering performance optimization**: Three DOM-level optimizations (CSS variable inheritance, event delegation, innerHTML batch rendering) reduce Git-style heatmap DOM operation time by ~94%
+- **Fix Settings UI layout regression**: 28 missed CSS class names in GraphForm.tsx after global rename caused settings panel to fall back to vertical stacking — all corrected
+
+### 26.5.5
+
+- **Global rename `contributionGraph` → `heatmap`**: All CSS class names, TypeScript types/methods, and documentation updated (~275 occurrences)
+- **Visual refinements**: Removed heatmap outer border shadow; adjusted desktop/mobile week font sizes and cell dimensions; fixed week indicator / data cell row alignment; optimized mobile legend spacing and reading view bottom margin
+- **ElementCard 4-column layout fix**: Drag resizer lines now align with card right edges; 4th card right border visible; column width unit changed from `%` to `fr`
 
 ### 26.5.4
 

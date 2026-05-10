@@ -185,6 +185,9 @@ dataSource:
 dataSource:
   type: PAGE                    # PAGE | ALL_TASK | TASK_IN_SPECIFIC_PAGE
   value: '#tag'                 # Dataview 查询表达式
+  excludeFolders:               # 可选，排除指定文件夹中的笔记
+    - templates/
+    - Archive/
   dateField:
     type: FILE_CTIME            # 日期字段类型
     value: propertyName         # 属性名（PAGE_PROPERTY/TASK_PROPERTY 时需要）
@@ -365,6 +368,18 @@ npm run build
 ---
 
 ## 更新日志
+
+### 26.5.6
+
+- **新增「排除文件夹」配置**：热力图数据源支持 `excludeFolders` 字段，可排除指定文件夹中的笔记（如模板文件夹），避免无效数据干扰统计；UI 支持自动补全文件夹路径
+- **渲染性能优化**：DOM 层面三项优化（CSS 变量继承、事件委托、innerHTML 批量生成），Git 风格热力图 DOM 操作时间降低约 94%
+- **修复 Settings UI 布局回归**：全局重命名后 GraphForm.tsx 的 28 处 CSS class 名遗漏导致设置面板布局回退为垂直堆叠，已全部修正
+
+### 26.5.5
+
+- **全局重命名 `contributionGraph` → `heatmap`**：所有 CSS 类名、TypeScript 类型/方法名、文档统一更新（~275 处）
+- **视觉优化**：移除热力图外边框阴影；调整桌面端/移动端星期字体大小和 cell 尺寸；修复星期指示器与数据格子的行对齐问题；优化移动端图例间距及预览模式底部间距
+- **ElementCard 4 列布局修复**：拖拽调整线与卡片右边缘对齐；第 4 张卡片右边界正确显示；列宽单位从 `%` 改为 `fr`
 
 ### 26.5.4
 
