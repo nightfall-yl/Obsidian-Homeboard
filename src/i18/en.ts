@@ -216,6 +216,59 @@ export class En implements Local {
     calendar_menu_delete = "Delete";
 	calendar_menu_create_daily = "Create daily note";
 
+	settings_homepage_enable = "Enable Homepage";
+	settings_homepage_enableDesc = "Enable homepage feature to auto-open a specified note on startup";
+	settings_homepage_kind = "Homepage kind";
+	settings_homepage_kindDesc = "Choose homepage type: a specific file or daily note";
+	settings_homepage_kindFile = "Specific file";
+	settings_homepage_kindDailyNote = "Daily note";
+	settings_homepage_filePath = "File path";
+	settings_homepage_filePathDesc = "Enter the path of the homepage file (without .md extension)";
+	settings_homepage_dailyNoteFormat = "Daily note format";
+	settings_homepage_dailyNoteFormatDesc = "Daily note filename format (determined by Daily Notes plugin settings)";
+	settings_homepage_dailyNoteFormatValue = "Use Daily Notes plugin format";
+	settings_homepage_openOnStartup = "Open on startup";
+	settings_homepage_openOnStartupDesc = "Automatically open homepage when Obsidian starts";
+	settings_homepage_openMode = "Open mode";
+	settings_homepage_openModeDescIntro = "Choose how to open the homepage. Assuming workspace has 3 tabs open: ";
+	settings_homepage_openModeDescExample = "Note A / Note B / Note C";
+	settings_homepage_openModeReplaceAll = "Replace all";
+	settings_homepage_openModeReplaceAllDesc = "Close all tabs, only homepage remains";
+	settings_homepage_openModeRetain = "Retain";
+	settings_homepage_openModeRetainDesc = "Keep all tabs, navigate if already open, otherwise do nothing (unless current tab is empty)";
+	settings_homepage_openModeReplaceLast = "Replace last";
+	settings_homepage_openModeReplaceLastDesc = "Becomes Note A / Note B / Homepage (Note C replaced)";
+	settings_homepage_viewMode = "View mode";
+	settings_homepage_viewModeDesc = "View mode when opening homepage";
+	settings_homepage_viewModeDefault = "Default";
+	settings_homepage_viewModeReading = "Reading";
+	settings_homepage_viewModeSource = "Source";
+	settings_homepage_viewModeLivePreview = "Live Preview";
+	settings_homepage_revertView = "Revert view on leave";
+	settings_homepage_revertViewDesc = "Revert to default view mode when leaving the homepage file";
+	settings_homepage_openWhenEmpty = "Open when empty tab";
+	settings_homepage_openWhenEmptyDesc = "Auto-open homepage when workspace only has empty tabs";
+	settings_homepage_pinInFileExplorer = "Pin homepage in file explorer (experimental)";
+	settings_homepage_pinInFileExplorerDesc = "Move the homepage note to the top of its folder in the file explorer. Uses Obsidian internals and silently skips if unavailable.";
+	settings_homepage_autoCreate = "Auto-create file";
+	settings_homepage_autoCreateDesc = "Auto-create the homepage file if it doesn't exist";
+
+	settings_cal_enable = "Enable Calendar";
+	settings_cal_enableDesc = "Show calendar view in sidebar";
+	settings_cal_position = "Calendar position";
+	settings_cal_positionDesc = "Choose which sidebar to display the calendar";
+	settings_cal_left = "Left sidebar";
+	settings_cal_right = "Right sidebar";
+	settings_cal_confirmCreate = "Confirm before creating";
+	settings_cal_confirmCreateDesc = "Show a confirmation modal before creating a new note";
+	settings_cal_wordsPerDot = "Words per dot";
+	settings_cal_wordsPerDotDesc = "How many words should be represented by a single dot?";
+	settings_cal_weekStart = "Start week on";
+	settings_cal_weekStartDesc = "Choose what day of the week to start";
+	settings_cal_localeDefault = "Locale default";
+	settings_cal_highlightToday = "Highlight today";
+	settings_cal_highlightTodayDesc = "Highlight today's date with a background color and bold text";
+
 	settings_forceView_enable = "Enable Force View Mode";
 	settings_forceView_enableDesc = "Automatically set view mode based on frontmatter or folder/file rules";
 	settings_forceView_descPart1 = "You can change view mode by setting ";
@@ -258,6 +311,11 @@ export class En implements Local {
 	settings_cursor_delayAfterOpeningDesc = "If you use links pointing to headings inside notes (like [link](note.md#heading)), this plugin should not scroll. Increase delay if you experience this. Set to zero if you don't use links pointing to sections within pages (move slider to the left). Range: 0-300 ms (default 100 ms).";
 	settings_cursor_delayBetweenSaving = "Interval between saving cursor position to file";
 	settings_cursor_delayBetweenSavingDesc = "For multi-device users. Shorten if you don't want to wait until Obsidian closes to save positions.";
+
+	settings_nav_homepage = "Homepage";
+	settings_nav_calendar = "Calendar";
+	settings_nav_forceView = "Force View";
+	settings_nav_cursorPosition = "Cursor Position";
 
 	notice_command_not_found = "Command '{0}' not found";
 }

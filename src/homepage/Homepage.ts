@@ -1,10 +1,11 @@
-import { App, MarkdownView, Notice, View as OView, WorkspaceLeaf } from "obsidian";
+import { App, MarkdownView, Notice, TFile, View as OView, WorkspaceLeaf } from "obsidian";
 import { DEFAULT_HOMEPAGE_SETTINGS, HomepageKind, HomepageSettings, OpenMode, ViewMode } from "./types";
 
 export class Homepage {
 	app: App;
 	settings: HomepageSettings;
 	lastView: MarkdownView | null = null;
+	private pinTimers: number[] = [];
 
 	constructor(app: App) {
 		this.app = app;
@@ -13,6 +14,77 @@ export class Homepage {
 
 	updateSettings(settings: HomepageSettings): void {
 		this.settings = settings;
+	}
+
+	schedulePinInFileExplorer(): void {
+		this.clearPinTimers();
+
+		if (!this.settings.enabled || !this.settings.pinInFileExplorer) {
+			return;
+		}
+
+		for (const delay of [0, 150, 500, 1000]) {
+			const timer = window.setTimeout(() => {
+				void this.pinInFileExplorer();
+			}, delay);
+			this.pinTimers.push(timer);
+		}
+	}
+
+	clearPinTimers(): void {
+		for (const timer of this.pinTimers) {
+			window.clearTimeout(timer);
+		}
+		this.pinTimers = [];
+	}
+
+	async pinInFileExplorer(): Promise<void> {
+		try {
+			if (!this.settings.enabled || !this.settings.pinInFileExplorer) {
+				return;
+			}
+
+			const file = await this.getHomepageFile();
+			if (!file) {
+				return;
+			}
+
+			const titleEl = this.findFileExplorerTitle(file.path);
+			if (!titleEl) {
+				return;
+			}
+
+			const itemEl = this.getFileExplorerItem(titleEl);
+			const parentEl = itemEl.parentElement;
+			if (!parentEl) {
+				return;
+			}
+
+			itemEl.addClass("elements-homepage-pinned-file");
+
+			const firstSibling = Array.from(parentEl.children).find((child) => {
+				return child instanceof HTMLElement && child !== itemEl && this.isFileExplorerItem(child);
+			});
+
+			if (firstSibling && itemEl.previousElementSibling !== null) {
+				parentEl.insertBefore(itemEl, firstSibling);
+			}
+		} catch {
+			return;
+		}
+	}
+
+	private async getHomepageFile(): Promise<TFile | null> {
+		const computedValue = await this.computeValue();
+		const existing = this.app.metadataCache.getFirstLinkpathDest(computedValue, "/");
+
+		if (existing instanceof TFile) {
+			return existing;
+		}
+
+		const normalized = this.ensureMdExt(computedValue);
+		const abstractFile = this.app.vault.getAbstractFileByPath(normalized);
+		return abstractFile instanceof TFile ? abstractFile : null;
 	}
 
 	async open(alternate: boolean = false): Promise<void> {
@@ -164,6 +236,39 @@ export class Homepage {
 	private hasDailyNotesPlugin(): boolean {
 		const plugin = (this.app as any).internalPlugins?.getPluginById("daily-notes");
 		return !!plugin?.enabled;
+	}
+
+	private findFileExplorerTitle(path: string): HTMLElement | null {
+		const escapedPath = this.escapeAttributeValue(path);
+		const selectors = [
+			`.workspace-leaf-content[data-type="file-explorer"] .nav-file-title[data-path="${escapedPath}"]`,
+			`.workspace-leaf-content[data-type="file-explorer"] .tree-item-self[data-path="${escapedPath}"]`,
+			`.workspace-leaf-content[data-type="file-explorer"] [data-path="${escapedPath}"]`,
+			`.nav-file-title[data-path="${escapedPath}"]`,
+			`.tree-item-self[data-path="${escapedPath}"]`,
+			`[data-path="${escapedPath}"]`,
+		];
+
+		for (const selector of selectors) {
+			const el = document.querySelector<HTMLElement>(selector);
+			if (el) {
+				return el;
+			}
+		}
+
+		return null;
+	}
+
+	private getFileExplorerItem(titleEl: HTMLElement): HTMLElement {
+		return titleEl.closest<HTMLElement>(".nav-file, .tree-item") ?? titleEl;
+	}
+
+	private isFileExplorerItem(el: HTMLElement): boolean {
+		return el.matches(".nav-file, .nav-folder, .tree-item");
+	}
+
+	private escapeAttributeValue(value: string): string {
+		return value.replace(/["\\\n\r\f]/g, "\\$&");
 	}
 
 	private isEmptyView(): boolean {

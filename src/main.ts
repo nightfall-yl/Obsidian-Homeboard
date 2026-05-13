@@ -137,6 +137,9 @@ export default class ElementCardComponentPlugin extends Plugin {
 		this.homepage = new Homepage(this.app);
 		const hpSettings = this.settings.homepage;
 		this.homepage.updateSettings(hpSettings);
+		this.app.workspace.onLayoutReady(() => {
+			this.homepage.schedulePinInFileExplorer();
+		});
 
 		if (hpSettings.enabled) {
 			const isZhLang = (getLanguage() || "en").startsWith("zh");
@@ -156,14 +159,29 @@ export default class ElementCardComponentPlugin extends Plugin {
 			this.app.workspace.onLayoutReady(async () => {
 				await new Promise((r) => setTimeout(r, 100));
 				await this.homepage.open();
+				this.homepage.schedulePinInFileExplorer();
 			});
 		}
 
 		this.registerEvent(
 			this.app.workspace.on("layout-change", async () => {
-				if (!hpSettings.enabled) return;
-				if (hpSettings.revertView) await this.homepage.revertViewIfNeeded();
-				if (hpSettings.openWhenEmpty) await this.homepage.openWhenEmpty();
+				const homepageSettings = this.settings.homepage;
+				if (!homepageSettings.enabled) return;
+				if (homepageSettings.revertView) await this.homepage.revertViewIfNeeded();
+				if (homepageSettings.openWhenEmpty) await this.homepage.openWhenEmpty();
+				this.homepage.schedulePinInFileExplorer();
+			})
+		);
+
+		this.registerEvent(
+			this.app.vault.on("create", () => {
+				this.homepage.schedulePinInFileExplorer();
+			})
+		);
+
+		this.registerEvent(
+			this.app.vault.on("rename", () => {
+				this.homepage.schedulePinInFileExplorer();
 			})
 		);
 
@@ -230,6 +248,7 @@ export default class ElementCardComponentPlugin extends Plugin {
 	onunload() {
 		this.forceViewModeManager?.onunload();
 		this.cursorPositionManager?.onunload();
+		this.homepage?.clearPinTimers();
 		this.app.workspace.detachLeavesOfType(VIEW_TYPE_CALENDAR);
 		document.getElementById(CSS_ID)?.remove();
 	}
@@ -257,7 +276,12 @@ export default class ElementCardComponentPlugin extends Plugin {
 	}
 
 	async loadSettings() {
-		this.settings = Object.assign({}, DEFAULT_ELEMENTCARD_SETTINGS, await this.loadData());
+		const loadedSettings = await this.loadData();
+		this.settings = Object.assign({}, DEFAULT_ELEMENTCARD_SETTINGS, loadedSettings);
+		this.settings.homepage = {
+			...DEFAULT_ELEMENTCARD_SETTINGS.homepage,
+			...(loadedSettings?.homepage ?? {}),
+		};
 	}
 
 	async saveSettings() {
@@ -277,6 +301,7 @@ export default class ElementCardComponentPlugin extends Plugin {
 		});
 		// Update homepage settings
 		this.homepage?.updateSettings(this.settings.homepage);
+		this.homepage?.schedulePinInFileExplorer();
 	}
 
 	private registerGlobalRenderApi() {

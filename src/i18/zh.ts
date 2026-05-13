@@ -214,6 +214,59 @@ export class Zh implements Local {
     calendar_menu_delete = "删除";
 	calendar_menu_create_daily = "新建日记";
 
+	settings_homepage_enable = "启用主页";
+	settings_homepage_enableDesc = "开启主页功能，可在启动时自动打开指定笔记";
+	settings_homepage_kind = "首页类型";
+	settings_homepage_kindDesc = "选择主页类型：指定文件或每日日记";
+	settings_homepage_kindFile = "指定文件";
+	settings_homepage_kindDailyNote = "日记";
+	settings_homepage_filePath = "文件路径";
+	settings_homepage_filePathDesc = "输入主页文件的路径（不含 .md 后缀）";
+	settings_homepage_dailyNoteFormat = "日记格式";
+	settings_homepage_dailyNoteFormatDesc = "日记文件名格式（由日记插件设置决定）";
+	settings_homepage_dailyNoteFormatValue = "使用日记插件设置";
+	settings_homepage_openOnStartup = "启动时打开";
+	settings_homepage_openOnStartupDesc = "Obsidian 启动时自动打开主页";
+	settings_homepage_openMode = "打开方式";
+	settings_homepage_openModeDescIntro = "选择打开主页时的行为。假设工作区当前开着 3 个标签：";
+	settings_homepage_openModeDescExample = "笔记A / 笔记B / 笔记C";
+	settings_homepage_openModeReplaceAll = "替换全部";
+	settings_homepage_openModeReplaceAllDesc = "3 个标签全关，只剩主页";
+	settings_homepage_openModeRetain = "保留";
+	settings_homepage_openModeRetainDesc = "标签全保留，如果主页已在其中则跳转，否则不操作（除非当前是空标签）";
+	settings_homepage_openModeReplaceLast = "替换最后一个";
+	settings_homepage_openModeReplaceLastDesc = "变成 笔记A / 笔记B / 主页（笔记C 被替换）";
+	settings_homepage_viewMode = "视图模式";
+	settings_homepage_viewModeDesc = "打开主页时使用的视图模式";
+	settings_homepage_viewModeDefault = "默认视图";
+	settings_homepage_viewModeReading = "阅读视图";
+	settings_homepage_viewModeSource = "编辑视图（源码模式）";
+	settings_homepage_viewModeLivePreview = "编辑视图（实时预览）";
+	settings_homepage_revertView = "离开后恢复视图";
+	settings_homepage_revertViewDesc = "离开主页文件时恢复为默认视图模式";
+	settings_homepage_openWhenEmpty = "空标签页时自动打开";
+	settings_homepage_openWhenEmptyDesc = "当工作区只有空标签页时自动打开主页";
+	settings_homepage_pinInFileExplorer = "文件列表置顶主页（实验性）";
+	settings_homepage_pinInFileExplorerDesc = "在文件管理器中将主页笔记移动到所在目录顶部。依赖 Obsidian 内部结构，失效时会静默跳过。";
+	settings_homepage_autoCreate = "自动创建文件";
+	settings_homepage_autoCreateDesc = "当主页文件不存在时自动创建";
+
+	settings_cal_enable = "启用日历";
+	settings_cal_enableDesc = "在侧边栏显示日历视图";
+	settings_cal_position = "日历位置";
+	settings_cal_positionDesc = "选择日历显示在哪个侧边栏";
+	settings_cal_left = "左侧边栏";
+	settings_cal_right = "右侧边栏";
+	settings_cal_confirmCreate = "创建前确认";
+	settings_cal_confirmCreateDesc = "创建日记前是否需要确认";
+	settings_cal_wordsPerDot = "每个圆点代表字数";
+	settings_cal_wordsPerDotDesc = "日历中每个圆点代表的字数";
+	settings_cal_weekStart = "星期起始日";
+	settings_cal_weekStartDesc = "选择一周的起始日";
+	settings_cal_localeDefault = "系统默认";
+	settings_cal_highlightToday = "今日高亮";
+	settings_cal_highlightTodayDesc = "用背景颜色和加粗文本高亮今天的日期";
+
 	settings_forceView_enable = "启用强制视图模式";
 	settings_forceView_enableDesc = "根据 frontmatter 或文件夹/文件规则自动设置视图模式";
 	settings_forceView_descPart1 = "可以通过键 ";
@@ -256,6 +309,11 @@ export class Zh implements Local {
 	settings_cursor_delayAfterOpeningDesc = "如果你使用了指向笔记标题的链接（如 [链接](笔记.md#标题)），本插件不应滚动页面。如果出现此问题，请增加延迟时间。如果你不使用指向页面内章节的链接，可将延迟设为零（滑块调至最左）。滑块范围：0-300 毫秒（默认值：100 毫秒）。";
 	settings_cursor_delayBetweenSaving = "光标位置保存到文件的间隔";
 	settings_cursor_delayBetweenSavingDesc = "适用于多设备用户。如果你不想等到关闭 Obsidian 才保存光标位置，可以缩短此间隔。";
+
+	settings_nav_homepage = "首页";
+	settings_nav_calendar = "日历";
+	settings_nav_forceView = "强制视图";
+	settings_nav_cursorPosition = "光标位置";
 
 	notice_command_not_found = "未找到 {0} 命令";
 }

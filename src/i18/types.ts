@@ -214,6 +214,65 @@ export interface Local {
 	calendar_menu_create_daily: string;
 
 	/**
+	 * settings - homepage
+	 */
+	settings_homepage_enable: string;
+	settings_homepage_enableDesc: string;
+	settings_homepage_kind: string;
+	settings_homepage_kindDesc: string;
+	settings_homepage_kindFile: string;
+	settings_homepage_kindDailyNote: string;
+	settings_homepage_filePath: string;
+	settings_homepage_filePathDesc: string;
+	settings_homepage_dailyNoteFormat: string;
+	settings_homepage_dailyNoteFormatDesc: string;
+	settings_homepage_dailyNoteFormatValue: string;
+	settings_homepage_openOnStartup: string;
+	settings_homepage_openOnStartupDesc: string;
+	settings_homepage_openMode: string;
+	settings_homepage_openModeDescIntro: string;
+	settings_homepage_openModeDescExample: string;
+	settings_homepage_openModeReplaceAll: string;
+	settings_homepage_openModeReplaceAllDesc: string;
+	settings_homepage_openModeRetain: string;
+	settings_homepage_openModeRetainDesc: string;
+	settings_homepage_openModeReplaceLast: string;
+	settings_homepage_openModeReplaceLastDesc: string;
+	settings_homepage_viewMode: string;
+	settings_homepage_viewModeDesc: string;
+	settings_homepage_viewModeDefault: string;
+	settings_homepage_viewModeReading: string;
+	settings_homepage_viewModeSource: string;
+	settings_homepage_viewModeLivePreview: string;
+	settings_homepage_revertView: string;
+	settings_homepage_revertViewDesc: string;
+	settings_homepage_openWhenEmpty: string;
+	settings_homepage_openWhenEmptyDesc: string;
+	settings_homepage_pinInFileExplorer: string;
+	settings_homepage_pinInFileExplorerDesc: string;
+	settings_homepage_autoCreate: string;
+	settings_homepage_autoCreateDesc: string;
+
+	/**
+	 * settings - calendar
+	 */
+	settings_cal_enable: string;
+	settings_cal_enableDesc: string;
+	settings_cal_position: string;
+	settings_cal_positionDesc: string;
+	settings_cal_left: string;
+	settings_cal_right: string;
+	settings_cal_confirmCreate: string;
+	settings_cal_confirmCreateDesc: string;
+	settings_cal_wordsPerDot: string;
+	settings_cal_wordsPerDotDesc: string;
+	settings_cal_weekStart: string;
+	settings_cal_weekStartDesc: string;
+	settings_cal_localeDefault: string;
+	settings_cal_highlightToday: string;
+	settings_cal_highlightTodayDesc: string;
+
+	/**
 	 * settings - force view mode
 	 */
 	settings_forceView_enable: string;
@@ -261,6 +320,14 @@ export interface Local {
 	settings_cursor_delayAfterOpeningDesc: string;
 	settings_cursor_delayBetweenSaving: string;
 	settings_cursor_delayBetweenSavingDesc: string;
+
+	/**
+	 * settings - navigation
+	 */
+	settings_nav_homepage: string;
+	settings_nav_calendar: string;
+	settings_nav_forceView: string;
+	settings_nav_cursorPosition: string;
 
 	/**
 	 * commands

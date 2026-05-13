@@ -99,6 +99,7 @@ export interface HomepagePluginSettings {
 	revertView: boolean;
 	openWhenEmpty: boolean;
 	autoCreate: boolean;
+	pinInFileExplorer: boolean;
 }
 
 export const DEFAULT_HOMEPAGE_SETTINGS: HomepagePluginSettings = {
@@ -111,6 +112,7 @@ export const DEFAULT_HOMEPAGE_SETTINGS: HomepagePluginSettings = {
 	revertView: true,
 	openWhenEmpty: false,
 	autoCreate: false,
+	pinInFileExplorer: false,
 };
 
 // ===== Calendar Plugin Settings =====

@@ -36,11 +36,7 @@ type SettingsSection = {
 	icon: string;
 };
 
-import { Locals, getLanguage } from "src/i18/messages";
-
-function isZh(): boolean {
-	return getLanguage() === "zh";
-}
+import { Locals } from "src/i18/messages";
 
 export class FolderSuggestDropdown extends AbstractInputSuggest<TFolder> {
 	private allFolders: TFolder[] | null = null;
@@ -127,11 +123,11 @@ export class ElementCardSettingTab extends PluginSettingTab {
 
 		// Define navigation sections
 			const sections: SettingsSection[] = [
-				{ id: "homepage", label: "Homepage", labelZh: "主页", icon: "home" },
-				{ id: "calendar", label: "Calendar", labelZh: "日历", icon: "calendar-days" },
-				{ id: "forceView", label: "Force View Mode", labelZh: "视图模式", icon: "eye" },
-				{ id: "cursorPosition", label: "Cursor Position", labelZh: "光标位置", icon: "mouse-pointer" },
-			];
+			{ id: "homepage", label: Locals.get().settings_nav_homepage, labelZh: "", icon: "home" },
+			{ id: "calendar", label: Locals.get().settings_nav_calendar, labelZh: "", icon: "calendar-days" },
+			{ id: "forceView", label: Locals.get().settings_nav_forceView, labelZh: "", icon: "eye" },
+			{ id: "cursorPosition", label: Locals.get().settings_nav_cursorPosition, labelZh: "", icon: "mouse-pointer" },
+		];
 
 		// Create layout: nav + content
 		const navEl = containerEl.createDiv({ cls: "elementCard-settings-nav" });
@@ -159,7 +155,7 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			});
 			const iconEl = button.createSpan({ cls: "elementCard-settings-nav-icon" });
 			setIcon(iconEl, section.icon);
-			button.createSpan({ text: isZh() ? section.labelZh : section.label });
+			button.createSpan({ text: section.label });
 			button.addEventListener("click", () => setActiveSection(section.id));
 			navButtons.set(section.id, button);
 
@@ -324,10 +320,6 @@ export class ElementCardSettingTab extends PluginSettingTab {
 								newFolder &&
 								this.plugin.settings.forceViewMode.folders.some((e) => e.folder === newFolder)
 							) {
-								console.error(
-									"ForceViewMode: This folder already has a rule",
-									newFolder
-								);
 								return;
 							}
 							this.plugin.settings.forceViewMode.folders[index].folder = newFolder;
@@ -399,7 +391,6 @@ export class ElementCardSettingTab extends PluginSettingTab {
 								value &&
 								this.plugin.settings.forceViewMode.files.some((e) => e.filePattern === value)
 							) {
-								console.error("ForceViewMode: Pattern already exists", value);
 								return;
 							}
 							this.plugin.settings.forceViewMode.files[index].filePattern = value;
@@ -504,13 +495,13 @@ export class ElementCardSettingTab extends PluginSettingTab {
 	}
 
 	private renderHomepageSection(containerEl: HTMLElement): void {
-		const isZhLang = isZh();
+		const t = Locals.get();
 		const hp = this.plugin.settings.homepage;
 		const group = this.createSettingsGroup(containerEl);
 
 		new Setting(group)
-			.setName(isZhLang ? "启用主页" : "Enable Homepage")
-			.setDesc(isZhLang ? "开启主页功能，可在启动时自动打开指定笔记" : "Enable homepage feature to auto-open a specified note on startup")
+			.setName(t.settings_homepage_enable)
+			.setDesc(t.settings_homepage_enableDesc)
 			.addToggle((toggle) =>
 				toggle
 					.setValue(hp.enabled)
@@ -521,44 +512,46 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(group)
-			.setName(isZhLang ? "首页类型" : "Homepage kind")
-			.setDesc(isZhLang ? "选择主页类型：指定文件或每日日记" : "Choose homepage type: a specific file or daily note")
+			.setName(t.settings_homepage_kind)
+			.setDesc(t.settings_homepage_kindDesc)
 			.addDropdown((dropdown) => {
-				dropdown.addOption("file", isZhLang ? "指定文件" : "Specific file");
-				dropdown.addOption("daily-note", isZhLang ? "日记" : "Daily note");
+				dropdown.addOption("file", t.settings_homepage_kindFile);
+				dropdown.addOption("daily-note", t.settings_homepage_kindDailyNote);
 				dropdown.setValue(hp.kind);
 				dropdown.onChange(async (value) => {
 					hp.kind = value as any;
 					await this.plugin.saveSettings();
+					this.plugin.homepage?.schedulePinInFileExplorer();
 					this.display();
 				});
 			});
 
 		if (hp.kind === "file") {
 			new Setting(group)
-				.setName(isZhLang ? "文件路径" : "File path")
-				.setDesc(isZhLang ? "输入主页文件的路径（不含 .md 后缀）" : "Enter the path of the homepage file (without .md extension)")
+				.setName(t.settings_homepage_filePath)
+				.setDesc(t.settings_homepage_filePathDesc)
 				.addText((text) => {
-					text.setPlaceholder("Home").setValue(hp.value);
+					text.setPlaceholder(t.settings_homepage_filePath).setValue(hp.value);
 					new FileSuggestDropdown(this.app, text.inputEl);
 					text.onChange(async (value) => {
 						hp.value = value;
 						await this.plugin.saveSettings();
+						this.plugin.homepage?.schedulePinInFileExplorer();
 					});
 				});
 		} else {
 			new Setting(group)
-				.setName(isZhLang ? "日记格式" : "Daily note format")
-				.setDesc(isZhLang ? "日记文件名格式（由日记插件设置决定）" : "Daily note filename format (determined by Daily Notes plugin settings)")
+				.setName(t.settings_homepage_dailyNoteFormat)
+				.setDesc(t.settings_homepage_dailyNoteFormatDesc)
 				.addText((text) => {
 					text.inputEl.disabled = true;
-					text.setValue(isZhLang ? "使用日记插件设置" : "Use Daily Notes plugin format");
+					text.setValue(t.settings_homepage_dailyNoteFormatValue);
 				});
 		}
 
 		new Setting(group)
-			.setName(isZhLang ? "启动时打开" : "Open on startup")
-			.setDesc(isZhLang ? "Obsidian 启动时自动打开主页" : "Automatically open homepage when Obsidian starts")
+			.setName(t.settings_homepage_openOnStartup)
+			.setDesc(t.settings_homepage_openOnStartupDesc)
 			.addToggle((toggle) =>
 				toggle
 					.setValue(hp.openOnStartup)
@@ -569,48 +562,30 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(group)
-			.setName(isZhLang ? "打开方式" : "Open mode")
+			.setName(t.settings_homepage_openMode)
 			.setDesc(
-				isZhLang
-					? createFragment((frag) => {
-						frag.createSpan({ text: "选择打开主页时的行为。假设工作区当前开着 3 个标签：" });
-						frag.createEl("b", { text: "笔记A / 笔记B / 笔记C" });
-						frag.createEl("br");
-						frag.createEl("br");
-						frag.createSpan({ text: "• " });
-						frag.createEl("b", { text: "替换全部" });
-						frag.createSpan({ text: " → 3 个标签全关，只剩主页" });
-						frag.createEl("br");
-						frag.createSpan({ text: "• " });
-						frag.createEl("b", { text: "保留" });
-						frag.createSpan({ text: " → 标签全保留，如果主页已在其中则跳转，否则不操作（除非当前是空标签）" });
-						frag.createEl("br");
-						frag.createSpan({ text: "• " });
-						frag.createEl("b", { text: "替换最后一个" });
-						frag.createSpan({ text: " → 变成 笔记A / 笔记B / 主页（笔记C 被替换）" });
-					})
-					: createFragment((frag) => {
-						frag.createSpan({ text: "Choose how to open the homepage. Assuming workspace has 3 tabs open: " });
-						frag.createEl("b", { text: "Note A / Note B / Note C" });
-						frag.createEl("br");
-						frag.createEl("br");
-						frag.createSpan({ text: "• " });
-						frag.createEl("b", { text: "Replace all" });
-						frag.createSpan({ text: " → Close all tabs, only homepage remains" });
-						frag.createEl("br");
-						frag.createSpan({ text: "• " });
-						frag.createEl("b", { text: "Retain" });
-						frag.createSpan({ text: " → Keep all tabs, navigate if already open, otherwise do nothing (unless current tab is empty)" });
-						frag.createEl("br");
-						frag.createSpan({ text: "• " });
-						frag.createEl("b", { text: "Replace last" });
-						frag.createSpan({ text: " → Becomes Note A / Note B / Homepage (Note C replaced)" });
-					})
+				createFragment((frag) => {
+					frag.createSpan({ text: t.settings_homepage_openModeDescIntro });
+					frag.createEl("b", { text: t.settings_homepage_openModeDescExample });
+					frag.createEl("br");
+					frag.createEl("br");
+					frag.createSpan({ text: "• " });
+					frag.createEl("b", { text: t.settings_homepage_openModeReplaceAll });
+					frag.createSpan({ text: ` → ${t.settings_homepage_openModeReplaceAllDesc}` });
+					frag.createEl("br");
+					frag.createSpan({ text: "• " });
+					frag.createEl("b", { text: t.settings_homepage_openModeRetain });
+					frag.createSpan({ text: ` → ${t.settings_homepage_openModeRetainDesc}` });
+					frag.createEl("br");
+					frag.createSpan({ text: "• " });
+					frag.createEl("b", { text: t.settings_homepage_openModeReplaceLast });
+					frag.createSpan({ text: ` → ${t.settings_homepage_openModeReplaceLastDesc}` });
+				})
 			)
 			.addDropdown((dropdown) => {
-				dropdown.addOption("replace-all", isZhLang ? "替换全部" : "Replace all");
-				dropdown.addOption("replace-last", isZhLang ? "替换最后一个" : "Replace last");
-				dropdown.addOption("retain", isZhLang ? "保留（已打开则跳转）" : "Retain (navigate if already open)");
+				dropdown.addOption("replace-all", t.settings_homepage_openModeReplaceAll);
+				dropdown.addOption("replace-last", t.settings_homepage_openModeReplaceLast);
+				dropdown.addOption("retain", t.settings_homepage_openModeRetain);
 				dropdown.setValue(hp.openMode);
 				dropdown.onChange(async (value) => {
 					hp.openMode = value as any;
@@ -619,13 +594,13 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			});
 
 		new Setting(group)
-			.setName(isZhLang ? "视图模式" : "View mode")
-			.setDesc(isZhLang ? "打开主页时使用的视图模式" : "View mode when opening homepage")
+			.setName(t.settings_homepage_viewMode)
+			.setDesc(t.settings_homepage_viewModeDesc)
 			.addDropdown((dropdown) => {
-				dropdown.addOption("default", isZhLang ? "默认视图" : "Default");
-				dropdown.addOption("reading", isZhLang ? "阅读视图" : "Reading");
-				dropdown.addOption("source", isZhLang ? "编辑视图（源码模式）" : "Source");
-				dropdown.addOption("live-preview", isZhLang ? "编辑视图（实时预览）" : "Live Preview");
+				dropdown.addOption("default", t.settings_homepage_viewModeDefault);
+				dropdown.addOption("reading", t.settings_homepage_viewModeReading);
+				dropdown.addOption("source", t.settings_homepage_viewModeSource);
+				dropdown.addOption("live-preview", t.settings_homepage_viewModeLivePreview);
 				dropdown.setValue(hp.viewMode);
 				dropdown.onChange(async (value) => {
 					hp.viewMode = value as any;
@@ -634,8 +609,8 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			});
 
 		new Setting(group)
-			.setName(isZhLang ? "离开后恢复视图" : "Revert view on leave")
-			.setDesc(isZhLang ? "离开主页文件时恢复为默认视图模式" : "Revert to default view mode when leaving the homepage file")
+			.setName(t.settings_homepage_revertView)
+			.setDesc(t.settings_homepage_revertViewDesc)
 			.addToggle((toggle) =>
 				toggle
 					.setValue(hp.revertView)
@@ -646,8 +621,8 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(group)
-			.setName(isZhLang ? "空标签页时自动打开" : "Open when empty tab")
-			.setDesc(isZhLang ? "当工作区只有空标签页时自动打开主页" : "Auto-open homepage when workspace only has empty tabs")
+			.setName(t.settings_homepage_openWhenEmpty)
+			.setDesc(t.settings_homepage_openWhenEmptyDesc)
 			.addToggle((toggle) =>
 				toggle
 					.setValue(hp.openWhenEmpty)
@@ -658,8 +633,21 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(group)
-			.setName(isZhLang ? "自动创建文件" : "Auto-create file")
-			.setDesc(isZhLang ? "当主页文件不存在时自动创建" : "Auto-create the homepage file if it doesn't exist")
+			.setName(t.settings_homepage_pinInFileExplorer)
+			.setDesc(t.settings_homepage_pinInFileExplorerDesc)
+			.addToggle((toggle) =>
+				toggle
+					.setValue(hp.pinInFileExplorer)
+					.onChange(async (value) => {
+						hp.pinInFileExplorer = value;
+						await this.plugin.saveSettings();
+						this.plugin.homepage?.schedulePinInFileExplorer();
+					})
+			);
+
+		new Setting(group)
+			.setName(t.settings_homepage_autoCreate)
+			.setDesc(t.settings_homepage_autoCreateDesc)
 			.addToggle((toggle) =>
 				toggle
 					.setValue(hp.autoCreate)
@@ -671,13 +659,13 @@ export class ElementCardSettingTab extends PluginSettingTab {
 	}
 
 	private renderCalendarSection(containerEl: HTMLElement): void {
-		const isZhLang = isZh();
+		const t = Locals.get();
 		const group = this.createSettingsGroup(containerEl);
 
 		// 1. Enable toggle
 		new Setting(group)
-			.setName(isZhLang ? "启用日历" : "Enable Calendar")
-			.setDesc(isZhLang ? "在侧边栏显示日历视图" : "Show calendar view in sidebar")
+			.setName(t.settings_cal_enable)
+			.setDesc(t.settings_cal_enableDesc)
 			.addToggle((toggle) =>
 				toggle
 					.setValue(this.plugin.settings.calendar.enabled)
@@ -694,11 +682,11 @@ export class ElementCardSettingTab extends PluginSettingTab {
 
 		// 2. Calendar position
 		new Setting(group)
-			.setName(isZhLang ? "日历位置" : "Calendar position")
-			.setDesc(isZhLang ? "选择日历显示在哪个侧边栏" : "Choose which sidebar to display the calendar")
+			.setName(t.settings_cal_position)
+			.setDesc(t.settings_cal_positionDesc)
 			.addDropdown((dropdown) => {
-				dropdown.addOption("left", isZhLang ? "左侧边栏" : "Left sidebar");
-				dropdown.addOption("right", isZhLang ? "右侧边栏" : "Right sidebar");
+				dropdown.addOption("left", t.settings_cal_left);
+				dropdown.addOption("right", t.settings_cal_right);
 				dropdown.setValue(this.plugin.settings.calendar.position || "left");
 				dropdown.onChange(async (value) => {
 					this.plugin.settings.calendar.position = value as "left" | "right";
@@ -712,8 +700,8 @@ export class ElementCardSettingTab extends PluginSettingTab {
 
 		// 3. Confirm before create
 		new Setting(group)
-			.setName(isZhLang ? "创建前确认" : "Confirm before creating new note")
-			.setDesc(isZhLang ? "创建日记前是否需要确认" : "Show a confirmation modal before creating a new note")
+			.setName(t.settings_cal_confirmCreate)
+			.setDesc(t.settings_cal_confirmCreateDesc)
 			.addToggle((toggle) =>
 				toggle
 					.setValue(this.plugin.settings.calendar.shouldConfirmBeforeCreate)
@@ -725,8 +713,8 @@ export class ElementCardSettingTab extends PluginSettingTab {
 
 		// 4. Words per dot
 		new Setting(group)
-			.setName(isZhLang ? "每个圆点代表字数" : "Words per dot")
-			.setDesc(isZhLang ? "日历中每个圆点代表的字数" : "How many words should be represented by a single dot?")
+			.setName(t.settings_cal_wordsPerDot)
+			.setDesc(t.settings_cal_wordsPerDotDesc)
 			.addText((textfield) => {
 				textfield.inputEl.type = "number";
 				textfield.setPlaceholder("250");
@@ -753,10 +741,10 @@ export class ElementCardSettingTab extends PluginSettingTab {
 		};
 
 		new Setting(group)
-			.setName(isZhLang ? "星期起始日" : "Start week on")
-			.setDesc(isZhLang ? "选择一周的起始日" : "Choose what day of the week to start")
+			.setName(t.settings_cal_weekStart)
+			.setDesc(t.settings_cal_weekStartDesc)
 			.addDropdown((dropdown) => {
-				dropdown.addOption("locale", isZhLang ? `系统默认 (${localeWeekStart})` : `Locale default (${localeWeekStart})`);
+				dropdown.addOption("locale", `${t.settings_cal_localeDefault} (${localeWeekStart})`);
 				weekdays.forEach((key: string) => {
 					dropdown.addOption(key, weekdayLabels[key]);
 				});
@@ -769,8 +757,8 @@ export class ElementCardSettingTab extends PluginSettingTab {
 
 		// 6. Highlight today
 		new Setting(group)
-			.setName(isZhLang ? "今日高亮" : "Highlight today")
-			.setDesc(isZhLang ? "用背景颜色和加粗文本高亮今天的日期" : "Highlight today's date with a background color and bold text")
+			.setName(t.settings_cal_highlightToday)
+			.setDesc(t.settings_cal_highlightTodayDesc)
 			.addToggle((toggle) =>
 				toggle
 					.setValue(this.plugin.settings.calendar.highlightToday !== false)
