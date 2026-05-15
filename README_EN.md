@@ -343,31 +343,6 @@ npm run build
 
 ---
 
-## Changelog
-
-### 26.5.6
-
-- **New "Exclude Folders" config**: Heatmap data source now supports `excludeFolders` field to exclude specific folders (e.g., template folders) from Dataview queries; UI includes folder path autocomplete
-- **Rendering performance optimization**: Three DOM-level optimizations (CSS variable inheritance, event delegation, innerHTML batch rendering) reduce Git-style heatmap DOM operation time by ~94%
-- **Fix Settings UI layout regression**: 28 missed CSS class names in GraphForm.tsx after global rename caused settings panel to fall back to vertical stacking — all corrected
-
-### 26.5.5
-
-- **Visual refinements**: Removed heatmap outer border shadow; adjusted desktop/mobile week font sizes and cell dimensions; fixed week indicator / data cell row alignment; optimized mobile legend spacing and reading view bottom margin
-- **ElementCard 4-column layout fix**: Drag resizer lines now align with card right edges; 4th card right border visible; column width unit changed from `%` to `fr`
-
-### 26.5.4
-
-- **Action Links**: ElementCard link items now support an `action` field to trigger built-in plugin functions (`open-homepage`, `open-weread`, `open-memoria`), visually distinguished with a ⚡ icon
-- **Fix: BuilderModal action field loss**: Editing a card via Builder and re-rendering no longer breaks action links — the full action round-trip (parse → edit → save → render) is now preserved
-- **Improved weread command execution**: Supports direct command ID execution for more reliable command matching
-- **Calendar i18n**: Ribbon icon and command palette "Open Calendar" now support Chinese/English switching
-- **Homepage i18n**: Ribbon icon and command palette "Open Homepage" now support Chinese/English switching
-- **Updated link input description**: Builder link textarea now shows both URL and Action format examples
-- **Documentation**: Added complete Homepage documentation and Action Links usage guide to README
-
----
-
 ## License
 
 [MIT](LICENSE)

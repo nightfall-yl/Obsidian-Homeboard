@@ -367,38 +367,6 @@ npm run build
 
 ---
 
-## 更新日志
-
-### 26.5.7
-
-- **Settings UI 配色层次修复**：修复移动端亮色模式下设置面板卡片与页面底色融为一体的问题；根容器透出 Obsidian 原生底色，避免覆盖
-- **跨平台配色规范**：发现并修正桌面端与移动端 CSS 变量用法相反的问题（桌面端卡片用 `--background-secondary`，移动端卡片用 `--background-primary`），统一遵循 Obsidian 官方设计语言
-- **导航胶囊激活态修复**：移动端导航按钮激活态改用中性灰 `--background-modifier-hover`，移除错误的蓝色强调色
-- **版本同步自动化**：esbuild 构建流程新增 `syncManifestVersion()`，`npm run build` 时自动从 `package.json` 同步版本号到 `manifest.json`
-
-### 26.5.6
-
-- **新增「排除文件夹」配置**：热力图数据源支持 `excludeFolders` 字段，可排除指定文件夹中的笔记（如模板文件夹），避免无效数据干扰统计；UI 支持自动补全文件夹路径
-- **渲染性能优化**：DOM 层面三项优化（CSS 变量继承、事件委托、innerHTML 批量生成），Git 风格热力图 DOM 操作时间降低约 94%
-- **修复 Settings UI 布局回归**：全局重命名后 GraphForm.tsx 的 28 处 CSS class 名遗漏导致设置面板布局回退为垂直堆叠，已全部修正
-
-### 26.5.5
-
-- **视觉优化**：移除热力图外边框阴影；调整桌面端/移动端星期字体大小和 cell 尺寸；修复星期指示器与数据格子的行对齐问题；优化移动端图例间距及预览模式底部间距
-- **ElementCard 4 列布局修复**：拖拽调整线与卡片右边缘对齐；第 4 张卡片右边界正确显示；列宽单位从 `%` 改为 `fr`
-
-### 26.5.4
-
-- **新增 Action 链接**：ElementCard 链接项支持 `action` 字段，可触发插件内置功能（`open-homepage`、`open-weread`、`open-memoria`），以 ⚡ 图标标识
-- **修复 BuilderModal 丢失 action 字段**：通过 Builder 编辑卡片后重新渲染，action 链接不再失效
-- **优化 weread 命令执行**：支持按 command ID 直接执行，提高命令匹配可靠性
-- **日历双语支持**：Ribbon 栏和命令面板的"打开日历"支持中英文切换
-- **主页双语支持**：Ribbon 栏和命令面板的"打开主页"支持中英文切换
-- **链接输入框描述更新**：Builder 中链接文本域展示 URL 和 Action 两种格式说明
-- **文档完善**：README 新增主页（Homepage）功能完整文档、Action 链接使用指南
-
----
-
 ## 许可证
 
 [MIT](LICENSE)
