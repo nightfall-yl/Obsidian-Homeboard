@@ -364,8 +364,8 @@ display:flex;align-items:center;justify-content:space-between;gap:12px;min-width
 .elementCard-settings-root {
 	--elementCard-settings-collapsible-padding: 20px 16px;
 	--elementCard-settings-collapsible-radius: 20px;
-	--elementCard-settings-collapsible-border: 1px solid color-mix(in srgb, var(--background-modifier-border) 58%, transparent 42%);
-	--elementCard-settings-collapsible-light-bg: color-mix(in srgb, var(--background-secondary) 94%, white 6%);
+	--elementCard-settings-collapsible-border: 1px solid var(--background-modifier-border);
+	--elementCard-settings-collapsible-light-bg: var(--background-secondary);
 	--elementCard-settings-collapsible-dark-bg: var(--background-secondary);
 	--elementCard-settings-group-bg: var(--background-secondary);
 	--elementCard-settings-group-margin: 18px 0 28px;
@@ -408,6 +408,7 @@ display:flex;align-items:center;justify-content:space-between;gap:12px;min-width
 	margin: var(--elementCard-settings-group-margin);
 	padding: 0 var(--elementCard-settings-group-padding-x);
 	border-radius: var(--elementCard-settings-group-radius);
+	border: var(--elementCard-settings-collapsible-border);
 	background: var(--elementCard-settings-group-bg);
 	overflow: hidden;
 }
@@ -488,7 +489,7 @@ display:flex;align-items:center;justify-content:space-between;gap:12px;min-width
 .elementCard-settings-nav-btn.is-active {
 	padding: 12px 16px;
 	border-radius: 8px;
-	background: var(--background-secondary);
+	background: var(--background-modifier-hover);
 	color: var(--text-normal);
 	box-shadow: none;
 }
@@ -804,6 +805,8 @@ display:flex;align-items:center;justify-content:space-between;gap:12px;min-width
 @media (max-width: 720px) {
 	.elementCard-settings-root {
 		--elementCard-settings-group-bg: var(--background-primary);
+		--elementCard-settings-collapsible-light-bg: var(--background-primary);
+		--elementCard-settings-collapsible-dark-bg: var(--background-primary);
 		--elementCard-settings-group-margin: 12px 0 22px;
 		--elementCard-settings-group-padding-x: 14px;
 		--elementCard-settings-group-radius: 28px;
@@ -811,8 +814,21 @@ display:flex;align-items:center;justify-content:space-between;gap:12px;min-width
 		--elementCard-settings-group-title-margin: 22px 0 10px;
 		--elementCard-settings-group-title-size: 1.05rem;
 	}
+	.theme-light .elementCard-settings-group,
+	.theme-dark .elementCard-settings-group {
+		--elementCard-settings-group-bg: var(--background-primary) !important;
+		background: var(--background-primary) !important;
+	}
 	.elementCard-settings-nav {
 		gap: 10px 12px;
+	}
+	.theme-light .elementCard-settings-collapsible-summary,
+	.theme-light .elementCard-settings-collapsible-summary:focus,
+	.theme-light .elementCard-settings-collapsible-summary:focus-visible,
+	.theme-light .elementCard-settings-collapsible-summary:hover,
+	.theme-light .elementCard-settings-collapsible-summary.is-open {
+		background: var(--background-primary) !important;
+		background-color: var(--background-primary) !important;
 	}
 	.elementCard-settings-nav-btn {
 		padding: 10px 12px;

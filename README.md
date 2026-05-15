@@ -369,6 +369,13 @@ npm run build
 
 ## 更新日志
 
+### 26.5.7
+
+- **Settings UI 配色层次修复**：修复移动端亮色模式下设置面板卡片与页面底色融为一体的问题；根容器透出 Obsidian 原生底色，避免覆盖
+- **跨平台配色规范**：发现并修正桌面端与移动端 CSS 变量用法相反的问题（桌面端卡片用 `--background-secondary`，移动端卡片用 `--background-primary`），统一遵循 Obsidian 官方设计语言
+- **导航胶囊激活态修复**：移动端导航按钮激活态改用中性灰 `--background-modifier-hover`，移除错误的蓝色强调色
+- **版本同步自动化**：esbuild 构建流程新增 `syncManifestVersion()`，`npm run build` 时自动从 `package.json` 同步版本号到 `manifest.json`
+
 ### 26.5.6
 
 - **新增「排除文件夹」配置**：热力图数据源支持 `excludeFolders` 字段，可排除指定文件夹中的笔记（如模板文件夹），避免无效数据干扰统计；UI 支持自动补全文件夹路径

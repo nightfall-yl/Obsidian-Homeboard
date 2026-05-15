@@ -13,6 +13,14 @@ if you want to view the source, please visit the plugin source
 
 const prod = process.argv[2] === "production";
 
+async function syncManifestVersion() {
+	const packageJson = JSON.parse(await readFile("package.json", "utf8"));
+	const manifestJson = JSON.parse(await readFile("manifest.json", "utf8"));
+	manifestJson.version = packageJson.version;
+	await writeFile("manifest.json", JSON.stringify(manifestJson, null, 2));
+	console.log(`Synced manifest.json version → ${packageJson.version}`);
+}
+
 async function updateVersionsJson() {
 	// 读取package.json获取当前版本号
 	const packageJson = JSON.parse(await readFile("package.json", "utf8"));
@@ -127,6 +135,7 @@ const context = await esbuild.context({
 
 if (prod) {
 	await context.rebuild();
+	await syncManifestVersion();
 	await updateVersionsJson();
 	await copyPluginFilesToDist();
 	process.exit(0);
