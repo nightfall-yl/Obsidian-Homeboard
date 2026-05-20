@@ -19,7 +19,7 @@ Elements 是一款功能强大的 Obsidian 插件，为用户提供了多种实�
 
 ### 手动安装
 
-1. 下载最新 [release](https://github.com/nightfall_yl/obsidian-elements/releases)
+1. 下载最新 [release](https://github.com/nightfall/obsidian-elements/releases)
 2. 将以下文件放入 Obsidian 插件目录：
 
 ```
