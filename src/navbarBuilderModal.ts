@@ -1,4 +1,4 @@
-import { App, FuzzySuggestModal, Modal, Notice, Setting, SettingGroup, setIcon } from "obsidian";
+import { App, FuzzySuggestModal, Modal, Notice, Platform, Setting, SettingGroup, setIcon } from "obsidian";
 import { NavBarConfig, NavBarAlign, NavBarItem } from "./navbarTypes";
 import { stringifyNavBarConfig } from "./navbarYaml";
 import { Locals } from "./i18/messages";
@@ -115,6 +115,7 @@ export class NavBarBuilderModal extends Modal {
 		const local = Locals.get();
 		contentEl.empty();
 		contentEl.addClass("navbar-builder-modal");
+		contentEl.toggleClass("is-mobile", Platform.isMobile);
 
 		new SettingGroup(contentEl)
 			.setHeading(local.navbar_align_desc)

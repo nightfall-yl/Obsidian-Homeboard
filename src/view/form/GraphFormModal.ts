@@ -1,4 +1,4 @@
-import { App, Modal, MarkdownView, parseYaml, stringifyYaml, Notice, Setting, SettingGroup } from "obsidian";
+import { App, Modal, Platform, MarkdownView, parseYaml, stringifyYaml, Notice, Setting, SettingGroup } from "obsidian";
 import { YamlGraphConfig, DateRangeType } from "src/processor/types";
 import { YamlConfigReconciler } from "src/processor/yamlConfigReconciler";
 import { Locals, isZh } from "src/i18/messages";
@@ -55,6 +55,7 @@ export class HeatmapCreateModal extends Modal {
 		const local = Locals.get();
 		contentEl.empty();
 		contentEl.addClass("heatmap-setting-modal");
+		contentEl.toggleClass("is-mobile", Platform.isMobile);
 
 		const navEl = contentEl.createDiv({ cls: "heatmap-setting-nav" });
 		const tabs = [
