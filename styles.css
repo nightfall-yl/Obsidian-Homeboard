@@ -1261,6 +1261,35 @@ background:var(--interactive-accent);color:var(--text-on-accent)
 	}
 }
 
+
+@media (max-width: 768px) {
+	.heatmap-setting-modal .setting-group,
+	.navbar-builder-modal .setting-group {
+		gap: var(--size-4-2, 8px);
+	}
+
+	.heatmap-setting-modal .setting-group + .setting-group,
+	.navbar-builder-modal .setting-group + .setting-group {
+		margin-top: var(--size-4-6, 24px);
+	}
+
+	.heatmap-setting-modal .setting-group .setting-items,
+	.navbar-builder-modal .setting-group .setting-items {
+		background-color: var(--background-primary);
+		border: 1px solid var(--background-modifier-border);
+		border-radius: var(--radius-l, 12px);
+		box-shadow: var(--shadow-s);
+		margin-bottom: 0;
+		padding: var(--size-4-5, 20px);
+	}
+
+	.theme-dark .heatmap-setting-modal .setting-group .setting-items,
+	.theme-dark .navbar-builder-modal .setting-group .setting-items {
+		background-color: var(--background-secondary);
+		border-color: var(--background-modifier-border);
+	}
+}
+
 .elements-calendar-outer {
 	width: 100%;
 	overflow: hidden;

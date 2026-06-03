@@ -1,4 +1,4 @@
-import { App, FuzzySuggestModal, Modal, Notice, Platform, Setting, SettingGroup, setIcon } from "obsidian";
+import { App, FuzzySuggestModal, Modal, Notice, Setting, SettingGroup, setIcon } from "obsidian";
 import { NavBarConfig, NavBarAlign, NavBarItem } from "./navbarTypes";
 import { stringifyNavBarConfig } from "./navbarYaml";
 import { Locals } from "./i18/messages";
@@ -247,35 +247,6 @@ export class NavBarBuilderModal extends Modal {
 			this.close();
 		});
 
-		if (Platform.isMobile || window.innerWidth <= 768) {
-			this.injectMobileSettingGroupStyles(contentEl);
-		}
-	}
-
-	private injectMobileSettingGroupStyles(container: HTMLElement) {
-		const styleEl = container.createEl("style", {
-			text: `
-/* Mobile SettingGroup - 按 ui-patterns.md §10.2 + §10.9 G 规范 */
-.theme-light .navbar-builder-modal .setting-group .setting-items {
-	background-color: #ffffff !important;
-}
-.theme-dark .navbar-builder-modal .setting-group .setting-items {
-	background-color: var(--background-primary-alt) !important;
-}
-.navbar-builder-modal .setting-group .setting-items {
-	padding: var(--size-4-5, 20px) !important;
-	border-radius: var(--radius-l, 12px) !important;
-	margin-bottom: 0 !important;
-}
-.navbar-builder-modal .setting-group {
-	gap: var(--size-4-2, 8px) !important;
-}
-.navbar-builder-modal .setting-group + .setting-group {
-	margin-top: var(--size-4-6, 24px) !important;
-}
-`,
-		});
-		styleEl.setAttribute("data-mobile-setting-group", "");
 	}
 
 	private renderItemEditor(group: SettingGroup, item: NavBarItem, index: number) {

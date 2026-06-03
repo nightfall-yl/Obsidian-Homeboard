@@ -1,4 +1,4 @@
-import { App, Modal, Platform, MarkdownView, parseYaml, stringifyYaml, Notice, Setting, SettingGroup } from "obsidian";
+import { App, Modal, MarkdownView, parseYaml, stringifyYaml, Notice, Setting, SettingGroup } from "obsidian";
 import { YamlGraphConfig, DateRangeType } from "src/processor/types";
 import { YamlConfigReconciler } from "src/processor/yamlConfigReconciler";
 import { Locals, isZh } from "src/i18/messages";
@@ -95,35 +95,6 @@ export class HeatmapCreateModal extends Modal {
 			this.doSave();
 		});
 
-		if (Platform.isMobile || window.innerWidth <= 768) {
-			this.injectMobileSettingGroupStyles(contentEl);
-		}
-	}
-
-	private injectMobileSettingGroupStyles(container: HTMLElement) {
-		const styleEl = container.createEl("style", {
-			text: `
-/* Mobile SettingGroup - 按 ui-patterns.md §10.2 + §10.9 G 规范 */
-.theme-light .heatmap-setting-modal .setting-group .setting-items {
-	background-color: #ffffff !important;
-}
-.theme-dark .heatmap-setting-modal .setting-group .setting-items {
-	background-color: var(--background-primary-alt) !important;
-}
-.heatmap-setting-modal .setting-group .setting-items {
-	padding: var(--size-4-5, 20px) !important;
-	border-radius: var(--radius-l, 12px) !important;
-	margin-bottom: 0 !important;
-}
-.heatmap-setting-modal .setting-group {
-	gap: var(--size-4-2, 8px) !important;
-}
-.heatmap-setting-modal .setting-group + .setting-group {
-	margin-top: var(--size-4-6, 24px) !important;
-}
-`,
-		});
-		styleEl.setAttribute("data-mobile-setting-group", "");
 	}
 
 	private doSave() {
