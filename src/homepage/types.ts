@@ -26,7 +26,6 @@ export interface HomepageSettings {
 	revertView: boolean;
 	openWhenEmpty: boolean;
 	autoCreate: boolean;
-	pinInFileExplorer: boolean;
 }
 
 export const DEFAULT_HOMEPAGE_SETTINGS: HomepageSettings = {
@@ -39,5 +38,4 @@ export const DEFAULT_HOMEPAGE_SETTINGS: HomepageSettings = {
 	revertView: true,
 	openWhenEmpty: false,
 	autoCreate: false,
-	pinInFileExplorer: false,
 };

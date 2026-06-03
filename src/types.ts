@@ -1,4 +1,100 @@
 import { DEFAULT_RULES } from "./constants";
+import { HomepageKind, OpenMode, ViewMode } from "./homepage/types";
+
+// ===== Force View Mode Settings =====
+export interface ForceViewModeSettings {
+	enabled: boolean;
+	debounceTimeout: number;
+	ignoreOpenFiles: boolean;
+	ignoreForceViewAll: boolean;
+	folders: { folder: string; viewMode: string }[];
+	files: { filePattern: string; viewMode: string }[];
+}
+
+export const DEFAULT_FORCE_VIEW_MODE_SETTINGS: ForceViewModeSettings = {
+	enabled: true,
+	debounceTimeout: 300,
+	ignoreOpenFiles: false,
+	ignoreForceViewAll: false,
+	folders: [{ folder: "", viewMode: "" }],
+	files: [{ filePattern: "", viewMode: "" }],
+};
+
+// ===== Remember Cursor Position Settings =====
+export interface CursorPositionSettings {
+	enabled: boolean;
+	dbFileName: string;
+	delayAfterFileOpening: number;
+	saveTimer: number;
+}
+
+export const SAFE_DB_FLUSH_INTERVAL = 5000;
+
+export const DEFAULT_CURSOR_POSITION_SETTINGS: CursorPositionSettings = {
+	enabled: true,
+	dbFileName: ".obsidian/plugins/elements/cursor.json",
+	delayAfterFileOpening: 100,
+	saveTimer: SAFE_DB_FLUSH_INTERVAL,
+};
+
+// ===== Homepage Settings =====
+export interface HomepagePluginSettings {
+	enabled: boolean;
+	kind: HomepageKind;
+	value: string;
+	openOnStartup: boolean;
+	openMode: OpenMode;
+	viewMode: ViewMode;
+	revertView: boolean;
+	openWhenEmpty: boolean;
+	autoCreate: boolean;
+}
+
+export const DEFAULT_HOMEPAGE_SETTINGS: HomepagePluginSettings = {
+	enabled: true,
+	kind: HomepageKind.File,
+	value: "Home",
+	openOnStartup: true,
+	openMode: OpenMode.ReplaceAll,
+	viewMode: ViewMode.Default,
+	revertView: true,
+	openWhenEmpty: false,
+	autoCreate: false,
+};
+
+// ===== Calendar Plugin Settings =====
+export interface CalendarPluginSettings {
+	enabled: boolean;
+	wordsPerDot: number;
+	weekStart: string;
+	shouldConfirmBeforeCreate: boolean;
+	position: "left" | "right";
+	highlightToday: boolean;
+}
+
+export const DEFAULT_CALENDAR_SETTINGS: CalendarPluginSettings = {
+	enabled: true,
+	wordsPerDot: 250,
+	weekStart: "locale",
+	shouldConfirmBeforeCreate: true,
+	position: "left",
+	highlightToday: true,
+};
+
+// ===== Elements Plugin Settings =====
+export interface ElementsSettings {
+	forceViewMode: ForceViewModeSettings;
+	cursorPosition: CursorPositionSettings;
+	homepage: HomepagePluginSettings;
+	calendar: CalendarPluginSettings;
+}
+
+export const DEFAULT_ELEMENTS_SETTINGS: ElementsSettings = {
+	forceViewMode: DEFAULT_FORCE_VIEW_MODE_SETTINGS,
+	cursorPosition: DEFAULT_CURSOR_POSITION_SETTINGS,
+	homepage: DEFAULT_HOMEPAGE_SETTINGS,
+	calendar: DEFAULT_CALENDAR_SETTINGS,
+};
 
 export class HeatmapConfig {
 	/**

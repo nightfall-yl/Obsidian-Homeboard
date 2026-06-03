@@ -7,7 +7,7 @@ import {
 	TFolder,
 	debounce,
 } from "obsidian";
-import { ForceViewModeSettings } from "./elementCardTypes";
+import { ForceViewModeSettings } from "./types";
 
 interface ViewState {
 	source?: boolean;

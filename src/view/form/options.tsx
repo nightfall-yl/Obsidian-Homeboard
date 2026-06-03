@@ -1,7 +1,6 @@
 import { Locals, isZh } from "src/i18/messages";
 import { Icons } from "../icon/Icons";
 import { ChooseOption } from "../choose/Choose";
-import { SelectOption } from "./GraphForm";
 import {
 	CountFieldType,
 	DataSourceFilterType,
@@ -10,6 +9,18 @@ import {
 	TaskStatus,
 } from "src/query/types";
 import { DateRangeType } from "src/processor/types";
+
+export class SelectOption<T> {
+	label: string;
+	value: T;
+	selected?: boolean;
+
+	constructor(label: string, value: T, selected?: boolean) {
+		this.label = label;
+		this.value = value;
+		this.selected = selected;
+	}
+}
 
 export const titleAlignChooseOptions: ChooseOption[] = [
 	{

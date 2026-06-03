@@ -36,7 +36,13 @@ export class Renders {
 	}
 
 	static renderErrorTips(container: HTMLElement, summary: string, recommends?: string[]): void {
+		// ✅ 保留Obsidian原生编辑按钮
+		const nativeEditButton = container.querySelector<HTMLElement>(".edit-block-button");
 		container.empty();
+		if (nativeEditButton) {
+			container.appendChild(nativeEditButton);
+		}
+
 		const errDiv = createDiv({
 			cls: "heatmap-render-error-container",
 			parent: container

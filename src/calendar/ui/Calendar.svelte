@@ -90,8 +90,13 @@
 	class="elements-calendar-outer"
 	class:highlight-today={highlightToday}
 	bind:this={outerEl}
+	style="overflow: visible;"
 >
-	<div class="elements-calendar-inner" style="width: {REFERENCE_WIDTH}px; zoom: {zoomLevel}">
+	<div class="elements-calendar-inner" style="
+		width: {REFERENCE_WIDTH}px;
+		transform: scale({zoomLevel});
+		transform-origin: top left;
+	">
 		<Calendar
 			{sources}
 			{today}
@@ -108,11 +113,19 @@
 <style>
 	.elements-calendar-outer {
 		width: 100%;
-		overflow: hidden;
+		min-height: 300px;
 	}
 
 	.elements-calendar-inner {
 		transform-origin: top left;
+	}
+
+	/* 禁用text-shadow防止重影 */
+	:global(.elements-calendar-outer .calendar .day) {
+		text-shadow: none !important;
+		-webkit-text-stroke: 0 !important;
+		paint-order: normal !important;
+		rendering: optimizeSpeed !important;
 	}
 
 	:global(.elements-calendar-outer:not(.highlight-today) .calendar .day.today) {

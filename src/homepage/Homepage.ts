@@ -5,7 +5,6 @@ export class Homepage {
 	app: App;
 	settings: HomepageSettings;
 	lastView: MarkdownView | null = null;
-	private pinTimers: number[] = [];
 
 	constructor(app: App) {
 		this.app = app;
@@ -14,64 +13,6 @@ export class Homepage {
 
 	updateSettings(settings: HomepageSettings): void {
 		this.settings = settings;
-	}
-
-	schedulePinInFileExplorer(): void {
-		this.clearPinTimers();
-
-		if (!this.settings.enabled || !this.settings.pinInFileExplorer) {
-			return;
-		}
-
-		for (const delay of [0, 150, 500, 1000]) {
-			const timer = window.setTimeout(() => {
-				void this.pinInFileExplorer();
-			}, delay);
-			this.pinTimers.push(timer);
-		}
-	}
-
-	clearPinTimers(): void {
-		for (const timer of this.pinTimers) {
-			window.clearTimeout(timer);
-		}
-		this.pinTimers = [];
-	}
-
-	async pinInFileExplorer(): Promise<void> {
-		try {
-			if (!this.settings.enabled || !this.settings.pinInFileExplorer) {
-				return;
-			}
-
-			const file = await this.getHomepageFile();
-			if (!file) {
-				return;
-			}
-
-			const titleEl = this.findFileExplorerTitle(file.path);
-			if (!titleEl) {
-				return;
-			}
-
-			const itemEl = this.getFileExplorerItem(titleEl);
-			const parentEl = itemEl.parentElement;
-			if (!parentEl) {
-				return;
-			}
-
-			itemEl.addClass("elements-homepage-pinned-file");
-
-			const firstSibling = Array.from(parentEl.children).find((child) => {
-				return child instanceof HTMLElement && child !== itemEl && this.isFileExplorerItem(child);
-			});
-
-			if (firstSibling && itemEl.previousElementSibling !== null) {
-				parentEl.insertBefore(itemEl, firstSibling);
-			}
-		} catch {
-			return;
-		}
 	}
 
 	private async getHomepageFile(): Promise<TFile | null> {

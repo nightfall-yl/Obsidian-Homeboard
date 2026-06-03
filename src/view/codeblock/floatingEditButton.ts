@@ -17,8 +17,11 @@ export function mountFloatingEditButton(options: FloatingEditButtonOptions) {
 		codeblockDom.querySelectorAll(`.${primaryClassName}`).forEach((existing) => existing.remove());
 	}
 
+	codeblockDom.style.position = "relative";
+
 	const editButton = document.createElement("div");
 	editButton.className = className;
+	editButton.setAttribute("aria-label", "Edit");
 	const iconEl = getIcon(iconName);
 	if (iconEl) {
 		editButton.appendChild(iconEl);
@@ -37,39 +40,46 @@ export function mountFloatingEditButton(options: FloatingEditButtonOptions) {
 	const showButton = () => {
 		clearHideTimer();
 		const markdownView = app.workspace.getActiveViewOfType(MarkdownView);
-		if (markdownView && markdownView.getMode() !== "preview" && (!canShow || canShow())) {
-			justifyTop(codeblockDom, editButton);
+		if (markdownView && (!canShow || canShow())) {
+			justifyBottomRight(codeblockDom, editButton);
 			editButton.style.opacity = "1";
+			editButton.style.pointerEvents = "auto";
 		}
 	};
 
 	const hideButton = () => {
 		clearHideTimer();
-		hideTimer = window.setTimeout(() => {
-			editButton.style.opacity = "0";
-		}, 120);
+		editButton.style.opacity = "0";
+		editButton.style.pointerEvents = "none";  /* ✅ 立即禁用指针事件，不延迟 */
 	};
 
 	codeblockDom.addEventListener("mouseenter", showButton);
 	codeblockDom.addEventListener("mouseleave", hideButton);
 	editButton.addEventListener("mouseenter", showButton);
 	editButton.addEventListener("mouseleave", hideButton);
-	nativeEditButton?.addEventListener("mouseenter", showButton);
-	nativeEditButton?.addEventListener("mouseleave", hideButton);
 
-	editButton.onclick = onClick;
+	if (nativeEditButton) {
+		nativeEditButton.addEventListener("mouseenter", showButton);
+		nativeEditButton.addEventListener("mouseleave", hideButton);
+		nativeEditButton.style.position = "relative";  /* ✅ 确保原生按钮在更高层级 */
+		nativeEditButton.style.zIndex = "20";
+	}
+
+	editButton.addEventListener("click", (e) => {
+		e.stopPropagation();
+		e.preventDefault();
+		onClick();
+	});
+
+	editButton.style.zIndex = "5";  /* ✅ 确保自定义按钮在原生按钮下方 */
 	codeblockDom.appendChild(editButton);
+
 	return editButton;
 }
 
-function justifyTop(codeblockDom: HTMLElement, editButton: HTMLDivElement) {
-	const nativeEditButton = findNativeEditButton(codeblockDom);
-	let top: string | undefined;
-	if (nativeEditButton) {
-		top = getComputedStyle(nativeEditButton).top;
-	}
-
-	editButton.style.top = top || "0";
+function justifyBottomRight(codeblockDom: HTMLElement, editButton: HTMLDivElement) {
+	editButton.style.bottom = "4px";
+	editButton.style.right = "4px";
 }
 
 function findNativeEditButton(codeblockDom: HTMLElement): HTMLElement | null {

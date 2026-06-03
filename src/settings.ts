@@ -1,40 +1,13 @@
 import { App, PluginSettingTab, Setting, setIcon, TFolder, TAbstractFile, TFile, AbstractInputSuggest } from "obsidian";
-import ElementCardComponentPlugin from "./main";
+import ElementsPlugin from "./main";
 import {
-	DEFAULT_ELEMENTCARD_SETTINGS,
-	ElementCardComponentSettings,
+	ElementsSettings,
 	ForceViewModeSettings,
 	CursorPositionSettings,
 	SAFE_DB_FLUSH_INTERVAL,
 	CalendarPluginSettings,
-} from "./elementCardTypes";
-import { convertToRGBA } from "./colorUtils";
+} from "./types";
 import { VIEW_TYPE_CALENDAR } from "./calendar/constants";
-
-export function applyElementCardStyles(settings: ElementCardComponentSettings) {
-	const rootStyle = document.documentElement.style;
-	rootStyle.setProperty("--elementCard-card-padding", `${settings.cardPadding}px`);
-	rootStyle.setProperty("--elementCard-card-radius", `${settings.cardBorderRadius}px`);
-	rootStyle.setProperty(
-		"--elementCard-card-border-color",
-		convertToRGBA(settings.cardBorderColor, settings.cardBorderTransparency)
-	);
-	rootStyle.setProperty("--elementCard-resizer-width", `${settings.resizerWidth}px`);
-	rootStyle.setProperty(
-		"--elementCard-resizer-color",
-		settings.showResizers
-			? convertToRGBA(settings.resizerColor, settings.resizerTransparency)
-			: "transparent"
-	);
-}
-
-// ===== Navigation Section Type =====
-type SettingsSection = {
-	id: string;
-	label: string;
-	labelZh: string;
-	icon: string;
-};
 
 import { Locals } from "src/i18/messages";
 
@@ -103,11 +76,11 @@ export class FileSuggestDropdown extends AbstractInputSuggest<TFile> {
 	}
 }
 
-export class ElementCardSettingTab extends PluginSettingTab {
-	plugin: ElementCardComponentPlugin;
+export class ElementsSettingTab extends PluginSettingTab {
+	plugin: ElementsPlugin;
 	private activeSectionId: string = "homepage";
 
-	constructor(app: App, plugin: ElementCardComponentPlugin) {
+	constructor(app: App, plugin: ElementsPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
@@ -119,19 +92,19 @@ export class ElementCardSettingTab extends PluginSettingTab {
 
 		const { containerEl } = this;
 		containerEl.empty();
-		containerEl.addClass("elementCard-settings-root");
+		containerEl.addClass("element-settings-root");
 
 		// Define navigation sections
 			const sections: SettingsSection[] = [
-			{ id: "homepage", label: Locals.get().settings_nav_homepage, labelZh: "", icon: "home" },
-			{ id: "calendar", label: Locals.get().settings_nav_calendar, labelZh: "", icon: "calendar-days" },
-			{ id: "forceView", label: Locals.get().settings_nav_forceView, labelZh: "", icon: "eye" },
-			{ id: "cursorPosition", label: Locals.get().settings_nav_cursorPosition, labelZh: "", icon: "mouse-pointer" },
+			{ id: "homepage", label: Locals.get().settings_nav_homepage, icon: "home" },
+			{ id: "calendar", label: Locals.get().settings_nav_calendar, icon: "calendar-days" },
+			{ id: "forceView", label: Locals.get().settings_nav_forceView, icon: "eye" },
+			{ id: "cursorPosition", label: Locals.get().settings_nav_cursorPosition, icon: "mouse-pointer" },
 		];
 
 		// Create layout: nav + content
-		const navEl = containerEl.createDiv({ cls: "elementCard-settings-nav" });
-		const contentEl = containerEl.createDiv({ cls: "elementCard-settings-content" });
+		const navEl = containerEl.createDiv({ cls: "element-settings-nav" });
+		const contentEl = containerEl.createDiv({ cls: "element-settings-content" });
 
 		const sectionEls = new Map<string, HTMLElement>();
 		const navButtons = new Map<string, HTMLButtonElement>();
@@ -150,17 +123,17 @@ export class ElementCardSettingTab extends PluginSettingTab {
 		sections.forEach((section, index) => {
 			// Navigation button
 			const button = navEl.createEl("button", {
-				cls: "elementCard-settings-nav-btn",
+				cls: "setting-item-heading element-settings-nav-btn",
 				attr: { type: "button" },
 			});
-			const iconEl = button.createSpan({ cls: "elementCard-settings-nav-icon" });
+			const iconEl = button.createSpan({ cls: "element-settings-nav-icon" });
 			setIcon(iconEl, section.icon);
 			button.createSpan({ text: section.label });
 			button.addEventListener("click", () => setActiveSection(section.id));
 			navButtons.set(section.id, button);
 
 			// Content section
-			const sectionEl = contentEl.createDiv({ cls: "elementCard-settings-section" });
+			const sectionEl = contentEl.createDiv({ cls: "element-settings-section" });
 			sectionEls.set(section.id, sectionEl);
 
 			// Restore previously active section (or default to first)
@@ -188,12 +161,12 @@ export class ElementCardSettingTab extends PluginSettingTab {
 
 	private createSettingsGroup(containerEl: HTMLElement, title?: string): HTMLElement {
 		if (title) {
-			containerEl.createEl("h2", {
-				cls: "elementCard-settings-group-title",
+			containerEl.createEl("div", {
+				cls: "setting-item-heading element-settings-group-title",
 				text: title,
 			});
 		}
-		return containerEl.createDiv({ cls: "elementCard-settings-group" });
+		return containerEl.createDiv({ cls: "element-settings-group" });
 	}
 
 	private renderForceViewModeSection(containerEl: HTMLElement): void {
@@ -521,7 +494,6 @@ export class ElementCardSettingTab extends PluginSettingTab {
 				dropdown.onChange(async (value) => {
 					hp.kind = value as any;
 					await this.plugin.saveSettings();
-					this.plugin.homepage?.schedulePinInFileExplorer();
 					this.display();
 				});
 			});
@@ -536,7 +508,6 @@ export class ElementCardSettingTab extends PluginSettingTab {
 					text.onChange(async (value) => {
 						hp.value = value;
 						await this.plugin.saveSettings();
-						this.plugin.homepage?.schedulePinInFileExplorer();
 					});
 				});
 		} else {
@@ -584,8 +555,8 @@ export class ElementCardSettingTab extends PluginSettingTab {
 			)
 			.addDropdown((dropdown) => {
 				dropdown.addOption("replace-all", t.settings_homepage_openModeReplaceAll);
-				dropdown.addOption("replace-last", t.settings_homepage_openModeReplaceLast);
 				dropdown.addOption("retain", t.settings_homepage_openModeRetain);
+				dropdown.addOption("replace-last", t.settings_homepage_openModeReplaceLast);
 				dropdown.setValue(hp.openMode);
 				dropdown.onChange(async (value) => {
 					hp.openMode = value as any;
@@ -629,19 +600,6 @@ export class ElementCardSettingTab extends PluginSettingTab {
 					.onChange(async (value) => {
 						hp.openWhenEmpty = value;
 						await this.plugin.saveSettings();
-					})
-			);
-
-		new Setting(group)
-			.setName(t.settings_homepage_pinInFileExplorer)
-			.setDesc(t.settings_homepage_pinInFileExplorerDesc)
-			.addToggle((toggle) =>
-				toggle
-					.setValue(hp.pinInFileExplorer)
-					.onChange(async (value) => {
-						hp.pinInFileExplorer = value;
-						await this.plugin.saveSettings();
-						this.plugin.homepage?.schedulePinInFileExplorer();
 					})
 			);
 
@@ -770,3 +728,10 @@ export class ElementCardSettingTab extends PluginSettingTab {
 
 	}
 }
+
+// ===== Navigation Section Type =====
+type SettingsSection = {
+	id: string;
+	label: string;
+	icon: string;
+};

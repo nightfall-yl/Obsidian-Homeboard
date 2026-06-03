@@ -11,7 +11,6 @@ export interface Local {
 	 * context menu
 	 */
 	context_menu_create: string;
-	context_menu_insert_elementCard: string;
 
 	/**
 	 * form
@@ -117,69 +116,10 @@ export interface Local {
 	form_button_preview: string;
 	form_button_save: string;
 
-
-	elementCard_builder_heading: string;
-	elementCard_tab_basic: string;
-	elementCard_tab_cards: string;
-	elementCard_block_id: string;
-	elementCard_block_id_desc: string;
-	elementCard_title_font_size_placeholder: string;
-	elementCard_columns: string;
-	elementCard_gap: string;
-	elementCard_gap_desc: string;
-	elementCard_cards: string;
-	elementCard_add_card: string;
-	elementCard_add_card_desc: string;
-	elementCard_add_button: string;
-	elementCard_type: string;
-	elementCard_type_desc: string;
-	elementCard_palette: string;
-	elementCard_palette_desc: string;
-	elementCard_palette_custom: string;
-	elementCard_palette_sage: string;
-	elementCard_palette_mist: string;
-	elementCard_palette_amber: string;
-	elementCard_palette_plum: string;
-	elementCard_palette_slate: string;
-	elementCard_palette_transparent: string;
-	elementCard_background: string;
-	elementCard_background_desc: string;
-	elementCard_accent_colors: string;
-	elementCard_accent_colors_desc: string;
-	elementCard_column_span: string;
-	elementCard_column_span_desc: string;
-	elementCard_links: string;
-	elementCard_links_desc: string;
-	elementCard_links_layout: string;
-	elementCard_links_layout_desc: string;
-	elementCard_links_layout_stack: string;
-	elementCard_links_layout_inline: string;
-	elementCard_links_layout_justify: string;
-	elementCard_move_up: string;
-	elementCard_move_down: string;
-	elementCard_remove: string;
-	elementCard_card_label: string;
-	elementCard_default_title: string;
-	elementCard_default_card_title: string;
-	elementCard_menu_title: string;
-	elementCard_insert_command: string;
-	elementCard_builder_command: string;
-	elementCard_edit_command: string;
-	elementCard_menu_insert: string;
 	notice_open_markdown_first: string;
-	notice_elementCard_update_failed: string;
-	notice_elementCard_parse_failed: string;
-	notice_elementCard_cursor_required: string;
 	notice_no_active_markdown_file: string;
 	notice_heatmap_no_markdown_view: string;
 	notice_heatmap_editor_unsupported: string;
-	elementCard_error_empty: string;
-	elementCard_error_empty_recommend: string;
-	elementCard_error_invalid_yaml_object: string;
-	elementCard_error_card_required: string;
-	elementCard_error_card_required_recommend: string;
-	elementCard_error_yaml_failed_at_line: string;
-	elementCard_error_yaml_failed: string;
 
 	/**
 	 * weekday
@@ -248,8 +188,6 @@ export interface Local {
 	settings_homepage_revertViewDesc: string;
 	settings_homepage_openWhenEmpty: string;
 	settings_homepage_openWhenEmptyDesc: string;
-	settings_homepage_pinInFileExplorer: string;
-	settings_homepage_pinInFileExplorerDesc: string;
 	settings_homepage_autoCreate: string;
 	settings_homepage_autoCreateDesc: string;
 
@@ -333,4 +271,42 @@ export interface Local {
 	 * commands
 	 */
 	notice_command_not_found: string;
+
+	/**
+	 * navbar
+	 */
+	navbar_builder_heading: string;
+	navbar_align_label: string;
+	navbar_align_desc: string;
+	navbar_align_center: string;
+	navbar_align_justify: string;
+	navbar_items_heading: string;
+	navbar_add_item: string;
+	navbar_item_label: string;
+	navbar_item_icon_label: string;
+	navbar_item_icon_desc: string;
+	navbar_item_url_label: string;
+	navbar_item_url_desc: string;
+	navbar_item_action_label: string;
+	navbar_item_action_desc: string;
+	navbar_item_select_command: string;
+	navbar_item_select_icon: string;
+	navbar_error_empty: string;
+	navbar_error_invalid_yaml: string;
+	navbar_error_no_items: string;
+	navbar_error_yaml_failed: string;
+	navbar_command_new: string;
+	navbar_default_title: string;
+	navbar_desktop_gap_label: string;
+	navbar_desktop_gap_desc: string;
+	navbar_mobile_gap_label: string;
+	navbar_mobile_gap_desc: string;
+	navbar_desktop_row_gap_label: string;
+	navbar_desktop_row_gap_desc: string;
+	navbar_mobile_row_gap_label: string;
+	navbar_mobile_row_gap_desc: string;
+
+	// ✅ 通用按钮文本
+	cancel: string;
+	confirm: string;
 }

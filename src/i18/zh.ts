@@ -11,7 +11,6 @@ export class Zh implements Local {
      * context menu
      */
     context_menu_create = "新建热力图";
-    context_menu_insert_elementCard = "新建卡片";
 
     /**
      * form
@@ -119,68 +118,10 @@ export class Zh implements Local {
     form_button_preview = "预览";
     form_button_save = "保存";
 
-	elementCard_builder_heading = "样式配置";
-	elementCard_tab_basic = "基础设置";
-	elementCard_tab_cards = "卡片设置";
-	elementCard_block_id = "区块 ID";
-	elementCard_block_id_desc = "用于保存拖拽后的列宽。建议保持唯一且稳定。";
-	elementCard_title_font_size_placeholder = "标题字号";
-	elementCard_columns = "列数";
-	elementCard_gap = "间距";
-	elementCard_gap_desc = "卡片之间的像素间距";
-	elementCard_cards = "卡片";
-	elementCard_add_card = "新增卡片";
-	elementCard_add_card_desc = "添加一个新的链接卡片";
-	elementCard_add_button = "新增";
-	elementCard_type = "类型";
-	elementCard_type_desc = "当前仅支持链接卡片";
-	elementCard_palette = "主题";
-	elementCard_palette_desc = "选择内置配色方案";
-	elementCard_palette_custom = "自定义配色";
-	elementCard_palette_sage = "苔绿晨雾";
-	elementCard_palette_mist = "雾蓝纸页";
-	elementCard_palette_amber = "琥珀米纸";
-	elementCard_palette_plum = "梅紫晚霞";
-	elementCard_palette_slate = "石墨冷灰";
-	elementCard_palette_transparent = "全透明";
-	elementCard_background = "背景";
-	elementCard_background_desc = "当前卡片自己的背景色";
-	elementCard_accent_colors = "强调色";
-	elementCard_accent_colors_desc = "分别控制标题、链接和分隔符";
-	elementCard_column_span = "列号 / 跨列";
-	elementCard_column_span_desc = "列号从 1 开始；span 表示跨几列";
-	elementCard_links = "链接";
-	elementCard_links_desc = "每行一个，格式：标题 | 链接地址 或 标题 | | action名称（如 open-homepage）";
-	elementCard_links_layout = "链接布局";
-	elementCard_links_layout_desc = "inline 模式下链接在一行显示，可选择居中或两端对齐";
-	elementCard_links_layout_stack = "堆叠（每行一条）";
-	elementCard_links_layout_inline = "居中（inline）";
-	elementCard_links_layout_justify = "两端对齐（justify）";
-	elementCard_move_up = "上移";
-	elementCard_move_down = "下移";
-	elementCard_remove = "删除";
-	elementCard_card_label = "卡片";
-	elementCard_default_title = "elementCard";
-	elementCard_default_card_title = "链接";
-	elementCard_menu_title = "新增 Elements 组件";
-	elementCard_insert_command = "插入 Elements（elementCard）代码块";
-	elementCard_builder_command = "New ElementCard";
-	elementCard_edit_command = "编辑光标所在的 Elements（elementCard）代码块";
-	elementCard_menu_insert = "新建卡片";
 	notice_open_markdown_first = "请先打开一个 Markdown 笔记。";
-	notice_elementCard_update_failed = "更新当前 Elements（elementCard）代码块失败。";
-	notice_elementCard_parse_failed = "解析当前 Elements（elementCard）代码块失败。";
-	notice_elementCard_cursor_required = "请先把光标放在 Elements（elementCard）代码块内。";
 	notice_no_active_markdown_file = "当前没有激活的 Markdown 文件。";
 	notice_heatmap_no_markdown_view = "当前没有激活的 Markdown 视图。";
 	notice_heatmap_editor_unsupported = "当前编辑器不支持就地编辑热力图。";
-	elementCard_error_empty = "Elements（elementCard）配置为空";
-	elementCard_error_empty_recommend = "请先添加 cards 配置";
-	elementCard_error_invalid_yaml_object = "Elements（elementCard）配置不是有效的 YAML 对象";
-	elementCard_error_card_required = "Elements（elementCard）至少需要一张卡片";
-	elementCard_error_card_required_recommend = "请在 cards 中添加 links 卡片";
-	elementCard_error_yaml_failed_at_line = "Elements（elementCard）YAML 解析失败，位置在第 {line} 行附近";
-	elementCard_error_yaml_failed = "Elements（elementCard）YAML 解析失败，请检查缩进与字段格式";
 
     /**
      * weekday
@@ -246,8 +187,6 @@ export class Zh implements Local {
 	settings_homepage_revertViewDesc = "离开主页文件时恢复为默认视图模式";
 	settings_homepage_openWhenEmpty = "空标签页时自动打开";
 	settings_homepage_openWhenEmptyDesc = "当工作区只有空标签页时自动打开主页";
-	settings_homepage_pinInFileExplorer = "文件列表置顶主页（实验性）";
-	settings_homepage_pinInFileExplorerDesc = "在文件管理器中将主页笔记移动到所在目录顶部。依赖 Obsidian 内部结构，失效时会静默跳过。";
 	settings_homepage_autoCreate = "自动创建文件";
 	settings_homepage_autoCreateDesc = "当主页文件不存在时自动创建";
 
@@ -304,16 +243,54 @@ export class Zh implements Local {
 	settings_cursor_enableDesc = "记住并恢复每个文件的光标位置和滚动位置";
 	settings_cursor_dataFileName = "数据文件名";
 	settings_cursor_dataFileNameDesc = "将位置信息保存到此文件";
-	settings_cursor_dataFileNamePlaceholder = "例如：cursor-positions.json";
+	settings_cursor_dataFileNamePlaceholder = "例如：cursor.json";
 	settings_cursor_delayAfterOpening = "打开新笔记后的延迟";
 	settings_cursor_delayAfterOpeningDesc = "如果你使用了指向笔记标题的链接（如 [链接](笔记.md#标题)），本插件不应滚动页面。如果出现此问题，请增加延迟时间。如果你不使用指向页面内章节的链接，可将延迟设为零（滑块调至最左）。滑块范围：0-300 毫秒（默认值：100 毫秒）。";
 	settings_cursor_delayBetweenSaving = "光标位置保存到文件的间隔";
 	settings_cursor_delayBetweenSavingDesc = "适用于多设备用户。如果你不想等到关闭 Obsidian 才保存光标位置，可以缩短此间隔。";
 
-	settings_nav_homepage = "首页";
+	settings_nav_homepage = "主页";
 	settings_nav_calendar = "日历";
 	settings_nav_forceView = "强制视图";
 	settings_nav_cursorPosition = "光标位置";
 
 	notice_command_not_found = "未找到 {0} 命令";
+
+	/**
+	 * navbar
+	 */
+	navbar_builder_heading = "导航栏配置";
+	navbar_align_label = "对齐方式";
+	navbar_align_desc = "导航项排列";
+	navbar_align_center = "居中";
+	navbar_align_justify = "两端对齐";
+	navbar_items_heading = "导航项";
+	navbar_add_item = "添加导航项";
+	navbar_item_label = "标签";
+	navbar_item_icon_label = "图标";
+	navbar_item_icon_desc = "Lucide 图标名称";
+	navbar_item_url_label = "链接";
+	navbar_item_url_desc = "内部笔记路径或外部 URL";
+	navbar_item_action_label = "命令";
+	navbar_item_action_desc = "Obsidian 命令 ID";
+	navbar_item_select_command = "选择";
+	navbar_item_select_icon = "选择图标";
+	navbar_error_empty = "navbar 配置为空";
+	navbar_error_invalid_yaml = "navbar 配置不是有效的 YAML 对象";
+	navbar_error_no_items = "navbar 至少需要一个导航项";
+	navbar_error_yaml_failed = "navbar YAML 解析失败，请检查缩进与字段格式";
+	navbar_command_new = "New NavBar";
+	navbar_default_title = "导航";
+	navbar_desktop_gap_label = "桌面端水平间距";
+	navbar_desktop_gap_desc = "导航项之间的水平间距（桌面端）";
+	navbar_mobile_gap_label = "移动端水平间距";
+	navbar_mobile_gap_desc = "导航项之间的水平间距（移动端）";
+	navbar_desktop_row_gap_label = "桌面端行间距";
+	navbar_desktop_row_gap_desc = "换行后行与行之间的垂直间距（桌面端）";
+	navbar_mobile_row_gap_label = "移动端行间距";
+	navbar_mobile_row_gap_desc = "换行后行与行之间的垂直间距（移动端）";
+
+	// ✅ 通用按钮文本
+	cancel = "取消";
+	confirm = "确定";
 }

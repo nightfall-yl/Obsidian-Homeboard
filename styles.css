@@ -1,173 +1,27 @@
-.elementCard {
-display:flex;flex-direction:column;gap:1rem;margin:.75rem 0;position:relative;background:transparent
+/* ========================================
+   全局渲染优化 - 防止文字重影和模糊
+   ======================================== */
+
+/* 强制所有文本使用最优渲染 */
+* {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeLegibility;
 }
-.elementCard--toolbar-only {
-padding-top:0
+
+/* 禁用可能导致重影的属性 */
+body {
+	text-shadow: none !important;
 }
-.elementCard__title {
-margin:0;font-size:1.4rem;font-weight:700;padding-right:2.75rem;color:#d97332
+
+/* 确保所有交互元素不会产生重影 */
+button, [role="button"], .clickable-icon {
+	transform: translateZ(0);
+	backface-visibility: hidden;
 }
-.elementCard__toolbar {
-position:absolute;top:0;right:44px;display:flex;gap:.5rem;z-index:3
-}
-.elementCard__toolbar-button {
-display:inline-flex;align-items:center;justify-content:center;width:30px;height:25px;padding:0;color:var(--text-muted);border-radius:5px;background:var(--background-secondary);border:1px solid var(--background-modifier-border);box-shadow:0 1px 2px rgba(15,23,42,.06);
-opacity:0;transition:opacity .12s ease;
-}
-.elementCard__toolbar-button:hover,
-.plugin-config-palette-option:hover,
-/* ElementCard 主题选项：鼠标悬停时的样式 */
-.elementCard-builder-modal__palette-option:hover {
+
+.plugin-config-palette-option:hover{
 background:var(--background-modifier-hover)
-}
-.elementCard__shell {
-position:relative;background:transparent
-}
-.elementCard__grid {
-display:grid;grid-template-columns:repeat(var(--elementCard-columns,2),minmax(0,1fr));gap:var(--elementCard-gap,16px);align-items:stretch;background:transparent
-}
-.elementCard__card {
-background:var(--elementCard-card-background,var(--background-primary));border:1px solid var(--elementCard-card-border-color,var(--background-modifier-border));border-radius:4px;padding:var(--elementCard-card-padding,1rem);min-width:0;position:relative;box-shadow:0 1px 4px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04)
-}
-.elementCard__card[data-palette-preset=transparent] {
-background:transparent!important;border-color:transparent;border-radius:0;box-shadow:0 1px 0 var(--background-modifier-border)
-}
-.elementCard__card[data-palette-preset=transparent]::before,
-.elementCard__card[data-palette-preset=transparent]::after {
-display:none
-}
-.elementCard__card[data-links-layout=inline] {
-display:flex;flex-direction:column;padding:.5em 1rem;background:var(--elementCard-card-background,var(--background-primary));color:var(--elementCard-card-link-color,#1d86ea)
-}
-.elementCard__card[data-links-layout=inline]::after {
-content:"";position:absolute;inset:0;border:1px solid color-mix(in srgb,var(--elementCard-card-title-color,#61b94d) 20%,transparent);pointer-events:none;border-radius:3px
-}
-.elementCard__card:hover {
-box-shadow:0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.05)
-}
-.elementCard__card[data-palette-preset=transparent]:hover {
-box-shadow:0 1px 0 var(--background-modifier-border)
-}
-.elementCard__card-title {
-margin:0 0 12px 0;font-size:1rem;font-weight:700;color:var(--elementCard-card-title-color,#61b94d);text-align:center
-}
-.elementCard__card-body {
-flex:1;display:flex;justify-content:center;align-items:center
-}
-.elementCard__card[data-links-layout=inline] .elementCard__card-title {
-text-align:center;font-size:1rem;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid color-mix(in srgb,var(--elementCard-card-title-color,#61b94d) 20%,transparent);color:var(--elementCard-card-title-color,#61b94d);letter-spacing:.015em;font-weight:700;
-color: color-mix(in srgb, var(--elementCard-card-title-color, #61b94d) 84%, white);
-	font-weight: 700;
-}
-.elementCard__card[data-links-layout=inline] .elementCard__card-body {
-display:flex;justify-content:center;position:relative;z-index:1;min-width:0;color:var(--elementCard-card-link-color,#1d86ea)
-}
-.elementCard__links {
-list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.6rem;color:var(--elementCard-card-link-color,#1d86ea)
-}
-.elementCard__links li {
-color:var(--elementCard-card-link-color,#1d86ea)
-}
-.elementCard__links li .elementCard__link-button {
-text-decoration:none;color:var(--elementCard-card-link-color,#1d86ea)
-}
-.elementCard__links-inline {
-display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.5em .3rem;font-size:.96rem;line-height:1.5;text-align:center;min-width:0;color:var(--elementCard-card-link-color,#1d86ea)
-}
-.elementCard__card[data-links-layout=justify] .elementCard__links-inline {
-justify-content:space-between;width:100%
-}
-.elementCard__card[data-links-layout=justify] .elementCard__card-body {
-justify-content:stretch;width:100%
-}
-.elementCard__link-button {
-appearance:none;border:none;background:transparent;color:inherit;font:inherit;font-weight:400;padding:.1rem .22rem;border-radius:4px;transition:background-color .12s ease,color .12s ease;overflow-wrap:anywhere;word-break:break-word;cursor:pointer
-}
-.elementCard__link-button:hover {
-background:color-mix(in srgb,var(--elementCard-card-link-color,#1d86ea) 10%,transparent);color:color-mix(in srgb,var(--elementCard-card-link-color,#1d86ea) 82%,black)
-}
-.elementCard__link-button--action {
-font-weight: 600;
-gap: 4px;
-display: inline-flex;
-align-items: center;
-}
-.elementCard__link-button--action::before {
-content: "⚡";
-margin-right: 2px;
-opacity: .7;
-}
-.elementCard__links-inline-separator {
-color:var(--elementCard-card-separator-color,#77ba61);opacity:.72;font-size:.92em;pointer-events:none;
-color: color-mix(in srgb, var(--elementCard-card-separator-color, #77ba61) 72%, white);
-	opacity: .62;
-}
-.elementCard__resizer {
-position:absolute;top:0;bottom:0;width:1px;transform:translateX(-50%);background:var(--elementCard-resizer-color,var(--interactive-accent));border-radius:0;cursor:col-resize;z-index:2;opacity:1;
-cursor: col-resize;
-}
-.elementCard__resizer-row {
-top:0;bottom:0;left:0;right:0;width:auto;height:1px;transform:translateY(-50%);cursor:row-resize;
-cursor: row-resize;
-}
-.elementCard__resizer-single {
-top:100%;transform:translateY(0)
-}
-.elementCard-builder-modal-container .modal {
-width:min(1100px,92vw);
-padding:14px;
-}
-.elementCard-builder-modal {
-display:flex;flex-direction:column;gap:1rem
-}
-.elementCard-builder-modal__workspace,
-.tab-container .tab-items .tab-item.active {
-display:block
-}
-.elementCard-builder-modal__editor {
-display:flex;flex-direction:column;gap:1rem;min-width:0
-}
-.elementCard-builder-modal__card {
-padding:1rem;border:1px solid var(--background-modifier-border);border-radius:12px;background:linear-gradient(180deg,var(--background-secondary),color-mix(in srgb,var(--background-secondary) 80%,white));display:flex;flex-direction:column;gap:.5rem;
-padding:.6rem;gap:var(--plugin-config-workspace-gap);
-}
-.elementCard-builder-modal__card h4 {
-margin:0;
-font-size:13px;margin:0;
-}
-.elementCard-builder-modal__textarea {
-width:100%;min-height:120px
-}
-.elementCard-builder-modal__actions {
-display:flex;gap:.75rem;justify-content:flex-end
-}
-.elementCard-menu-item--has-submenu .menu-item-title {
-display:flex;align-items:center;justify-content:space-between;gap:.75rem;width:100%
-}
-.elementCard-menu-item__chevron {
-margin-left:auto;color:var(--text-muted);font-size:1.45em;line-height:1;font-weight:500;transform:translateY(-1px)
-}
-@media (max-width:768px){.elementCard__grid{grid-template-columns:repeat(var(--elementCard-columns,2),minmax(0,1fr))!important}.elementCard__card{grid-column:auto!important;min-width:0}.elementCard__card[data-links-layout=inline]{padding:10px 9px}.elementCard__card[data-links-layout=inline] .elementCard__card-title{font-size:.9rem;line-height:1.28;margin-bottom:.38rem}.elementCard__links-inline{font-size:.8rem;gap:.5em .3rem;line-height:1.25;justify-content:center}.elementCard__link-button{padding:.01rem .14rem;height:auto!important;min-height:0!important;min-width:0;border-radius:0;background:transparent!important;border:none!important;box-shadow:none!important;line-height:1.12;white-space:nowrap}.elementCard__link-button--action{gap:2px}.elementCard__link-button--action::before{font-size:.7em;margin-right:1px}.elementCard__links-inline-separator{display:none}.elementCard .elementCard__link-button:hover,.elementCard .elementCard__link-button:focus{background:transparent!important}.elementCard__toolbar{position:static;align-self:flex-end;margin-bottom:-.25rem}.elementCard--toolbar-only{padding-top:0}.elementCard__resizer{display:none}}
-.elementCard-hover-submenu {
-position:fixed;z-index:1000;min-width:auto;width:auto;white-space:nowrap
-}
-.elementCard-hover-submenu__item {
-display:flex;align-items:center;gap:.625rem;cursor:pointer;border-radius:6px;padding:6px 8px;transition:background-color .12s ease,color .12s ease
-}
-.elementCard-hover-submenu__item:hover {
-background:var(--background-modifier-active-hover);color:var(--text-normal)
-}
-.elementCard-hover-submenu__item:hover .menu-item-icon,.elementCard-hover-submenu__item:hover .menu-item-title,
-.plugin-config-color-reset-button:hover,
-.color-reset-button:hover,
-.suggest-input-tags .tags .tag .remove-button:hover {
-color:var(--text-normal)
-}
-.elementCard-hover-submenu__item .menu-item-icon {
-display:flex;align-items:center;justify-content:center
-}
-.elementCard-hover-submenu__item .menu-item-title {
-width:auto;flex:1
 }
 .plugin-config-modal {
 --plugin-config-font-size:14px;--plugin-config-heading-size:15px;--plugin-config-heading-margin-bottom:.15rem;--plugin-config-section-gap:.5rem;--plugin-config-workspace-gap:.25rem;--plugin-config-tab-content-padding:3px 6px;--plugin-config-tab-title-padding:4.2px 6.5px;font-size:var(--plugin-config-font-size);gap:var(--plugin-config-section-gap)
@@ -188,8 +42,7 @@ padding:var(--plugin-config-tab-content-padding)
 padding:var(--plugin-config-tab-title-padding)
 }
 .plugin-config-form .setting-item,
-.plugin-config-form .form-item,
-.elementCard-builder-modal .setting-item-control {
+.plugin-config-form .form-item {
 gap:6px
 }
 .plugin-config-form .setting-item-control,
@@ -210,8 +63,7 @@ line-height:1.3;color:var(--text-faint)
 .plugin-config-form input,
 .plugin-config-form select,
 .plugin-config-form button,
-.plugin-config-form textarea,
-.elementCard-builder-modal input,.elementCard-builder-modal select,.elementCard-builder-modal button,.elementCard-builder-modal textarea {
+.plugin-config-form textarea {
 font-size:13px
 }
 
@@ -220,17 +72,12 @@ font-size:13px
 .plugin-config-form input[type="text"],
 .plugin-config-form input[type="number"],
 .plugin-config-form select,
-.plugin-config-form textarea,
-.elementCard-builder-modal input[type="text"],
-.elementCard-builder-modal input[type="number"],
-.elementCard-builder-modal select,
-.elementCard-builder-modal textarea {
+.plugin-config-form textarea {
 	border: 1px solid var(--background-modifier-border);
 	border-radius: var(--input-radius, 10px);
 	padding: 6px 10px;
 	background-color: var(--background-primary);
 }
-/* ElementCard Builder Modal inputs */
 
 .plugin-config-choice,
 .heatmap-choose {
@@ -241,8 +88,6 @@ display:flex;flex-direction:row;margin-left:12px;border-radius:6px;border:1px so
 display:flex;flex-direction:row;border-radius:4px;margin-right:2px
 }
 .plugin-config-choice__item:hover,
-.heatmap-modal-form .form-item .list-remove-button:hover,
-.heatmap-modal-form .form-item .list-add-button:hover,
 .heatmap-choose .item:hover {
 background-color:var(--interactive-accent-hover);color:var(--text-on-accent)
 }
@@ -282,157 +127,116 @@ display:flex;gap:6px;background-color:hsl(var(--interactive-accent-hsl),.2);colo
 .color-label:hover {
 background-color:hsl(var(--interactive-accent-hsl),.8);color:var(--text-on-accent)
 }
-/* ElementCard 主题选择器触发按钮容器：显示当前选中的主题 */
+/* Theme picker trigger row */
 .plugin-config-palette-trigger-row {
 display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:8px 10px;border:1px solid var(--background-modifier-border);border-radius:var(--input-radius,10px);background:var(--background-primary)
 }
-/* ElementCard 主题选择器下拉菜单：显示所有可选主题 */
+/* Theme picker dropdown menu */
 .plugin-config-palette-menu {
 display:flex;flex-direction:column;gap:4px;margin-top:6px;padding:6px;border:1px solid var(--background-modifier-border);border-radius:4px;background:var(--background-primary);box-shadow:0 12px 28px rgba(15,23,42,.08)
 }
 .plugin-config-palette-option,
-/* ElementCard 主题选择器选项：单个主题的样式 */
-.elementCard-builder-modal__palette-option {
+/* Theme picker option */
+.heatmap-modal__palette-option {
 display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:8px 10px;border:1px solid transparent;border-radius:var(--input-radius,10px);background:transparent;text-align:left
 }
 .plugin-config-palette-option.is-active,
-/* ElementCard 主题选择器：当前选中主题的高亮样式 */
-.elementCard-builder-modal__palette-option.is-active {
+/* Theme picker active option */
+.heatmap-modal__palette-option.is-active {
 border-color:color-mix(in srgb,var(--interactive-accent) 35%,transparent);background:color-mix(in srgb,var(--interactive-accent) 8%,transparent)
 }
 .plugin-config-palette-label,
-/* ElementCard 主题选择器：主题名称的标签样式 */
-.elementCard-builder-modal__palette-trigger-label {
+/* Theme picker label */
+.heatmap-modal__palette-trigger-label {
 font-size:12px;font-weight:600;color:var(--text-normal);white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 }
 .plugin-config-swatch-group {
 display:flex;align-items:center;gap:6px;flex-shrink:0
 }
-.elementCard-builder-modal,
-.elementCard-builder-modal__editor,
-.elementCard-builder-modal__actions {
-gap:var(--plugin-config-section-gap)
-}
-.elementCard-builder-modal h3 {
-margin:.25rem 0 0;font-size:14px
-}
-.elementCard-builder-modal .setting-item {
-padding:5px 0;min-height:auto
-}
-.elementCard-builder-modal .setting-item-info {
-padding-right:10px
-}
-.elementCard-builder-modal .setting-item-name {
-font-size:13px;line-height:1.25
-}
-.elementCard-builder-modal .setting-item-description {
-font-size:12px;line-height:1.3;margin-top:1px
-}
-.elementCard-builder-modal__preview {
-padding:.65rem;font-size:12px;line-height:1.4
-}
-.elementCard-builder-modal__actions button {
-padding:6px 12px
-}
+
 .heatmap-modal-heading {
 --plugin-config-heading-margin-bottom:.35rem
 }
 .heatmap-modal-content {
 gap:var(--plugin-config-workspace-gap)
 }
-.elementCard:hover .elementCard__toolbar-button,.elementCard:focus-within .elementCard__toolbar-button {
-opacity:1
-}
-/* ElementCard 主题选择器触发按钮：点击打开主题选择菜单 */
-.elementCard-builder-modal__palette-trigger {
-width:100%;justify-content:flex-start;padding:0;border:none;background:transparent;box-shadow:none
-}
-/* ElementCard 主题选择器触发按钮：鼠标悬停时的样式 */
-.elementCard-builder-modal__palette-trigger:hover {
-background:transparent;box-shadow:none
-}
+
 .heatmap-modal__theme-trigger,
-/* ElementCard 主题选择器触发按钮行：主题选择器的容器 */
-.elementCard-builder-modal__palette-trigger-row {
+/* Theme picker trigger row */
+.heatmap-modal__palette-trigger-row {
 display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:200px;width:100%;padding:8px 10px;border:1px solid var(--background-modifier-border);border-radius:var(--input-radius,10px);background:var(--background-primary)
 }
-.elementCard-builder-modal__palette-trigger-row,
-.elementCard-builder-modal__palette-trigger,
-.elementCard-builder-modal__palette-option {
+.heatmap-modal__palette-trigger-row,
+.heatmap-modal__palette-trigger,
+.heatmap-modal__palette-option {
 -webkit-tap-highlight-color:transparent;
 }
-.elementCard-settings-root {
-	--elementCard-settings-collapsible-padding: 20px 16px;
-	--elementCard-settings-collapsible-radius: 20px;
-	--elementCard-settings-collapsible-border: 1px solid var(--background-modifier-border);
-	--elementCard-settings-collapsible-light-bg: var(--background-secondary);
-	--elementCard-settings-collapsible-dark-bg: var(--background-secondary);
-	--elementCard-settings-group-bg: var(--background-secondary);
-	--elementCard-settings-group-margin: 18px 0 28px;
-	--elementCard-settings-group-padding-x: 24px;
-	--elementCard-settings-group-radius: 18px;
-	--elementCard-settings-group-item-padding-y: 18px;
-	--elementCard-settings-group-title-margin: 28px 0 12px;
-	--elementCard-settings-group-title-size: 1.15rem;
-	--elementCard-settings-nav-font-size: 15px;
-	--elementCard-settings-nav-font-weight: 600;
-	padding-bottom: 24px;
+.element-settings-root {
+	--element-settings-collapsible-padding: var(--size-4-5) 16px;
+	--element-settings-collapsible-radius: var(--radius-l);
+	--element-settings-collapsible-border: 1px solid var(--background-modifier-border);
+	--element-settings-collapsible-light-bg: var(--background-primary-alt);
+	--element-settings-collapsible-dark-bg: var(--background-primary-alt);
+	--element-settings-group-bg: var(--background-primary-alt);
+	--element-settings-group-margin: var(--size-4-6) 0;
+	--element-settings-group-padding-x: var(--size-4-5);
+	--element-settings-group-radius: var(--radius-l);
+	--element-settings-group-item-padding-y: var(--size-4-4);
+	--element-settings-group-title-margin: 0 0 var(--size-4-4);
+	--element-settings-group-title-size: var(--font-ui-medium);
+	--element-settings-nav-font-size: var(--font-ui-medium);
+	--element-settings-nav-font-weight: var(--font-semibold);
+	padding-bottom: var(--size-4-16);
 }
 /* Content Area */
 
-.elementCard-settings-content {
-	padding-top: 22px;
+.element-settings-content {
+	padding-top: var(--size-4-6);
 }
-.elementCard-settings-section {
+.element-settings-section {
 	display: none;
-	animation: elementCard-settings-fade-in 140ms ease;
+	animation: element-settings-fade-in 140ms ease;
 }
-.elementCard-settings-section.is-active {
+.element-settings-section.is-active {
 	display: block;
 }
-.elementCard-settings-section .setting-item {
-	padding-top: 14px;
-	padding-bottom: 14px;
+.element-settings-section .setting-item {
+	padding-top: var(--size-4-4);
+	padding-bottom: var(--size-4-4);
 }
-.elementCard-settings-section .setting-item:first-child {
+.element-settings-section .setting-item:first-child {
 	border-top: 0;
 }
-.elementCard-settings-group-title {
-	margin: var(--elementCard-settings-group-title-margin);
+.element-settings-group-title {
+	margin: var(--element-settings-group-title-margin);
 	color: var(--text-normal);
-	font-size: var(--elementCard-settings-group-title-size);
-	font-weight: 700;
-	line-height: 1.3;
+	font-size: var(--element-settings-group-title-size);
+	font-weight: var(--font-semibold);
+	line-height: var(--line-height-tight);
 }
-.elementCard-settings-group {
-	margin: var(--elementCard-settings-group-margin);
-	padding: 0 var(--elementCard-settings-group-padding-x);
-	border-radius: var(--elementCard-settings-group-radius);
-	border: var(--elementCard-settings-collapsible-border);
-	background: var(--elementCard-settings-group-bg);
+.element-settings-group {
+	margin: var(--element-settings-group-margin);
+	padding: 0 var(--element-settings-group-padding-x);
+	border-radius: var(--element-settings-group-radius);
+	border: var(--element-settings-collapsible-border);
+	background: var(--element-settings-group-bg) !important;
 	overflow: hidden;
 }
-.theme-light .elementCard-settings-group {
-	--elementCard-settings-group-bg: var(--elementCard-settings-collapsible-light-bg);
-}
-.theme-dark .elementCard-settings-group {
-	--elementCard-settings-group-bg: var(--elementCard-settings-collapsible-dark-bg);
-}
-.elementCard-settings-group > .setting-item,
-.elementCard-settings-group > .force-view-mode-div {
+.element-settings-group > .setting-item,
+.element-settings-group > .force-view-mode-div {
 	margin: 0 !important;
-	padding: var(--elementCard-settings-group-item-padding-y) 0;
+	padding: var(--element-settings-group-item-padding-y) 0;
 	border: 0 !important;
 	border-top: 1px solid var(--background-modifier-border) !important;
 	border-radius: 0 !important;
 	background: transparent !important;
 	box-shadow: none !important;
 }
-.elementCard-settings-group > .setting-item:first-child,
-.elementCard-settings-group > .force-view-mode-div:first-child {
+.element-settings-group > .setting-item:first-child,
+.element-settings-group > .force-view-mode-div:first-child {
 	border-top: 0 !important;
 }
-.elementCard-settings-group > .force-view-mode-div > .setting-item {
+.element-settings-group > .force-view-mode-div > .setting-item {
 	margin: 0 !important;
 	padding: 0;
 	border: 0 !important;
@@ -442,173 +246,146 @@ display:flex;align-items:center;justify-content:space-between;gap:12px;min-width
 }
 /* Top Navigation - Fork from imgbox-pro */
 
-.elementCard-settings-nav {
+.element-settings-nav {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 14px 18px;
-	margin: 18px 0 0;
-	padding: 0 0 18px;
+	gap: var(--size-4-2) var(--size-4-4);
+	margin: var(--size-4-4) 0 0;
+	padding: 0 0 var(--size-4-4);
 	border-bottom: 1px solid var(--background-modifier-border);
 }
-.elementCard-settings-nav-btn {
+.element-settings-nav-btn {
 	appearance: none;
 	-webkit-appearance: none;
 	display: inline-flex;
 	align-items: center;
-	gap: 10px;
-	padding: 12px 14px;
-	border: 0;
-	border-radius: 0;
+	gap: var(--size-4-2);
+	border: 0 !important;
+	border-bottom: none !important;
+	border-radius: var(--radius-m);
 	background: transparent;
-	color: var(--text-muted);
-	font-size: var(--elementCard-settings-nav-font-size);
-	font-weight: var(--elementCard-settings-nav-font-weight);
-	line-height: 1;
 	cursor: pointer;
 	box-shadow: none;
 	outline: none;
-	transition: background-color 140ms ease, color 140ms ease, transform 140ms ease;
+	transition: background-color 140ms ease, color 140ms ease;
 }
-.elementCard-settings-nav-btn:hover {
-	background: transparent;
+.element-settings-nav-btn:hover {
+	background: var(--background-modifier-hover);
 	color: var(--text-normal);
-	transform: translateY(-1px);
 }
-.elementCard-settings-nav-btn:not(.is-active) {
-	padding: 12px 8px;
-	border: 0;
-	border-radius: 0;
+.element-settings-nav-btn:not(.is-active) {
 	background: transparent;
 	box-shadow: none;
 }
-.elementCard-settings-nav-btn:not(.is-active):focus,
-.elementCard-settings-nav-btn:not(.is-active):focus-visible {
+.element-settings-nav-btn:not(.is-active):focus,
+.element-settings-nav-btn:not(.is-active):focus-visible {
 	outline: none;
 	box-shadow: none;
 }
-.elementCard-settings-nav-btn.is-active {
-	padding: 12px 16px;
-	border-radius: 8px;
+.element-settings-nav-btn.is-active {
 	background: var(--background-modifier-hover);
 	color: var(--text-normal);
 	box-shadow: none;
 }
-.elementCard-settings-nav-btn.is-active .svg-icon,
-.heatmap-modal-form .tab-titles .tab-item-title:hover {
+.element-settings-nav-btn.is-active .svg-icon {
 	color: var(--text-normal);
 }
-.elementCard-settings-nav-icon {
+.element-settings-nav-icon {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	color: currentColor;
 }
-.elementCard-settings-nav-icon svg {
-	width: 20px;
-	height: 20px;
+.element-settings-nav-icon svg {
+	width: var(--size-4-5);
+	height: var(--size-4-5);
 	stroke-width: 1.9px;
+}
+
+@media (max-width: 768px) {
+	.element-settings-nav {
+		flex-wrap: nowrap;
+		justify-content: space-between;
+		gap: var(--size-4-2);
+	}
+
+	.element-settings-nav-btn {
+		flex: 1;
+	}
+
+	.element-settings-nav-icon {
+		display: none;
+	}
 }
 /* Collapsible Cards - Fork from imgbox-pro */
 
-.elementCard-settings-collapsible {
-	margin-top: 18px;
+.element-settings-collapsible {
+	margin-top: var(--size-4-4);
 	border: 0 !important;
 	background: transparent !important;
 	overflow: visible;
 	box-shadow: none !important;
 	outline: none !important;
 }
-.elementCard-settings-collapsible-summary {
+.element-settings-collapsible-summary {
 	display: flex;
 	align-items: flex-start;
 	justify-content: flex-start;
-	gap: 14px;
+	gap: var(--size-4-4);
 	width: 100%;
 	margin: 0;
-	padding: var(--elementCard-settings-collapsible-padding);
-	border: var(--elementCard-settings-collapsible-border) !important;
-	border-radius: var(--elementCard-settings-collapsible-radius);
+	padding: var(--element-settings-collapsible-padding);
+	border: var(--element-settings-collapsible-border) !important;
+	border-radius: var(--element-settings-collapsible-radius);
 	box-sizing: border-box;
-	background: var(--background-secondary) !important;
-	background-color: var(--background-secondary) !important;
+	background: var(--background-primary-alt) !important;
+	background-color: var(--background-primary-alt) !important;
 	box-shadow: none !important;
 	outline: none !important;
 	color: var(--text-normal);
 	font-family: inherit;
-	font-size: 15px;
-	font-weight: 600;
+	font-size: var(--font-ui-medium);
+	font-weight: var(--font-semibold);
 	cursor: pointer;
 	text-align: left;
 }
-.elementCard-settings-collapsible-summary:focus,
-.elementCard-settings-collapsible-summary:focus-visible,
-.elementCard-settings-collapsible-summary:hover,
-.elementCard-settings-collapsible-summary.is-open {
-	background: var(--background-secondary) !important;
-	background-color: var(--background-secondary) !important;
-	border: var(--elementCard-settings-collapsible-border) !important;
-	box-shadow: none !important;
-	outline: none !important;
-}
-.elementCard-settings-collapsible-copy {
+.element-settings-collapsible-copy {
 	display: flex;
 	flex: 1 1 auto;
 	min-width: 0;
 	flex-direction: column;
 }
-.elementCard-settings-collapsible-title {
-	font-size: 15px;
-	font-weight: 600;
-	line-height: 1.35;
+.element-settings-collapsible-title {
+	font-size: var(--font-ui-medium);
+	font-weight: var(--font-semibold);
+	line-height: var(--line-height-tight);
 }
-.elementCard-settings-collapsible-desc {
-	margin: 6px 0 0;
+.element-settings-collapsible-desc {
+	margin: var(--size-4-1) 0 0;
 	color: var(--text-muted);
-	font-size: 13px;
-	line-height: 1.5;
+	font-size: var(--font-smaller);
+	line-height: var(--line-height-tight);
 }
-.elementCard-settings-collapsible-content {
-	padding: 14px 0 0;
+.element-settings-collapsible-content {
+	padding: var(--size-4-4) 0 0;
 }
 /* no-summary cards: apply card style directly (no summary element) */
 
-.elementCard-settings-collapsible.no-summary {
-	border: var(--elementCard-settings-collapsible-border) !important;
-	border-radius: var(--elementCard-settings-collapsible-radius);
-	background: var(--background-secondary) !important;
-	background-color: var(--background-secondary) !important;
+.element-settings-collapsible.no-summary {
+	border: var(--element-settings-collapsible-border) !important;
+	border-radius: var(--element-settings-collapsible-radius);
+	background: var(--background-primary-alt) !important;
+	background-color: var(--background-primary-alt) !important;
 }
-.elementCard-settings-collapsible.no-summary .elementCard-settings-collapsible-content {
-	padding: 14px 16px;
-}
-.theme-light .elementCard-settings-collapsible.no-summary,
-.theme-light .elementCard-settings-collapsible-summary,
-.theme-light .elementCard-settings-collapsible-summary:focus,
-.theme-light .elementCard-settings-collapsible-summary:focus-visible,
-.theme-light .elementCard-settings-collapsible-summary:hover,
-.theme-light .elementCard-settings-collapsible-summary.is-open {
-	background: var(--elementCard-settings-collapsible-light-bg) !important;
-	background-color: var(--elementCard-settings-collapsible-light-bg) !important;
-}
-.theme-dark .elementCard-settings-collapsible.no-summary {
-	background: var(--elementCard-settings-collapsible-dark-bg) !important;
-	background-color: var(--elementCard-settings-collapsible-dark-bg) !important;
-}
-.theme-dark .elementCard-settings-collapsible-summary,
-.theme-dark .elementCard-settings-collapsible-summary:focus,
-.theme-dark .elementCard-settings-collapsible-summary:focus-visible,
-.theme-dark .elementCard-settings-collapsible-summary:hover,
-.theme-dark .elementCard-settings-collapsible-summary.is-open {
-	background: var(--elementCard-settings-collapsible-dark-bg) !important;
-	background-color: var(--elementCard-settings-collapsible-dark-bg) !important;
-	border: var(--elementCard-settings-collapsible-border) !important;
+.element-settings-collapsible.no-summary .element-settings-collapsible-content {
+	padding: var(--size-4-4) var(--size-4-4);
 }
 /* Force View Mode specific styles */
 .force-view-mode-div {
-	margin-bottom: 8px;
+	margin-bottom: var(--size-4-2);
 }
 .force-view-mode-div > .setting-item {
-	padding: 8px 12px;
+	padding: var(--size-4-2) var(--size-4-3);
 	border: none;
 }
 .force-view-mode-div > .setting-item > .setting-item-control {
@@ -676,123 +453,8 @@ display:flex;align-items:center;justify-content:space-between;gap:12px;min-width
 	box-sizing: border-box;
 }
 
-/* Folder browse button */
 
-.elementCard-folder-browse-btn {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 28px;
-	height: 28px;
-	border: none;
-	background: transparent;
-	color: var(--text-muted);
-	cursor: pointer;
-	border-radius: var(--input-radius);
-	margin-left: 4px;
-	flex-shrink: 0;
-}
-.elementCard-folder-browse-btn:hover {
-	background-color: var(--background-modifier-hover);
-	color: var(--text-normal);
-}
-
-/* Folder suggest dropdown */
-
-.folder-suggest-backdrop {
-	position: fixed;
-	inset: 0;
-	z-index: var(--layer-modal);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-.folder-suggest-dropdown {
-	width: 480px;
-	max-width: 90vw;
-	max-height: 70vh;
-	overflow: hidden;
-	background: var(--background-primary);
-	border: 1px solid var(--background-modifier-border);
-	border-radius: var(--radius-m);
-	display: flex;
-	flex-direction: column;
-}
-
-/* Inline dropdown (used by force-view-mode row input itself) */
-
-.folder-suggest-dropdown--inline {
-	position: absolute;
-	left: 0;
-	right: 0;
-	top: calc(100% + 4px);
-	width: 100%;
-	max-width: none;
-	max-height: 280px;
-	z-index: calc(var(--layer-modal) + 2);
-	border-radius: var(--input-radius, 10px);
-	box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
-}
-.folder-suggest-search {
-	padding: 8px 10px;
-	border-bottom: 1px solid var(--background-modifier-border);
-}
-.folder-suggest-search-input {
-	width: 100%;
-	padding: 6px 8px;
-	background: var(--background-modifier-form-field);
-	border: 1px solid var(--background-modifier-border);
-	border-radius: var(--radius-s);
-	color: var(--text-normal);
-	font-size: var(--font-ui-small);
-	outline: none;
-	pointer-events: auto;
-	user-select: text;
-	-webkit-user-select: text;
-	caret-color: var(--text-normal);
-}
-.folder-suggest-search-input:focus {
-	border-color: var(--interactive-accent);
-}
-.folder-suggest-list {
-	overflow-y: auto;
-	padding: 4px 0;
-}
-.folder-suggest-empty {
-	padding: 20px 10px;
-	text-align: center;
-	color: var(--text-faint);
-	font-size: var(--font-ui-small);
-}
-.folder-suggest-dropdown .suggest-item {
-	display: flex;
-	align-items: center;
-	gap: 6px;
-	padding: 6px 10px;
-	cursor: pointer;
-	color: var(--text-muted);
-	font-size: var(--font-ui-small);
-}
-.folder-suggest-dropdown .suggest-item:hover,
-.folder-suggest-dropdown .suggest-item.is-active {
-	background: var(--background-modifier-hover);
-	color: var(--text-normal);
-}
-.folder-suggest-dropdown .suggest-icon {
-	display: flex;
-	flex-shrink: 0;
-	color: var(--text-faint);
-}
-.folder-suggest-dropdown .suggest-icon svg {
-	width: 14px;
-	height: 14px;
-}
-.folder-suggest-dropdown .suggest-text {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-@keyframes elementCard-settings-fade-in {
+@keyframes element-settings-fade-in {
 	from {
 		opacity: 0;
 		transform: translateY(4px);
@@ -803,60 +465,57 @@ display:flex;align-items:center;justify-content:space-between;gap:12px;min-width
 	}
 }
 @media (max-width: 720px) {
-	.elementCard-settings-root {
-		--elementCard-settings-group-bg: var(--background-primary);
-		--elementCard-settings-collapsible-light-bg: var(--background-primary);
-		--elementCard-settings-collapsible-dark-bg: var(--background-primary);
-		--elementCard-settings-group-margin: 12px 0 22px;
-		--elementCard-settings-group-padding-x: 14px;
-		--elementCard-settings-group-radius: 28px;
-		--elementCard-settings-group-item-padding-y: 18px;
-		--elementCard-settings-group-title-margin: 22px 0 10px;
-		--elementCard-settings-group-title-size: 1.05rem;
+	.element-settings-root {
+		--element-settings-group-margin: var(--size-4-4) 0 var(--size-4-6);
+		--element-settings-group-padding-x: var(--size-4-4);
+		--element-settings-group-radius: 28px;
+		--element-settings-group-item-padding-y: 18px;
+		--element-settings-group-title-margin: var(--size-4-6) 0 var(--size-4-3);
+		--element-settings-group-title-size: 1.05rem;
 	}
-	.theme-light .elementCard-settings-group,
-	.theme-dark .elementCard-settings-group {
-		--elementCard-settings-group-bg: var(--background-primary) !important;
+	.theme-light .element-settings-group {
 		background: var(--background-primary) !important;
 	}
-	.elementCard-settings-nav {
-		gap: 10px 12px;
-	}
-	.theme-light .elementCard-settings-collapsible-summary,
-	.theme-light .elementCard-settings-collapsible-summary:focus,
-	.theme-light .elementCard-settings-collapsible-summary:focus-visible,
-	.theme-light .elementCard-settings-collapsible-summary:hover,
-	.theme-light .elementCard-settings-collapsible-summary.is-open {
+	.theme-light .element-settings-collapsible-summary,
+	.theme-light .element-settings-collapsible-summary {
 		background: var(--background-primary) !important;
 		background-color: var(--background-primary) !important;
 	}
-	.elementCard-settings-nav-btn {
-		padding: 10px 12px;
-		font-size: calc(var(--elementCard-settings-nav-font-size) - 1px);
+	.theme-light .element-settings-collapsible.no-summary {
+		background: var(--background-primary) !important;
+		background-color: var(--background-primary) !important;
 	}
-	.elementCard-settings-content {
+	.element-settings-nav {
+		gap: var(--size-4-3) var(--size-4-4);
+	}
+	.element-settings-nav-btn {
+		padding: var(--size-4-3) var(--size-4-4);
+		font-size: calc(var(--element-settings-nav-font-size) - 1px);
+		border-radius: var(--touch-radius-xs);
+	}
+	.element-settings-content {
 		padding: 14px 0;
 	}
-	.elementCard-settings-group > .setting-item {
+	.element-settings-group > .setting-item {
 		flex-direction: column;
 		align-items: stretch;
 		gap: 10px;
 	}
-	.elementCard-settings-group > .setting-item > .setting-item-info,
-	.elementCard-settings-group > .setting-item > .setting-item-control {
+	.element-settings-group > .setting-item > .setting-item-info,
+	.element-settings-group > .setting-item > .setting-item-control {
 		width: 100%;
 	}
-	.elementCard-settings-group > .setting-item > .setting-item-control {
+	.element-settings-group > .setting-item > .setting-item-control {
 		justify-content: flex-start;
 		flex-wrap: wrap;
 	}
-	.elementCard-settings-group input,
-	.elementCard-settings-group select,
-	.elementCard-settings-group textarea {
+	.element-settings-group input,
+	.element-settings-group select,
+	.element-settings-group textarea {
 		width: 100%;
 		max-width: 100%;
 	}
-	.elementCard-settings-group > .force-view-mode-div > .setting-item > .setting-item-control {
+	.element-settings-group > .force-view-mode-div > .setting-item > .setting-item-control {
 		flex-direction: column;
 		align-items: stretch;
 	}
@@ -869,61 +528,48 @@ display:flex;align-items:center;justify-content:space-between;gap:12px;min-width
 		flex: 1 1 auto;
 		width: 100%;
 	}
-	.elementCard-settings-group > .force-view-mode-div .setting-item-control > .clickable-icon {
+	.element-settings-group > .force-view-mode-div .setting-item-control > .clickable-icon {
 		align-self: flex-end;
 	}
 }
 .heatmap-modal__theme-menu,
-/* ElementCard 主题选择器下拉菜单：主题选择器的下拉菜单 */
-.elementCard-builder-modal__palette-menu {
+/* Theme picker dropdown */
+.heatmap-modal__palette-menu {
 display:flex;flex-direction:column;gap:4px;margin-top:6px;padding:6px;border:1px solid var(--background-modifier-border);border-radius:4px;background:var(--background-primary);box-shadow:0 12px 28px rgba(15,23,42,.08);min-width:180px
 }
-/* ElementCard 主题选择器选项：主题选项中的标签样式 */
-.elementCard-builder-modal__palette-option-label {
+/* Theme picker option label */
+.heatmap-modal__palette-option-label {
 font-size:12px;font-weight:600;color:var(--text-normal);white-space:nowrap
 }
-/* ElementCard 主题选择器色板：主题颜色示例的容器 */
-.elementCard-builder-modal__palette-swatches {
+/* Theme picker swatch group */
+.heatmap-modal__palette-swatches {
 display:flex;align-items:center;gap:3px;flex-shrink:0
 }
-/* ElementCard 主题选择器色板：单个颜色块的样式 */
-.elementCard-builder-modal__palette-swatch {
+/* Theme picker swatch */
+.heatmap-modal__palette-swatch {
 width:16px;height:16px;border-radius:999px;border:1px solid rgba(15,23,42,.08)
 }
-/* ElementCard 主题选择器色板：小号颜色块的样式 */
-.elementCard-builder-modal__palette-swatch--small {
+/* Theme picker swatch (small) */
+.heatmap-modal__palette-swatch--small {
 width:14px;height:14px
 }
-.elementCard-builder-modal__title-input {
+.heatmap-modal__title-input {
 min-width:220px;flex:1
 }
-.elementCard-builder-modal__title-size-input {
+.heatmap-modal__title-size-input {
 width:48px;min-width:48px;text-align:center
 }
-.heatmap-modal-form .heatmap-modal__title-size {
-width:48px;min-width:48px;max-width:48px;text-align:center;flex-grow:0;flex-shrink:0
-}
-.elementCard-builder-modal__select,
-.elementCard-builder-modal__input,
-.heatmap-modal-form select,
-.heatmap-modal-form input[type="text"],
-.heatmap-modal-form input[type="number"],
-.heatmap-modal-form input[type="date"] {
+.heatmap-modal__select,
+.heatmap-modal__input {
     border: 1px solid var(--background-modifier-border);
     border-radius: var(--input-radius, 10px);
     padding: 6px 10px;
     background-color: var(--background-primary);
     font-size: 13px;
 }
-/* ElementCard 语言按钮：默认态（激活态在下面单独覆盖） */
-
-.elementCard-builder-modal__language-button,
 .heatmap-modal-language-toggle button {
 padding:.45rem 1rem;border:0;border-radius:4px;background:transparent;color:var(--text-normal);font:inherit;font-weight:600;cursor:var(--cursor)
 }
-/* ElementCard 语言按钮：激活态与 Tab（如“基础设置”）保持同一强调体系 */
-
-.elementCard-builder-modal__language-button.is-active,
 .heatmap-modal-language-toggle button.is-active {
 background:var(--nav-item-background-active);color:var(--nav-item-color-active);font-weight:var(--nav-item-weight-active,600)
 }
@@ -961,17 +607,17 @@ display:inline-flex;align-items:center;padding:0;border-radius:0;background:tran
 	padding: 0 8px;
 	box-sizing: border-box;
 }
-.heatmap-modal__theme-trigger .elementCard-builder-modal__palette-trigger-label,
-.heatmap-modal__theme-option .elementCard-builder-modal__palette-option-label {
+.heatmap-modal__theme-trigger .heatmap-modal__palette-trigger-label,
+.heatmap-modal__theme-option .heatmap-modal__palette-option-label {
 	font-size: 12px;
 	line-height: 1.2;
 }
-.heatmap-modal__theme-trigger .elementCard-builder-modal__palette-swatches,
-.heatmap-modal__theme-option .elementCard-builder-modal__palette-swatches {
+.heatmap-modal__theme-trigger .heatmap-modal__palette-swatches,
+.heatmap-modal__theme-option .heatmap-modal__palette-swatches {
 	gap: 2px;
 }
-.heatmap-modal__theme-trigger .elementCard-builder-modal__palette-swatch--small,
-.heatmap-modal__theme-option .elementCard-builder-modal__palette-swatch--small {
+.heatmap-modal__theme-trigger .heatmap-modal__palette-swatch--small,
+.heatmap-modal__theme-option .heatmap-modal__palette-swatch--small {
 	width: 10px;
 	height: 10px;
 }
@@ -1024,16 +670,6 @@ display:inline-flex;align-items:center;padding:0;border-radius:0;background:tran
 }
 /* 对齐方式：整行与标签统一垂直居中 */
 
-.heatmap-modal-form .form-item:has(.heatmap-modal__title-align-row) {
-	align-items: center;
-}
-/* 对齐方式：左侧“对齐方式”标签与按钮组同高对齐 */
-
-.heatmap-modal-form .form-item:has(.heatmap-modal__title-align-row) .label {
-	line-height: normal;
-	min-height: var(--input-height, 32px);
-	align-items: center;
-}
 /* 对齐方式：单个按钮填满整行高度 */
 
 .heatmap-modal__title-align-row .heatmap-choose .item,
@@ -1048,7 +684,7 @@ display:inline-flex;align-items:center;padding:0;border-radius:0;background:tran
 /* 对齐方式图标：统一在按钮正中 */
 
 .heatmap-modal-container .heatmap-modal__title-align-row .heatmap-choose .item .icon,
-.heatmap-modal-container .heatmap-modal__title-align-row .plugin-config-choice__icon {
+.heatmap-modal-container .heatmap-modal__title-align-row .plugin-config-choice__icon svg {
 	position: absolute;
 	inset: 0;
 	display: flex;
@@ -1069,15 +705,12 @@ display:inline-flex;align-items:center;padding:0;border-radius:0;background:tran
 	margin: 0;
 	flex: 0 0 auto;
 }
-.elementCard-render-error-container,
 .heatmap-render-error-container {
 background-color:var(--background-secondary);padding:6px;min-height:12px;border-radius:6px
 }
-.elementCard-render-error-container .summary,
 .heatmap-render-error-container .summary {
 text-align:left;color:var(--text-error);font-size:var(--font-ui-larger)
 }
-.elementCard-render-error-container .recommend,
 .heatmap-render-error-container .recommend {
 text-align:left
 }
@@ -1228,138 +861,22 @@ height:8px;width:auto;min-width:20px;margin-left:6px;margin-right:6px;color:var(
 .heatmap-modal {
 display:flex;flex-direction:column
 }
-.heatmap-modal-form {
-display:flex;flex-direction:column;flex-grow:1;
---cg-form-label-width: 120px;
-	--cg-form-gap: 10px;
-	--cg-form-section-gap: 18px;
-	--cg-form-indent: 24px;
-	--cg-form-divider-color: var(--background-modifier-border);
-}
-.heatmap-modal-form .form-group {
-display:flex;flex-direction:column;flex-grow:1;margin-bottom:12px;gap:3px
-}
-.heatmap-modal-form .form-item {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	gap: var(--cg-form-gap);
-	padding: 8px 16px 8px 0;
-	border-bottom: 1px solid transparent;
-}
-.heatmap-modal-form .form-item.form-item-filter {
-border-top:none;
-padding-top:0;
-}
-.heatmap-modal-form .form-item.form-item-source {
-padding-bottom:0;border-bottom:none
-}
-.heatmap-modal-form .form-item:first-child {
-padding-top:0px
-}
-.heatmap-modal-form .form-item .label {
-	display:inline-flex;
-	flex: 0 0 var(--cg-form-label-width);
-	max-width: var(--cg-form-label-width);
-	min-width: var(--cg-form-label-width);
-	text-align: center;
-	justify-content: center;
-	box-sizing:border-box;
-	padding: 0 12px 0 0;
-	font-size: 13px;
-	font-weight: 500;
-	color: var(--text-normal);
-	line-height: 32px;
-}
-.heatmap-modal-form .form-item .form-description {
-	width: 100%;
-	font-size: 12px;
-	color: var(--text-faint);
-	line-height: 1.5;
-	padding: 2px 0 0;
-}
-@media screen and (max-width: 768px){.heatmap-modal-form .form-item .label{width:100%;justify-content:flex-start}}
-.heatmap-modal-form .form-item .form-content {
-	flex: 1 1 auto;
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	gap: 6px;
-	min-width: 0;
-}
-.heatmap-modal-form .form-item .form-content .checkbox {
-	border:1px solid var(--background-modifier-border);
-	padding:0;
-	flex-grow:0;
-	cursor:pointer;
-	z-index:1;
-	width:16px;
-	height:16px;
-	accent-color:var(--interactive-accent);
-	vertical-align:middle;
-	margin:0;
-}
-.heatmap-modal-form .form-item .form-content .checkbox:checked {
-	background-color:var(--interactive-accent);
-	border-color:var(--interactive-accent);
-}
-.heatmap-modal-form .form-item .form-vertical-content {
-display:flex;flex-direction:column;flex-wrap:wrap;align-items:flex-start;flex:1;gap:8px
-}
-.heatmap-modal-form .form-item .form-vertical-content>input[type=text] {
-flex-grow:1;border-width:0px 0px 1px 0px;padding:3px;border-color:var(--background-modifier-border);color:var(--text-normal);width:100%
-}
-.heatmap-modal-form .form-item .form-content input {
-flex-grow:1;border: 1px solid var(--background-modifier-border);border-radius: var(--input-radius, 10px);padding: 6px 10px;background-color: var(--background-primary);color:var(--text-normal)
-}
-.heatmap-modal-form .form-item .form-content input[type=text] {
-background:var(--background-primary)
-}
-.heatmap-modal-form .form-item .form-content .color-picker {
-	width: 28px;
-	height: 28px;
-	flex-grow: 0;
-	border-radius: 50%;
-	border: 2px solid var(--background-modifier-border);
-	padding: 0;
-	cursor: pointer;
-	transition: border-color 150ms ease, transform 150ms ease;
-}
-.heatmap-modal-form .form-item .form-content .color-picker:hover {
-opacity:.5;
-border-color: var(--interactive-accent);
-	transform: scale(1.1);
-}
-.heatmap-modal-form .form-item .form-content .number-input {
-text-align:center;box-shadow:none;border:1px solid var(--background-modifier-border);border-radius:var(--input-radius, 10px);padding:6px 10px;background-color:var(--background-primary)
-}
-.heatmap-modal-form .form-item .form-content .number-input:focus {
-box-shadow:none
-}
-.heatmap-modal-form .form-item .form-content .button {
-flex-grow:1;margin-right:12px;background-color:var(--interactive-normal)
-}
-.heatmap-modal-form .form-item .form-content .button:hover {
-background-color:var(--interactive-accent)
-}
-.heatmap-modal-form .form-item .cell-rule-value {
-text-align:center;width:38px;border-radius:0
-}
-.heatmap-modal-form .form-item .cell-rule-color {
-width:16px;height:16px;border-radius:0;inline-size:inherit;block-size:inherit
-}
-.heatmap-modal-form .form-item .cell-rule-text {
-width:48px;background-color:transparent;border:none
-}
-.heatmap-modal-form .preview-content {
-display:grid;overflow-x:scroll;max-width:80vw
-}
-.heatmap-modal-form .form-item .list-remove-button,
-.heatmap-modal-form .form-item .list-add-button {
-border:none;border-width:0px;box-shadow:none;background-color:transparent
-}
 .heatmap-codeblock-edit-button {
-padding:var(--size-2-2) var(--size-2-3);position:absolute;top:var(--size-2-2);right:calc(var(--size-2-2) + 40px);display:flex;opacity:0;color:var(--text-muted);border-radius:var(--radius-s);cursor:var(--cursor)
+	padding: var(--size-2-2) var(--size-2-3);
+	position: absolute;
+	bottom: var(--size-2-2);
+	right: var(--size-2-2);
+	display: flex;
+	opacity: 0;
+	color: var(--text-muted);
+	border-radius: var(--radius-s);
+	cursor: var(--cursor);
+	z-index: 5;
+	pointer-events: none;
+}
+.heatmap-codeblock-edit-button svg {
+	width: var(--icon-m);
+	height: var(--icon-m);
 }
 .heatmap-codeblock-edit-button:hover,
 .heatmap .activity-container .activity-content .activity-list .activity-item .label:hover,
@@ -1417,7 +934,9 @@ width:12px;height:12px
 .suggest-input-tags .tags .tag .icon .lucide {
 width:100%;height:100%
 }
-.suggest-input-tags .tags .tag .remove-button {
+.suggest-input-tags .tags .tag .remove-button,
+.plugin-config-color-reset-button:hover,
+.color-reset-button:hover {
 min-width:24px;text-align:center
 }
 .heatmap-modal__folder-suggest-input {
@@ -1476,6 +995,9 @@ color:var(--nav-item-color-active);background-color:var(--nav-item-background-ac
 .tab-container .tab-items .tab-item {
 padding:3px 6px;display:none
 }
+.tab-container .tab-items .tab-item.active {
+display:block
+}
 .heatmap .activity-container {
 display:flex;flex-direction:row;gap:.6rem;padding:.4rem;position:relative
 }
@@ -1527,131 +1049,38 @@ font-size:.8rem;color:var(--text-muted);cursor:pointer;padding:4px;border-radius
 .input-range-value-label:hover {
 background:var(--interactive-accent);color:var(--text-on-accent)
 }
-.elementCard .elementCard__link-button,
-.elementCard .elementCard__link-button:hover,
-.elementCard .elementCard__link-button:focus,
-.elementCard .elementCard__link-button:active {
-appearance: none;
-	-webkit-appearance: none;
-	background: transparent !important;
-	background-color: transparent !important;
-	background-image: none !important;
-	border: 0 !important;
-	box-shadow: none !important;
-	outline: none;
-	padding: 0;
-	margin: 0;
-	border-radius: 0;
-	color: inherit;
-	font: inherit;
-	font-weight: 600;
-	text-decoration: none;
-font-weight: 400;
-}
-.elementCard .elementCard__link-button:hover,
-.elementCard .elementCard__link-button:focus {
-	color: color-mix(in srgb, var(--elementCard-card-link-color, #1d86ea) 82%, black);
-}
-.elementCard__card[data-links-layout=inline] .elementCard__card-body,
-.elementCard__links,
-.elementCard__links li,
-.elementCard__links-inline,
-.elementCard__links li .elementCard__link-button {
-	color: color-mix(in srgb, var(--elementCard-card-link-color, #1d86ea) 88%, white);
-}
+
 @media (max-width:768px) {
-
-/* ElementCard Builder Modal: Optimize color pickers for mobile */
-
-    .elementCard-builder-modal .setting-item-control {
-		flex-wrap: nowrap;
-}
-/* Ensure input fields have 4px border radius on mobile */
-    
-	.elementCard-builder-modal input[type="text"],
-	.elementCard-builder-modal input[type="number"],
-	.elementCard-builder-modal select,
-	.elementCard-builder-modal textarea,
-	.elementCard-builder-modal__select,
-	.elementCard-builder-modal__input,
-	.heatmap-modal-form select,
-	.heatmap-modal-form input[type="text"],
-	.heatmap-modal-form input[type="number"],
-	.heatmap-modal-form input[type="date"],
+	.heatmap-modal__select,
+	.heatmap-modal__input,
 	.plugin-config-form input[type="text"],
 	.plugin-config-form input[type="number"],
 	.plugin-config-form select,
 	.plugin-config-form textarea {
 		border-radius: 4px !important;
 	}
-	.elementCard-builder-modal__palette-trigger-row,
-	.elementCard-builder-modal__palette-menu,
-	.elementCard-builder-modal__palette-option,
-	.elementCard-builder-modal__palette-trigger {
+	.heatmap-modal__palette-trigger-row,
+	.heatmap-modal__palette-menu,
+	.heatmap-modal__palette-option,
+	.heatmap-modal__palette-trigger {
 		border-radius: 4px !important;
 	}
-	.elementCard-builder-modal__palette-trigger-row {
+	.heatmap-modal__palette-trigger-row {
 		width: 100% !important;
 		min-width: 100% !important;
 		max-width: 100% !important;
 		box-sizing: border-box;
 	}
-	.elementCard-builder-modal__palette-menu {
+	.heatmap-modal__palette-menu {
 		box-sizing: border-box;
 		padding: 8px;
 	}
-	.elementCard-builder-modal__palette-option {
+	.heatmap-modal__palette-option {
 		padding: 12px 14px;
-	}
-/* Make accent color pickers horizontal */
-    
-	.elementCard-builder-modal__accent-colors .setting-item-control {
-		display: flex;
-		flex-direction: row;
-		flex-wrap: nowrap;
-		gap: 12px;
-		justify-content: flex-start;
-		align-items: center;
-	}
-/* Make background color setting more compact */
-
-	.elementCard-builder-modal__background .setting-item-control {
-		display: flex;
-		flex-direction: row;
-		flex-wrap: nowrap;
-		gap: 12px;
-		align-items: center;
-	}
-/* Adjust input field width for transparency */
-
-	.elementCard-builder-modal__background .setting-item-control input[type="text"] {
-		max-width: 60px;
-	}
-/* Compact card settings */
-
-	.elementCard-builder-modal__card {
-		padding: 0.5rem;
-		gap: 0.4rem;
-	}
-	.elementCard-builder-modal__card h4 {
-		font-size: 12px;
-		margin-bottom: 4px;
-	}
-	.elementCard-builder-modal .setting-item {
-		padding: 4px 0;
-	}
-	.elementCard-builder-modal .setting-item-name {
-		font-size: 12px;
-	}
-	.elementCard-builder-modal .setting-item-description {
-		font-size: 11px;
 	}
 }
 /* Reading/preview mode: never show draggable resizers. */
 
-.markdown-reading-view .elementCard__resizer {
-	display: none !important;
-}
 /* Reading/preview mode: offset paragraph bottom margin for heatmap */
 .markdown-reading-view .heatmap {
 	margin-bottom: -16px;
@@ -1720,203 +1149,115 @@ font-weight: 400;
 		min-width: 7px;
 	}
 }
-/* 带描述文字的表单项作为分组标题 */
-
-.heatmap-modal-form .form-item:has(.form-description) {
-	flex-direction: column;
-	align-items: flex-start;
-	gap: 4px;
-	padding: var(--cg-form-section-gap) 0 6px;
-	margin-top: 2px;
-	border-top: 1px solid var(--cg-form-divider-color);
-}
-.heatmap-modal-form .form-item:has(.form-description) .label {
-	flex: none;
-	max-width: none;
-	min-width: 0;
-	text-align: left;
-	justify-content: flex-start;
-	padding: 0;
-	font-size: 14px;
-	font-weight: 600;
-	color: var(--text-normal);
-	line-height: 1.4;
-}
-.heatmap-modal-form .form-item:has(.form-description) .form-content {
-	flex: none;
-	width: 100%;
-}
-/* ===== 1. 子选项缩进（日期字段、日期格式、打分属性等从属选项） ===== */
-
-.heatmap-modal-form .form-item.is-sub-item {
-	padding-left: var(--cg-form-indent);
-}
-.heatmap-modal-form .form-item.is-sub-item .label {
-	flex: 0 0 calc(var(--cg-form-label-width) - var(--cg-form-indent));
-	max-width: calc(var(--cg-form-label-width) - var(--cg-form-indent));
-	min-width: calc(var(--cg-form-label-width) - var(--cg-form-indent));
-	font-size: 12px;
-	color: var(--text-muted);
-}
-
-/* ===== 2. 简单 Checkbox 项：紧凑排列 ===== */
-
-.heatmap-modal-form .form-item.is-checkbox-item {
-	padding: 6px 0;
-}
-.heatmap-modal-form .form-item.is-checkbox-item .label {
-	flex: 1 1 auto;
-	max-width: none;
-	min-width: 0;
-	text-align: left;
-	justify-content: flex-start;
-	padding: 0;
-	font-weight: 400;
-	line-height: 20px;
-}
-.heatmap-modal-form .form-item.is-checkbox-item .form-content {
-	flex: 0 0 auto;
-}
-
-/* ===== 3. 双列布局：将简短的 checkbox 项两两并排 ===== */
-
-.heatmap-modal-form .checkbox-pair {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 0 24px;
-}
-.heatmap-modal-form .checkbox-pair .form-item {
-	border-bottom: none;
-	padding: 6px 0;
-}
-
-/* ===== 4. 输入控件统一风格 ===== */
-
-.heatmap-modal-form .form-item .form-content input[type="text"],
-.heatmap-modal-form .form-item .form-content input[type="number"],
-.heatmap-modal-form .form-item .form-content select {
-	border: 1px solid var(--background-modifier-border);
-	border-radius: var(--input-radius, 6px);
-	padding: 0 10px;
-	background-color: var(--background-primary);
-	font-size: 13px;
-	height: 32px;
-	line-height: 32px;
-	box-sizing: border-box;
-	color: var(--text-normal);
-	transition: border-color 150ms ease;
-}
-.heatmap-modal-form .form-item .form-content input[type="text"]:focus,
-.heatmap-modal-form .form-item .form-content input[type="number"]:focus,
-.heatmap-modal-form .form-item .form-content select:focus {
-	border-color: var(--interactive-accent);
-	outline: none;
-	box-shadow: 0 0 0 2px color-mix(in srgb, var(--interactive-accent) 20%, transparent);
-}
-
-/* ===== 5. 主题选择器宽度统一 ===== */
-
-.heatmap-modal__theme-trigger,
-.elementCard-builder-modal__palette-trigger-row {
-	min-width: 240px;
-}
-
-/* ===== 6. Slider 滑块优化 ===== */
-
-.heatmap-modal-form .form-item .form-content input[type="range"] {
-	flex: 1 1 auto;
-	min-width: 120px;
-	height: 4px;
-	-webkit-appearance: none;
-	appearance: none;
-	background: var(--background-modifier-border);
-	border-radius: 2px;
-	outline: none;
-	padding: 0;
-}
-.heatmap-modal-form .form-item .form-content input[type="range"]::-webkit-slider-thumb {
-	-webkit-appearance: none;
-	width: 16px;
-	height: 16px;
-	border-radius: 50%;
-	background: var(--interactive-accent);
-	cursor: pointer;
-	border: 2px solid var(--background-primary);
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-	margin-top: 0;
-}
-.heatmap-modal-form .form-item .form-content input[type="range"]::-moz-range-track {
-	height: 4px;
-	background: var(--background-modifier-border);
-	border-radius: 2px;
-}
-.heatmap-modal-form .form-item .form-content input[type="range"]::-moz-range-thumb {
-	width: 16px;
-	height: 16px;
-	border-radius: 50%;
-	background: var(--interactive-accent);
-	cursor: pointer;
-	border: 2px solid var(--background-primary);
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-/* ===== 7. Tab 标签页样式优化 ===== */
-
-.heatmap-modal-form .tab-container {
-	border-bottom: 2px solid var(--background-modifier-border);
-	margin-bottom: 12px;
-}
-.heatmap-modal-form .tab-titles {
+/* ✅ Heatmap Modal 底部按钮栏 */
+.heatmap-modal-footer {
 	display: flex;
-	gap: 0;
+	justify-content: center;
+	gap: var(--size-4-3);
+	padding: var(--size-4-4) 0;
+	margin-top: var(--size-4-5);
+	border-top: 1px solid var(--background-modifier-border);
 }
-.heatmap-modal-form .tab-titles .tab-item-title {
-	padding: 8px 20px;
-	font-size: 13px;
-	font-weight: 500;
-	color: var(--text-muted);
-	border-bottom: 2px solid transparent;
-	margin-bottom: -2px;
-	transition: color 150ms ease, border-color 150ms ease;
-}
-.heatmap-modal-form .tab-titles .tab-item-title.is-active {
+
+.heatmap-modal-footer__btn {
+	font-family: inherit;
+	font-size: var(--font-ui-small);
+	font-weight: var(--input-font-weight);
+	line-height: 1;
 	color: var(--text-normal);
-	border-bottom-color: var(--interactive-accent);
-	font-weight: 600;
+	background-color: var(--interactive-normal);
+	border: 0 solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	corner-shape: var(--button-corner-shape);
+	padding: var(--size-4-1) var(--size-4-3);
+	height: var(--input-height);
+	flex: 0 0 25%;
+	box-shadow: var(--input-shadow);
+	cursor: var(--cursor);
+	transition: background-color 140ms ease, box-shadow 140ms ease;
 }
 
-/* ===== 8. 响应式：小屏幕适配 ===== */
+@media (max-width: 768px) {
+	.heatmap-modal-footer__btn {
+		flex: 0 1 100%;
+		border-radius: var(--button-radius);
+	}
+}
 
-@media screen and (max-width: 600px) {
-	.heatmap-modal-form .form-item .label {
-		flex: 0 0 80px;
-		max-width: 80px;
-		min-width: 80px;
-		font-size: 12px;
-	}
-	.heatmap-modal-form .form-item.is-sub-item {
-		padding-left: 16px;
-	}
-	.heatmap-modal-form .form-item.is-sub-item .label {
-		flex: 0 0 64px;
-		max-width: 64px;
-		min-width: 64px;
-	}
-	.heatmap-modal-form .checkbox-pair {
-		grid-template-columns: 1fr;
-	}
-	.heatmap-modal__title-align-row .heatmap-choose,
-	.heatmap-modal__title-align-row .plugin-config-choice {
-		width: 120px;
-		min-width: 120px;
-		max-width: 120px;
-	}
-	.heatmap-modal-container .heatmap-modal__title-align-row .heatmap-choose .item .icon svg,
-	.heatmap-modal-container .heatmap-modal__title-align-row .plugin-config-choice__icon svg {
-		transform: translateY(-5px);
-	}
-	.heatmap-modal-form .form-item .form-content input[type="range"]::-webkit-slider-thumb {
-		margin-top: 2px;
+.heatmap-modal-footer__btn:hover {
+	background-color: var(--interactive-hover);
+	box-shadow: var(--input-shadow-hover);
+}
+
+.heatmap-modal-footer__btn:focus-visible {
+	box-shadow: 0 0 0 3px var(--background-modifier-border-focus);
+}
+
+.heatmap-modal-footer__btn--confirm {
+	background-color: var(--interactive-accent);
+	color: var(--text-on-accent);
+}
+
+.heatmap-modal-footer__btn--confirm:hover {
+	background-color: var(--interactive-accent-hover);
+}
+
+/* ✅ Heatmap Setting Modal (SettingGroup) */
+.heatmap-setting-modal .heatmap-setting-nav {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--size-4-2) var(--size-4-4);
+	margin: var(--size-4-4) 0 0;
+	padding: 0 0 var(--size-4-4);
+	border-bottom: 1px solid var(--background-modifier-border);
+	margin-bottom: var(--size-4-4);
+}
+
+.heatmap-setting-nav-btn {
+	appearance: none;
+	-webkit-appearance: none;
+	display: inline-flex;
+	align-items: center;
+	gap: var(--size-4-2);
+	border: 0 !important;
+	border-bottom: none !important;
+	border-radius: var(--radius-m);
+	background: transparent;
+	cursor: pointer;
+	box-shadow: none;
+	outline: none;
+	transition: background-color 140ms ease, color 140ms ease;
+}
+
+.heatmap-setting-nav-btn:hover {
+	background: var(--background-modifier-hover);
+	color: var(--text-normal);
+}
+
+.heatmap-setting-nav-btn:not(.is-active) {
+	background: transparent;
+	box-shadow: none;
+}
+
+.heatmap-setting-nav-btn:not(.is-active):focus,
+.heatmap-setting-nav-btn:not(.is-active):focus-visible {
+	outline: none;
+	box-shadow: none;
+}
+
+.heatmap-setting-nav-btn.is-active {
+	background: var(--background-modifier-hover);
+	color: var(--text-normal);
+	box-shadow: none;
+}
+
+.heatmap-setting-content {
+	padding-bottom: var(--size-4-4);
+}
+
+@media (max-width: 720px) {
+	.theme-light .heatmap-modal-footer {
+		background-color: var(--background-primary);
 	}
 }
 
@@ -1959,11 +1300,6 @@ font-weight: 400;
 	padding: 6px 16px;
 	border-radius: 4px;
 	font-size: 0.9em;
-	cursor: pointer;
-	border: 1px solid var(--background-modifier-border);
-	background-color: var(--background-primary);
-	color: var(--text-normal);
-	transition: background-color 0.15s ease;
 }
 
 .calendar-confirm-modal__btn:hover {
@@ -1978,4 +1314,229 @@ font-weight: 400;
 
 .calendar-confirm-modal__btn--confirm:hover {
 	background-color: var(--interactive-accent-hover);
+}
+
+/* ==================== NavBar ==================== */
+.navbar-container {
+	position: relative;
+}
+
+.navbar {
+	display: flex;
+	align-items: center;
+	padding: var(--size-4-4) calc(var(--size-4-4) + 2px) calc(var(--size-4-4) + 2px) var(--size-4-4);
+	height: auto;
+	background: transparent;
+
+	border-bottom: 1px solid var(--background-modifier-border);
+	position: relative;
+	z-index: auto;
+	margin: 0;
+
+	/* ✅ 防重影优化 */
+	transform: translateZ(0);
+	backface-visibility: hidden;
+
+	/* ✅ 字体清晰度优化 */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeLegibility;
+}
+
+.navbar--center {
+	justify-content: center;
+}
+
+.navbar--justify {
+	justify-content: space-between;
+}
+
+.navbar__items {
+	display: flex;
+	align-items: center;
+	column-gap: 1.5rem;
+	row-gap: 0.5rem;
+	flex-wrap: wrap;
+}
+
+.navbar__item {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+	font-size: 0.8rem;
+	color: var(--text-muted);
+	letter-spacing: 0.01em;
+	cursor: pointer;
+	position: relative;
+	padding-bottom: 2px;
+	transition: color 0.15s ease;
+	white-space: nowrap;
+	user-select: none;
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
+
+	font-weight: 500 !important;
+}
+
+.navbar__item-icon,
+.navbar__item-label {
+	font-weight: inherit !important;
+}
+
+.navbar__item:hover {
+	color: var(--text-normal);
+}
+
+.navbar__item::after {
+	content: "";
+	position: absolute;
+	bottom: -1px;
+	left: 0;
+	right: 0;
+	height: 1px;
+	background: var(--text-normal);
+	opacity: 0;
+	transition: opacity 0.15s ease;
+}
+
+.navbar__item:hover::after {
+	opacity: 0;
+}
+
+.navbar__item--active {
+	color: var(--text-normal);
+}
+
+.navbar__item--active::after {
+	opacity: 1;
+}
+
+.navbar__item--static {
+	cursor: default;
+	color: var(--text-muted);
+}
+
+.navbar__item--static::after {
+	display: none;
+}
+
+.navbar__item--static:hover {
+	color: var(--text-muted);
+}
+
+.navbar__item-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.navbar__item-icon svg {
+	width: 14px;
+	height: 14px;
+}
+
+.navbar__item-label {
+	font-size: inherit;
+}
+
+/* NavBar render error */
+.navbar-render-error {
+	padding: 1rem;
+	color: var(--text-error);
+	font-size: 0.85rem;
+}
+
+.navbar-codeblock-edit-button {
+	padding: var(--size-2-2) var(--size-2-3);
+	position: absolute;
+	bottom: var(--size-2-2);
+	right: var(--size-2-2);
+	display: flex;
+	opacity: 0;
+	pointer-events: none;
+	color: var(--text-muted);
+	border-radius: var(--radius-s);
+	cursor: var(--cursor);
+	transition: opacity 120ms ease-in-out;
+	z-index: 5;
+}
+.navbar-codeblock-edit-button svg {
+	width: var(--icon-m);
+	height: var(--icon-m);
+}
+
+.navbar-codeblock-edit-button:hover {
+	background-color: var(--background-modifier-hover);
+}
+
+/* NavBar Builder Modal */
+.navbar-builder-modal-container .navbar-builder-modal {
+	padding: var(--size-4-6);
+}
+
+/* ✅ NavBar Builder Modal 底部按钮栏 */
+.navbar-builder-modal__footer {
+	display: flex;
+	justify-content: center;
+	gap: var(--size-4-3);
+	padding: var(--size-4-4) 0;
+	margin-top: var(--size-4-5);
+	border-top: 1px solid var(--background-modifier-border);
+}
+
+.navbar-builder-modal__footer-btn {
+	font-family: inherit;
+	font-size: var(--font-ui-small);
+	font-weight: var(--input-font-weight);
+	line-height: 1;
+	color: var(--text-normal);
+	background-color: var(--interactive-normal);
+	border: 0 solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	corner-shape: var(--button-corner-shape);
+	padding: var(--size-4-1) var(--size-4-3);
+	height: var(--input-height);
+	flex: 0 0 25%;
+	box-shadow: var(--input-shadow);
+	cursor: var(--cursor);
+	transition: background-color 140ms ease, box-shadow 140ms ease;
+}
+
+@media (max-width: 768px) {
+	.navbar-builder-modal__footer-btn {
+		flex: 0 1 100%;
+		border-radius: var(--button-radius);
+	}
+}
+
+.navbar-builder-modal__footer-btn:hover {
+	background-color: var(--interactive-hover);
+	box-shadow: var(--input-shadow-hover);
+}
+
+.navbar-builder-modal__footer-btn:focus-visible {
+	box-shadow: 0 0 0 3px var(--background-modifier-border-focus);
+}
+
+.navbar-builder-modal__footer-btn--confirm {
+	background-color: var(--interactive-accent);
+	color: var(--text-on-accent);
+}
+
+.navbar-builder-modal__footer-btn--confirm:hover {
+	background-color: var(--interactive-accent-hover);
+}
+
+/* Mobile: wrap */
+@media (max-width: 768px) {
+	.navbar {
+		height: auto;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		padding: var(--size-4-4) calc(var(--size-4-4) + 2px) calc(var(--size-4-4) + 2px) var(--size-4-4);
+	}
+
+	.navbar__items {
+		gap: 1rem;
+	}
 }

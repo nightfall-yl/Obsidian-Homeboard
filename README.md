@@ -1,26 +1,26 @@
 # Elements
 
-> 一款 Obsidian 插件，为首页配置分栏导航卡片，并支持热力图追踪。
+> An Obsidian plugin that provides configurable navigation cards and heatmaps for your homepage.
 
-## 插件功能总结
+## Plugin Feature Summary
 
-Elements 是一款功能强大的 Obsidian 插件，为用户提供了多种实用功能：
+Elements is a powerful Obsidian plugin that offers multiple useful features:
 
-- **元素卡片**：通过 `elementCard` 代码块构建多列导航卡片布局，支持自定义配色方案、链接布局和卡片样式，帮助用户快速访问常用笔记和资源。链接支持 Action 触发器，可一键打开主页、微信读书书架等。
-- **热力图（Heatmap）**：通过 `heatmap` 代码块渲染 GitHub 风格热力图，支持多种图表类型和数据源，帮助用户追踪笔记创作节奏和任务完成情况。
-- **主页**：将指定笔记设为主页，支持启动自动打开、空标签页自动打开、多种打开模式（替换全部/保留/替换最后一个）及视图模式控制。
-- **侧边栏日历**：在左侧或右侧边栏显示月历视图，支持点击日期创建/打开日记，通过圆点直观展示每日笔记字数。
-- **强制视图模式**：允许用户为特定文件夹或文件设置默认视图模式（阅读模式或编辑模式），提高工作效率。
-- **光标位置记忆**：自动记忆并恢复用户在文件中的光标位置，避免重复定位，提升编辑体验。
+- **Element Card**: Build multi-column navigation card layouts through `elementCard` code blocks, supporting custom color schemes, link layouts, and card styles to help users quickly access frequently used notes and resources. Links support Action triggers for one-click access to homepage, WeRead bookshelf, etc.
+- **Heatmap**: Render GitHub-style heatmaps through `heatmap` code blocks, supporting multiple chart types and data sources to help users track note creation rhythm and task completion status.
+- **Homepage**: Designate a specific note as your homepage with auto-open on startup, auto-open on empty tabs, multiple open modes (replace all / keep / replace last), and view mode control.
+- **Sidebar Calendar**: Display a monthly calendar in the left or right sidebar, allowing you to create/open daily notes by clicking dates and visualize daily note counts with dots.
+- **Force View Mode**: Allow users to set default view modes (reading mode or editing mode) for specific folders or files, improving work efficiency.
+- **Remember Cursor Position**: Automatically remember and restore users' cursor positions in files, avoiding repeated positioning and enhancing editing experience.
 
-插件提供了直观的命令面板和右键菜单操作，支持中英文国际化，可根据用户的语言环境自动切换界面语言。
+The plugin provides intuitive command palette and right-click menu operations, supports English and Chinese internationalization, and automatically switches interface languages based on the user's language environment.
 
-## 安装
+## Installation
 
-### 手动安装
+### Manual
 
-1. 下载最新 [release](https://github.com/nightfall/obsidian-elements/releases)
-2. 将以下文件放入 Obsidian 插件目录：
+1. Download the latest [release](https://github.com/nightfall-yl/Trimmings/releases)
+2. Extract `main.js`, `manifest.json`, and `styles.css` into your vault's plugin folder:
 
 ```
 .obsidian/plugins/obsidian-elements/
@@ -29,19 +29,19 @@ Elements 是一款功能强大的 Obsidian 插件，为用户提供了多种实�
 └── styles.css
 ```
 
-3. 在 Obsidian 设置 → 社区插件中启用 **Elements**
+3. Enable **Elements** in Settings → Community Plugins
 
-### 前置依赖
+### Prerequisites
 
-- [Dataview](https://github.com/blacksmithgu/obsidian-dataview) 插件（热力图数据查询需要）
+- [Dataview](https://github.com/blacksmithgu/obsidian-dataview) plugin (required for Heatmap queries)
 
 ---
 
-## 元素卡片（ElementCard）
+## ElementCard
 
-通过 `elementCard` 代码块构建多列导航链接。
+Create a dashboard with multi-column card layouts using the `elementCard` code block.
 
-### 快速创建
+### Quick Start
 
 ````markdown
 ```elementCard
@@ -51,86 +51,86 @@ columns: 2
 gap: 2
 cards:
   - type: links
-    title: 卡片 1
+    title: Card 1
     span: 1
     linksLayout: inline
     palettePreset: sage
     links:
-      - label: 链接 1
+      - label: Link 1
         url:
-      - label: 链接 2
+      - label: Link 2
         url:
 
   - type: links
-    title: 卡片 2
+    title: Card 2
     span: 1
     linksLayout: inline
     palettePreset: mist
     links:
-      - label: 链接 1
+      - label: Link 1
         url:
-      - label: 链接 2
+      - label: Link 2
         url:
 ```
 ````
 
 ### Builder
 
-通过命令面板运行 `New ElementCard` 直接插入卡片，或通过右键菜单选择 **新增 Elements 组件** → **新建卡片**。
+Run `New ElementCard` from the command palette to directly insert a card, or select **Add Elements Component** → **Add Card** from the right-click menu.
 
-要编辑已有代码块，将光标移入 `elementCard` 代码块，运行 `Edit Elements (elementCard) block at cursor`，保存后变更会自动回写到源代码块。
+To edit an existing block, place your cursor inside a `elementCard` code block and run `Edit Elements (elementCard) block at cursor`. Changes are written back to the source block on save.
 
-### 配置参考
+### Configuration
 
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| `id` | 代码块唯一标识（推荐设置，用于记忆列宽） | 自动生成 |
-| `title` | 仪表盘标题 | — |
-| `columns` | 列数（1–4） | 2 |
-| `gap` | 卡片间距（px） | 2 |
-| `cards` | 卡片列表 | — |
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `id` | Unique block identifier (recommended for persisting column widths) | Auto-generated |
+| `title` | Dashboard title | — |
+| `columns` | Number of columns (1–4) | 2 |
+| `gap` | Gap between cards in px | 2 |
+| `cards` | List of cards | — |
 
-### Links 卡片
+### Links Card
 
-| 字段 | 说明 |
-|------|------|
-| `title` | 卡片标题 |
-| `span` | 跨列数 |
-| `linksLayout` | `inline`（内联）或 `list`（列表） |
-| `palettePreset` | 配色方案：`sage`（苔绿）`mist`（雾蓝）`amber`（琥珀）`plum`（梅紫）`slate`（石墨） |
-| `links` | 链接列表，每项含 `label` 和 `url`（或 `action`），可选 `external` 标记外部链接 |
+| Field | Description |
+|-------|-------------|
+| `title` | Card title |
+| `span` | Number of columns to span |
+| `linksLayout` | `inline` or `list` |
+| `palettePreset` | Color scheme: `sage` `mist` `amber` `plum` `slate` |
+| `links` | List of links, each with `label` and `url` (or `action`). Set `external: true` for external links |
 
-阅读模式下可以拖动列分隔条调整列宽，宽度保存在 `localStorage`。建议给每个代码块设置固定 `id` 以确保持久化。
+Column widths can be dragged to resize in reading mode. Widths are saved to `localStorage` — set a fixed `id` on each block to ensure persistence.
 
-### Action 链接
+### Action Links
 
-链接项支持 `action` 字段，点击后触发插件内置功能（如打开主页、打开 Memoria 面板等），而非跳转到普通链接。
+Link items support an optional `action` field that triggers built-in plugin functions (e.g., open homepage, open Memoria panel) instead of navigating to a regular link.
 
 ```yaml
 links:
-  - label: 打开主页
+  - label: Open Homepage
     action: open-homepage
-  - label: 打开微信读书书架
+  - label: Open WeRead Bookshelf
     action: open-weread
-  - label: 打开 Memoria 面板
+  - label: Open Memoria Panel
     action: open-memoria
 ```
 
-| action 值 | 功能 |
-|-----------|------|
-| `open-homepage` | 打开 Elements 主页 |
-| `open-weread` | 打开微信读书书架 |
-| `open-memoria` | 打开 Memoria 面板 |
+| action value | Function |
+|-------------|----------|
+| `open-homepage` | Open Elements homepage |
+| `open-weread` | Open WeRead bookshelf |
+| `open-memoria` | Open Memoria panel |
 
-Action 链接在卡片中以 ⚡ 图标标识，与普通链接视觉区分。
+Action links are visually distinguished with a ⚡ icon prefix in the card.
 
 ---
 
-## 热力图（Heatmap）
+## Heatmap
 
-基于 Dataview 查询数据，渲染 GitHub 风格的热力图。移植自 [obsidian-contribution-graph](https://github.com/vran-dev/obsidian-contribution-graph)。
+Render GitHub-style heatmaps based on Dataview queries. Inspired by [obsidian-contribution-graph](https://github.com/vran-dev/obsidian-contribution-graph).
 
-### 快速创建
+### Quick Start
 
 ````markdown
 ```heatmap
@@ -143,210 +143,198 @@ dataSource:
   value: '""'
   dateField:
     type: FILE_CTIME
-  countField:
+    countField:
       type: DEFAULT
 ```
 ````
 
-也可以通过命令面板运行 `New Heatmap` 或右键菜单选择 **新增 Elements 组件** → **新建热力图**，会打开可视化配置表单。
+You can also create graphs via the command palette (`New Heatmap`) or select **Add Elements Component** → **Add Graph** from the right-click menu, which opens a visual configuration form.
 
-### 图表类型
+### Graph Types
 
-| 类型 | `graphType` | 说明 |
-|------|-------------|------|
-| Git 风格 | `default` | 经典 GitHub 风格，每列一周 |
-| 月度追踪 | `month-track` | 每行一个月 |
-| 日历视图 | `calendar` | 传统日历布局 |
+| Type | `graphType` | Description |
+|------|-------------|-------------|
+| Git Style | `default` | Classic GitHub layout, one column per week |
+| Month Track | `month-track` | One row per month |
+| Calendar | `calendar` | Traditional calendar layout |
 
-### 配置参考
+### Configuration
 
-#### 基础设置
+#### Basic
 
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| `title` | 图表标题 | `"Contributions"` |
-| `graphType` | 图表类型 | `"default"` |
-| `dateRangeType` | 日期范围模式 | `"LATEST_DAYS"` |
-| `dateRangeValue` | 日期范围数值 | `180` |
-| `startOfWeek` | 每周起始日（0=周日, 1=周一） | 中文环境为 1 |
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `title` | Graph title | `"Contributions"` |
+| `graphType` | Graph type | `"default"` |
+| `dateRangeType` | Date range mode | `"LATEST_DAYS"` |
+| `dateRangeValue` | Numeric value for date range | `180` |
+| `startOfWeek` | Week start day (0=Sun, 1=Mon) | 1 for Chinese locale |
 
-**日期范围模式 `dateRangeType`：**
+**Date range modes:**
 
-| 值 | 说明 | 需要的参数 |
-|----|------|-----------|
-| `LATEST_DAYS` | 最近 N 天 | `dateRangeValue` |
-| `LATEST_MONTH` | 最近 N 个整月 | `dateRangeValue` |
-| `LATEST_YEAR` | 最近 N 个整年 | `dateRangeValue` |
-| `FIXED_DATE_RANGE` | 固定日期范围 | `fromDate` + `toDate`（yyyy-MM-dd） |
+| Value | Description | Required Params |
+|-------|-------------|-----------------|
+| `LATEST_DAYS` | Last N days | `dateRangeValue` |
+| `LATEST_MONTH` | Last N complete months | `dateRangeValue` |
+| `LATEST_YEAR` | Last N complete years | `dateRangeValue` |
+| `FIXED_DATE_RANGE` | Fixed date range | `fromDate` + `toDate` (yyyy-MM-dd) |
 
-#### 数据源配置
+#### Data Source
 
 ```yaml
 dataSource:
   type: PAGE                    # PAGE | ALL_TASK | TASK_IN_SPECIFIC_PAGE
-  value: '#tag'                 # Dataview 查询表达式
-  excludeFolders:               # 可选，排除指定文件夹中的笔记
+  value: '#tag'                 # Dataview query expression
+  excludeFolders:               # Optional, exclude notes in specific folders
     - templates/
     - Archive/
   dateField:
-    type: FILE_CTIME            # 日期字段类型
-    value: propertyName         # 属性名（PAGE_PROPERTY/TASK_PROPERTY 时需要）
-    format: yyyy-MM-dd          # 日期格式（可选）
+    type: FILE_CTIME            # Date field type
+    value: propertyName         # Property name (for PAGE_PROPERTY/TASK_PROPERTY)
+    format: yyyy-MM-dd          # Date format (optional)
   countField:
     type: DEFAULT               # DEFAULT | PAGE_PROPERTY | TASK_PROPERTY
-    value: propertyName         # 计数字段名
-  filters:                      # 可选
+    value: propertyName         # Count field name
+  filters:                      # Optional
     - type: STATUS_IS
       value: COMPLETED
 ```
 
-**数据源类型：**
+**Data source types:**
 
-| 类型 | 说明 |
-|------|------|
-| `PAGE` | 基于文档查询（按创建/修改时间、文件名或文档属性） |
-| `ALL_TASK` | 查询库中所有任务 |
-| `TASK_IN_SPECIFIC_PAGE` | 查询指定文档中的任务 |
+| Type | Description |
+|------|-------------|
+| `PAGE` | Query pages (by creation/modification time, filename, or page property) |
+| `ALL_TASK` | Query all tasks in vault |
+| `TASK_IN_SPECIFIC_PAGE` | Query tasks in specific pages |
 
-**日期字段类型 `dateField.type`：**
+**Date field types:**
 
-| 类型 | 说明 |
-|------|------|
-| `FILE_CTIME` | 文件创建时间 |
-| `FILE_MTIME` | 文件修改时间 |
-| `FILE_NAME` | 文件名（需包含日期格式） |
-| `PAGE_PROPERTY` | 文档属性中的日期字段 |
-| `TASK_PROPERTY` | 任务属性中的日期字段 |
+| Type | Description |
+|------|-------------|
+| `FILE_CTIME` | File creation time |
+| `FILE_MTIME` | File modification time |
+| `FILE_NAME` | Filename (must contain date pattern) |
+| `PAGE_PROPERTY` | Date property on the page |
+| `TASK_PROPERTY` | Date property on the task |
 
-**筛选器（仅任务数据源可用）：**
+**Filters (task sources only):**
 
-| 类型 | 说明 |
-|------|------|
-| `STATUS_IS` | 任务状态等于指定值 |
-| `STATUS_IN` | 任务状态包含任意一个 |
-| `CONTAINS_ANY_TAG` | 包含任意标签 |
+| Type | Description |
+|------|-------------|
+| `STATUS_IS` | Task status equals value |
+| `STATUS_IN` | Task status matches any of the values |
+| `CONTAINS_ANY_TAG` | Contains any of the specified tags |
 
-**任务状态选项：** `COMPLETED` / `FULLY_COMPLETED` / `INCOMPLETE` / `CANCELED` / `ANY`
+**Task status options:** `COMPLETED` / `FULLY_COMPLETED` / `INCOMPLETE` / `CANCELED` / `ANY`
 
-#### 样式设置
+#### Style
 
-| 参数 | 说明 | 默认值 |
-|------|------|--------|
-| `fillTheScreen` | 充满屏幕宽度 | `false` |
-| `enableMainContainerShadow` | 启用容器阴影 | `false` |
-| `showCellRuleIndicators` | 显示色阶指示器 | `true` |
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `fillTheScreen` | Expand to fill screen width | `false` |
+| `enableMainContainerShadow` | Enable container shadow | `false` |
+| `showCellRuleIndicators` | Show color scale legend | `true` |
 
-**内置主题（通过可视化表单选择）：**
+**Built-in themes (selectable in visual form):**
 
-| 主题 | 说明 |
-|------|------|
-| `default` | 经典 GitHub 绿 |
-| `ocean` | 海洋蓝 |
-| `halloween` | 琥珀暖橙 |
-| `lovely` | 樱粉柔雾 |
-| `wine` | 梅酒红 |
+| Theme | Description |
+|-------|-------------|
+| `default` | Classic GitHub green |
+| `ocean` | Ocean blue |
+| `halloween` | Warm amber |
+| `lovely` | Cherry blossom pink |
+| `wine` | Wine red |
 
-单元格形状支持圆角（默认）、方块（`borderRadius: "0%"`）、圆形（`borderRadius: "50%"`），尺寸可通过 `cellStyle.minWidth` / `cellStyle.minHeight` 调整。
-
----
-
-## 命令
-
-| 命令 | 说明 |
-|------|------|
-| `New ElementCard` | 创建新的元素卡片 |
-| `New Heatmap` | 创建新的热力图 |
-| `Open Homepage` | 打开主页 |
-| `Open Calendar` | 打开侧边栏日历 |
-
-编辑区右键可从上下文菜单访问 **新增 Elements 组件**，包含 **新建卡片** 和 **新建热力图** 选项。阅读模式下 `elementCard` 和 `heatmap` 代码块旁均有浮动编辑按钮。
+Cell shape supports rounded (default), square (`borderRadius: "0%"`), and circle (`borderRadius: "50%"`). Cell size can be adjusted via `cellStyle.minWidth` / `cellStyle.minHeight`.
 
 ---
 
-## 集成功能
+## Commands
 
-Elements 集成以下实用功能：
+| Command | Description |
+|---------|-------------|
+| `New ElementCard` | Create a new element card |
+| `New Heatmap` | Create a new heatmap |
+| `Open Homepage` | Open homepage |
+| `Open Calendar` | Open sidebar calendar |
 
-### 主页（Homepage）
-
-移植自 [obsidian-homepage](https://github.com/mirnovov/obsidian-homepage)，将指定笔记设为主页，提供多种打开方式和视图模式控制。
-
-**功能特点：**
-- 启动自动打开：Obsidian 启动时自动打开主页笔记
-- 空标签页自动打开：工作区只剩空标签页时自动打开主页
-- 自动创建：主页文件不存在时自动创建
-- 视图模式控制：支持默认视图、阅读模式、编辑模式（源码）、编辑模式（实时预览）
-- 多种打开模式：替换全部标签 / 保留现有标签 / 替换最后一个标签
-- Ribbon 栏快捷入口：左键正常打开，右键/Ctrl/Meta 键使用备用打开方式
-- Action 链接集成：ElementCard 中可通过 `action: open-homepage` 一键打开主页
-
-### 侧边栏日历
-
-移植自 [obsidian-calendar-plugin](https://github.com/liamcain/obsidian-calendar-plugin)，在侧边栏显示月历视图，与日记插件无缝集成。
-
-**功能特点：**
-- 支持显示在左侧或右侧边栏
-- 点击日期创建或打开日记（可开启创建前确认）
-- 通过圆点直观展示每日笔记字数（可自定义每个圆点代表的字数）
-- 今日日期高亮显示
-- 日历宽度随侧边栏自动缩放
-- 支持自定义星期起始日
-
-**日历设置：**
-
-| 设置项 | 说明 | 默认值 |
-|--------|------|--------|
-| 启用日历 | 在侧边栏显示日历视图 | 开启 |
-| 日历位置 | 左侧边栏 / 右侧边栏 | 左侧边栏 |
-| 创建前确认 | 创建日记前是否弹出确认对话框 | 开启 |
-| 每个圆点代表字数 | 日历中每个圆点对应的字数 | 250 |
-| 星期起始日 | 选择一周的起始日 | 跟随系统 |
-| 今日高亮 | 用背景颜色高亮今天的日期 | 开启 |
-
-### 强制视图模式
-
-移植自 [obsidian-force-view-mode-of-note](https://github.com/bwydoogh/obsidian-force-view-mode-of-note)，允许你为特定文件夹或文件设置默认视图模式（阅读模式或编辑模式）。
-
-**功能特点：**
-- 支持按文件夹设置视图模式
-- 支持按文件模式设置视图模式
-- 可忽略已打开的文件，避免切换干扰
-- 可忽略强制视图全部设置，临时使用其他视图模式
-
-### 光标位置记忆
-
-移植自 [obsidian-remember-cursor-position](https://github.com/dy-sh/obsidian-remember-cursor-position)，自动记忆并恢复你在文件中的光标位置。
-
-**功能特点：**
-- 自动保存光标位置
-- 重新打开文件时恢复光标位置
-- 支持延迟恢复，避免影响文件打开速度
-
-这些功能可以在插件设置中进行配置。
+Right-click in the editor to access **Add Elements Component** from the context menu, which includes **Add Card** and **Add Graph** options. Floating edit buttons are available in reading mode for both `elementCard` and `heatmap` blocks.
 
 ---
 
-## 开发
+## Integrated Features
 
-基于 TypeScript、React 和 esbuild 构建。
+Elements also integrates the following utility features:
+
+### Homepage
+
+Based on [obsidian-homepage](https://github.com/mirnovov/obsidian-homepage), designate a specific note as your homepage with flexible open modes and view mode control.
+
+**Features:**
+- Auto-open on startup: Automatically opens the homepage note when Obsidian starts
+- Auto-open on empty tabs: Opens homepage when the workspace only has empty tabs
+- Auto-create: Automatically creates the homepage file if it doesn't exist
+- View mode control: Supports default view, reading mode, editing mode (source), and editing mode (live preview)
+- Multiple open modes: Replace all tabs / Keep existing tabs / Replace last tab
+- Ribbon shortcut: Left-click for normal open; right-click/Ctrl/Meta for alternate open mode
+- Action link integration: Open homepage directly from ElementCard via `action: open-homepage`
+
+### Sidebar Calendar
+
+Based on [obsidian-calendar-plugin](https://github.com/liamcain/obsidian-calendar-plugin), display a monthly calendar in the left or right sidebar.
+
+**Features:**
+- Display in left or right sidebar
+- Click dates to create or open daily notes (with optional confirmation)
+- Visualize daily note counts with dots (customizable threshold)
+- Today's date highlighted
+- Calendar width scales with sidebar
+- Customizable week start day
+
+### Force View Mode
+
+Based on [obsidian-force-view-mode-of-note](https://github.com/bwydoogh/obsidian-force-view-mode-of-note), this feature allows you to set default view modes (reading or editing) for specific folders or files.
+
+**Features:**
+- Support setting view mode by folder
+- Support setting view mode by file pattern
+- Can ignore already opened files to avoid switching interference
+- Can ignore all force view settings temporarily
+
+### Remember Cursor Position
+
+Based on [obsidian-remember-cursor-position](https://github.com/dy-sh/obsidian-remember-cursor-position), this feature automatically remembers and restores your cursor position in files.
+
+**Features:**
+- Automatically saves cursor position
+- Restores cursor position when reopening files
+- Supports delayed restoration to avoid affecting file opening speed
+
+These features can be configured in the plugin settings.
+
+---
+
+## Development
+
+Built with TypeScript, React, and esbuild.
 
 ```
 src/
-├── main.ts                    # 插件入口
-├── elementCardBuilderModal.ts # Elements ElementCard Builder 模态框
-├── elementCardProcessor.ts    # elementCard 代码块解析与渲染
-├── elementCardConfig.ts       # elementCard 配置
-├── elementCardTypes.ts        # elementCard 类型定义
-├── elementCardYaml.ts         # elementCard YAML 序列化
-├── types.ts                   # 热力图核心类型
-├── i18/                       # 国际化（中/英）
-├── processor/                 # 热力图数据处理与验证
-├── query/                     # Dataview 查询层
-├── render/                    # 图表渲染（Git 风格、月度追踪、日历）
-├── view/                      # React UI 组件
-└── util/                      # 工具函数
+├── main.ts                    # Plugin entry point
+├── elementCardBuilderModal.ts # Elements ElementCard Builder modal
+├── elementCardProcessor.ts    # elementCard block parsing & rendering
+├── elementCardConfig.ts       # elementCard configuration
+├── elementCardTypes.ts        # elementCard type definitions
+├── elementCardYaml.ts         # elementCard YAML serialization
+├── types.ts                   # Heatmap core types
+├── i18/                       # i18n (zh / en)
+├── processor/                 # Heatmap data processing & validation
+├── query/                     # Dataview query layer
+├── render/                    # Chart rendering (git-style, month-track, calendar)
+├── view/                      # React UI components
+└── util/                      # Utilities
 ```
-
 
 ```bash
 npm install
@@ -354,19 +342,17 @@ npm run build
 ```
 
 ---
-## 致谢
 
-基于 [Obsidian](https://obsidian.md/) 插件 API 和 [Dataview](https://github.com/blacksmithgu/obsidian-dataview) 构建。
-
--  [obsidian-contribution-graph](https://github.com/vran-dev/obsidian-contribution-graph)
--  [obsidian-homepage](https://github.com/mirnovov/obsidian-homepage)
--  [obsidian-calendar-plugin](https://github.com/liamcain/obsidian-calendar-plugin)
--  [obsidian-force-view-mode-of-note](https://github.com/bwydoogh/obsidian-force-view-mode-of-note)
--  [obsidian-remember-cursor-position](https://github.com/dy-sh/obsidian-remember-cursor-position)
-
-
----
-
-## 许可证
+## License
 
 [MIT](LICENSE)
+
+## Acknowledgements
+
+Built on the [Obsidian](https://obsidian.md/) plugin API and [Dataview](https://github.com/blacksmithgu/obsidian-dataview).
+
+- [obsidian-contribution-graph](https://github.com/vran-dev/obsidian-contribution-graph)
+- [obsidian-homepage](https://github.com/mirnovov/obsidian-homepage)
+- [obsidian-calendar-plugin](https://github.com/liamcain/obsidian-calendar-plugin)
+- [obsidian-force-view-mode-of-note](https://github.com/bwydoogh/obsidian-force-view-mode-of-note)
+- [obsidian-remember-cursor-position](https://github.com/dy-sh/obsidian-remember-cursor-position)

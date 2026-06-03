@@ -12,7 +12,6 @@ export class En implements Local {
      * context menu
      */
     context_menu_create = "Add Graph";
-    context_menu_insert_elementCard = "Add Card";
 
     /**
      * form
@@ -121,68 +120,10 @@ export class En implements Local {
     form_button_preview = "Preview";
     form_button_save = "Save";
 
-	elementCard_builder_heading = "Style Config";
-	elementCard_tab_basic = "Basic Settings";
-	elementCard_tab_cards = "Card Settings";
-	elementCard_block_id = "Block ID";
-	elementCard_block_id_desc = "Used to store resized column widths. Keep it unique and stable.";
-	elementCard_title_font_size_placeholder = "Title size";
-	elementCard_columns = "Columns";
-	elementCard_gap = "Gap";
-	elementCard_gap_desc = "Pixel gap between cards";
-	elementCard_cards = "Cards";
-	elementCard_add_card = "Add card";
-	elementCard_add_card_desc = "Add a new Links card";
-	elementCard_add_button = "Add";
-	elementCard_type = "Type";
-	elementCard_type_desc = "Only Links is supported now";
-	elementCard_palette = "Palette";
-	elementCard_palette_desc = "Choose a built-in color palette";
-	elementCard_palette_custom = "Custom palette";
-	elementCard_palette_sage = "Sage Dawn";
-	elementCard_palette_mist = "Mist Blue";
-	elementCard_palette_amber = "Amber Rice";
-	elementCard_palette_plum = "Plum Dusk";
-	elementCard_palette_slate = "Slate Gray";
-	elementCard_palette_transparent = "Transparent";
-	elementCard_background = "Background";
-	elementCard_background_desc = "Background color for this card";
-	elementCard_accent_colors = "Accent colors";
-	elementCard_accent_colors_desc = "Controls title, links, and separators";
-	elementCard_column_span = "Column / Span";
-	elementCard_column_span_desc = "Column starts from 1; span means how many columns to cross";
-	elementCard_links = "Links";
-	elementCard_links_desc = "One per line, format: Title | URL or Title | | action name (e.g. open-homepage)";
-	elementCard_links_layout = "Links Layout";
-	elementCard_links_layout_desc = "Inline mode shows links in one row; choose center or justified alignment";
-	elementCard_links_layout_stack = "Stack (one per line)";
-	elementCard_links_layout_inline = "Center (inline)";
-	elementCard_links_layout_justify = "Justified (space-between)";
-	elementCard_move_up = "Move up";
-	elementCard_move_down = "Move down";
-	elementCard_remove = "Remove";
-	elementCard_card_label = "Card";
-	elementCard_default_title = "elementCard";
-	elementCard_default_card_title = "Links";
-	elementCard_menu_title = "Add Elements Component";
-	elementCard_insert_command = "Insert Elements (elementCard) block";
-	elementCard_builder_command = "New ElementCard";
-	elementCard_edit_command = "Edit Elements (elementCard) block at cursor";
-	elementCard_menu_insert = "Add Card";
 	notice_open_markdown_first = "Please open a Markdown note first.";
-	notice_elementCard_update_failed = "Failed to update current Elements (elementCard) block.";
-	notice_elementCard_parse_failed = "Failed to parse current Elements (elementCard) block.";
-	notice_elementCard_cursor_required = "Place the cursor inside a Elements (elementCard) code block first.";
 	notice_no_active_markdown_file = "No active markdown file.";
 	notice_heatmap_no_markdown_view = "No markdown view is active.";
 	notice_heatmap_editor_unsupported = "Current editor does not support in-place heatmap editing.";
-	elementCard_error_empty = "Elements (elementCard) config is empty";
-	elementCard_error_empty_recommend = "Please add cards first";
-	elementCard_error_invalid_yaml_object = "Elements (elementCard) config is not a valid YAML object";
-	elementCard_error_card_required = "Elements (elementCard) requires at least one card";
-	elementCard_error_card_required_recommend = "Please add a links card in cards";
-	elementCard_error_yaml_failed_at_line = "Elements (elementCard) YAML parse failed near line {line}";
-	elementCard_error_yaml_failed = "Elements (elementCard) YAML parse failed, please check indentation and field format";
 
     /**
      * weekday
@@ -248,8 +189,6 @@ export class En implements Local {
 	settings_homepage_revertViewDesc = "Revert to default view mode when leaving the homepage file";
 	settings_homepage_openWhenEmpty = "Open when empty tab";
 	settings_homepage_openWhenEmptyDesc = "Auto-open homepage when workspace only has empty tabs";
-	settings_homepage_pinInFileExplorer = "Pin homepage in file explorer (experimental)";
-	settings_homepage_pinInFileExplorerDesc = "Move the homepage note to the top of its folder in the file explorer. Uses Obsidian internals and silently skips if unavailable.";
 	settings_homepage_autoCreate = "Auto-create file";
 	settings_homepage_autoCreateDesc = "Auto-create the homepage file if it doesn't exist";
 
@@ -306,7 +245,7 @@ export class En implements Local {
 	settings_cursor_enableDesc = "Remember and restore cursor and scroll position for each file";
 	settings_cursor_dataFileName = "Data file name";
 	settings_cursor_dataFileNameDesc = "Save position info to this file";
-	settings_cursor_dataFileNamePlaceholder = "Example: cursor-positions.json";
+	settings_cursor_dataFileNamePlaceholder = "Example: cursor.json";
 	settings_cursor_delayAfterOpening = "Delay after opening new note";
 	settings_cursor_delayAfterOpeningDesc = "If you use links pointing to headings inside notes (like [link](note.md#heading)), this plugin should not scroll. Increase delay if you experience this. Set to zero if you don't use links pointing to sections within pages (move slider to the left). Range: 0-300 ms (default 100 ms).";
 	settings_cursor_delayBetweenSaving = "Interval between saving cursor position to file";
@@ -318,4 +257,42 @@ export class En implements Local {
 	settings_nav_cursorPosition = "Cursor Position";
 
 	notice_command_not_found = "Command '{0}' not found";
+
+	/**
+	 * navbar
+	 */
+	navbar_builder_heading = "NavBar Configuration";
+	navbar_align_label = "Alignment";
+	navbar_align_desc = "How navigation items are arranged";
+	navbar_align_center = "Center";
+	navbar_align_justify = "Justify";
+	navbar_items_heading = "Navigation Items";
+	navbar_add_item = "Add Item";
+	navbar_item_label = "Label";
+	navbar_item_icon_label = "Icon";
+	navbar_item_icon_desc = "Lucide icon name";
+	navbar_item_url_label = "URL";
+	navbar_item_url_desc = "Internal note path or external URL";
+	navbar_item_action_label = "Action";
+	navbar_item_action_desc = "Obsidian command ID";
+	navbar_item_select_command = "Select";
+	navbar_item_select_icon = "Pick icon";
+	navbar_error_empty = "navbar config is empty";
+	navbar_error_invalid_yaml = "navbar config is not a valid YAML object";
+	navbar_error_no_items = "navbar requires at least one navigation item";
+	navbar_error_yaml_failed = "navbar YAML parsing failed, check indentation and field format";
+	navbar_command_new = "New NavBar";
+	navbar_default_title = "Navigation";
+	navbar_desktop_gap_label = "Desktop horizontal gap";
+	navbar_desktop_gap_desc = "Horizontal gap between nav items (desktop)";
+	navbar_mobile_gap_label = "Mobile horizontal gap";
+	navbar_mobile_gap_desc = "Horizontal gap between nav items (mobile)";
+	navbar_desktop_row_gap_label = "Desktop row gap";
+	navbar_desktop_row_gap_desc = "Vertical gap between wrapped rows (desktop)";
+	navbar_mobile_row_gap_label = "Mobile row gap";
+	navbar_mobile_row_gap_desc = "Vertical gap between wrapped rows (mobile)";
+
+	// ✅ 通用按钮文本
+	cancel = "Cancel";
+	confirm = "OK";
 }
