@@ -1,0 +1,53 @@
+{
+  "name": "obsidian-attend-dashboard",
+  "version": "1.0.0",
+  "description": "An interactive Obsidian home dashboard for tasks, knowledge graph, plugins, vault health, and writing activity.",
+  "main": "main.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "presync": "node version-bump.mjs",
+    "build": "npm run presync && tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+    "lint": "eslint src",
+    "test": "vitest run",
+    "check": "npm run lint && npm run test && npm run build",
+    "version": "node version-bump.mjs && git add manifest.json versions.json"
+  },
+  "keywords": [
+    "obsidian",
+    "dashboard",
+    "statistics",
+    "heatmap",
+    "backlinks"
+  ],
+  "author": "nightfall",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nightfall-yl/obsidian-attend-dashboard.git"
+  },
+  "homepage": "https://github.com/nightfall-yl/obsidian-attend-dashboard#readme",
+  "bugs": {
+    "url": "https://github.com/nightfall-yl/obsidian-attend-dashboard/issues"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/luxon": "^3.4.2",
+    "@types/node": "^22.15.17",
+    "esbuild": "0.25.5",
+    "esbuild-svelte": "^0.9.5",
+    "eslint": "^10.8.0",
+    "globals": "^17.6.0",
+    "obsidian": "latest",
+    "obsidian-dataview": "^0.5.64",
+    "svelte-preprocess": "^4.10.7",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.59.1",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "luxon": "^3.4.4",
+    "obsidian-calendar-ui": "^0.3.12",
+    "obsidian-daily-notes-interface": "^0.9.5",
+    "svelte": "^3.59.2"
+  }
+}

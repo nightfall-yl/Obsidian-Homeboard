@@ -1,0 +1,8 @@
+node_modules/
+main.js
+*.map
+.DS_Store
+design-qa.md
+dist/
+docs/*
+!docs/attend-dashboard-preview.png
