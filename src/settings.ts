@@ -820,7 +820,21 @@ function renderLinterSettings(
   linterGroup.addSetting((setting) =>
     setting
       .setName("保存时格式化文件")
-      .setDesc("手动保存时（按 <code>Ctrl + S</code> 或在使用 vim 键位时光标执行 <code>:w</code>）对文件执行格式化")
+      .setDesc(
+        (() => {
+          const frag = document.createDocumentFragment();
+          frag.append("保存时对当前文件执行格式化（按 ");
+          const k1 = document.createElement("code");
+          k1.textContent = "Cmd/Ctrl+S";
+          frag.append(k1);
+          frag.append("，或在使用 vim 键位时执行 ");
+          const k2 = document.createElement("code");
+          k2.textContent = ":w";
+          frag.append(k2);
+          frag.append("）。");
+          return frag;
+        })()
+      )
       .addToggle((toggle) =>
         toggle
           .setValue(manager.settings.lintOnSave)
@@ -961,7 +975,21 @@ function renderLinterSettings(
   linterGroup.addSetting((setting) =>
     setting
       .setName("格式")
-      .setDesc("使用的 Moment 日期格式（参见 <a href=\"https://momentjscom.readthedocs.io/en/latest/moment/04-displaying/01-format/\">Moment 格式选项</a>）")
+      .setDesc(
+        (() => {
+          const frag = document.createDocumentFragment();
+          frag.append("使用的 Moment 日期格式（参见 ");
+          const a = document.createElement("a");
+          a.href =
+            "https://momentjscom.readthedocs.io/en/latest/moment/04-displaying/01-format/";
+          a.textContent = "Moment 格式选项";
+          a.target = "_blank";
+          a.rel = "noopener";
+          frag.append(a);
+          frag.append("）。");
+          return frag;
+        })()
+      )
       .addText((text) =>
         text
           .setPlaceholder("YYYY-MM-DD")
