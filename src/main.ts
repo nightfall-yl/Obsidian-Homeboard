@@ -1,4 +1,4 @@
-import { Notice, Plugin, TFile } from "obsidian";
+import { App, Notice, Plugin, PluginManifest, TFile } from "obsidian";
 import {
   AttendDashboardView,
   VIEW_TYPE_ATTEND_DASHBOARD
@@ -7,10 +7,11 @@ import {
   DEFAULT_DATA,
   DEFAULT_HEATMAP_SETTINGS,
   DEFAULT_SETTINGS,
-  DEFAULT_FORCE_VIEW_MODE_SETTINGS,
   DEFAULT_CURSOR_POSITION_SETTINGS,
   DEFAULT_CALENDAR_SETTINGS,
   type AttendPluginData,
+  type AttendSettings,
+  type ForceViewModeSettings,
   type StartupMode
 } from "./models";
 import { AttendSettingTab } from "./settings";
@@ -21,6 +22,9 @@ import { CalendarView } from "./calendar/CalendarView";
 import { VIEW_TYPE_CALENDAR } from "./calendar/constants";
 import { calendarSettings } from "./calendar/ui/stores";
 import { defaultCalendarSettings } from "./calendar/settings";
+import { MinimalManager } from "./minimal/manager";
+import { LinterManager } from "./linter/manager";
+import { StaticStore } from "./static-store";
 import type { IWeekStartOption } from "obsidian-calendar-ui";
 
 export default class AttendDashboardPlugin extends Plugin {
@@ -28,10 +32,20 @@ export default class AttendDashboardPlugin extends Plugin {
   stats!: StatsService;
   forceViewModeManager!: ForceViewModeManager;
   cursorPositionManager!: CursorPositionManager;
+  minimalManager!: MinimalManager;
+  linterManager!: LinterManager;
+  /** Section2「Markdown+」三功能（视图模式/Minimal/Linter）的统一设置存储。 */
+  section2Store: StaticStore;
   private saveTimer: number | null = null;
   private vaultEventsRegistered = false;
 
+  constructor(app: App, pluginManifest: PluginManifest) {
+    super(app, pluginManifest);
+    this.section2Store = new StaticStore(this);
+  }
+
   async onload(): Promise<void> {
+    console.log("[LinterLite] plugin onload start");
     await this.loadPluginData();
     this.stats = new StatsService(this.app, this);
 
@@ -84,13 +98,27 @@ export default class AttendDashboardPlugin extends Plugin {
       },
     });
 
-    // Force View Mode
-    this.forceViewModeManager = new ForceViewModeManager(this, this.data.settings.forceViewMode);
+    // Force View Mode（设置存于 Section2 的 static-data.json）
+    this.forceViewModeManager = new ForceViewModeManager(this, this.section2Store.settings.forceViewMode);
     this.forceViewModeManager.onload();
 
     // Cursor Position
     this.cursorPositionManager = new CursorPositionManager(this, this.data.settings.cursorPosition);
     this.cursorPositionManager.onload();
+
+    // Minimal 主题设置（存于 Section2 的 static-data.json，挂在 Markdown+ Section）
+    this.minimalManager = new MinimalManager(this.app, this, this.section2Store);
+    await this.minimalManager.onload();
+
+    // Linter 设置（存于 Section2 的 static-data.json，挂在 Markdown+ Section）
+    this.linterManager = new LinterManager(this.app, this, this.section2Store);
+    console.log("[LinterLite] about to init LinterManager");
+    try {
+      await this.linterManager.onload();
+      console.log("[LinterLite] LinterManager.onload OK");
+    } catch (err) {
+      console.error("[LinterLite] LinterManager.onload FAILED", err);
+    }
 
     this.app.workspace.onLayoutReady(() => {
       this.registerVaultEvents();
@@ -105,6 +133,8 @@ export default class AttendDashboardPlugin extends Plugin {
   onunload(): void {
     this.forceViewModeManager?.onunload();
     this.cursorPositionManager?.onunload();
+    this.minimalManager?.onunload();
+    this.linterManager?.onunload();
     this.app.workspace.detachLeavesOfType(VIEW_TYPE_CALENDAR);
     if (this.saveTimer !== null) {
       window.clearTimeout(this.saveTimer);
@@ -176,7 +206,7 @@ export default class AttendDashboardPlugin extends Plugin {
     this.stats.invalidate();
     await this.saveData(this.data);
     this.refreshDashboardViews(true);
-    this.forceViewModeManager?.updateSettings(this.data.settings.forceViewMode);
+    this.forceViewModeManager?.updateSettings(this.section2Store.settings.forceViewMode);
     this.cursorPositionManager?.updateSettings(this.data.settings.cursorPosition);
     this.updateCalendarStore();
   }
@@ -302,12 +332,6 @@ export default class AttendDashboardPlugin extends Plugin {
           ...DEFAULT_HEATMAP_SETTINGS,
           ...(migratedHeatmap ?? {})
         },
-        forceViewMode: {
-          ...DEFAULT_FORCE_VIEW_MODE_SETTINGS,
-          ...(saved?.settings?.forceViewMode ?? {}),
-          // 防抖超时已移除设置项，固定为默认值 300ms
-          debounceTimeout: DEFAULT_FORCE_VIEW_MODE_SETTINGS.debounceTimeout
-        },
         cursorPosition: {
           ...DEFAULT_CURSOR_POSITION_SETTINGS,
           ...(saved?.settings?.cursorPosition ?? {})
@@ -323,6 +347,28 @@ export default class AttendDashboardPlugin extends Plugin {
       trackingStartedAt: saved?.trackingStartedAt ?? null,
       linkTrackingStartedAt: saved?.linkTrackingStartedAt ?? null
     };
+
+    // Section2「Markdown+」设置迁移：forceViewMode 旧版存于主 data.json，
+    // 现统一并入 static-data.json（与 Minimal/Linter 一起），并从主数据移除。
+    await this.section2Store.load();
+    await this.section2Store.migrateFromLegacy();
+    const legacyFV = (
+      saved?.settings as Partial<AttendSettings> & {
+        forceViewMode?: ForceViewModeSettings;
+      }
+    )?.forceViewMode;
+    if (legacyFV) {
+      this.section2Store.settings.forceViewMode = {
+        ...this.section2Store.settings.forceViewMode, // 保留 store 默认值与已有别名配置
+        ...legacyFV,
+      };
+      await this.section2Store.save();
+    }
+    // 主数据内的残留 forceViewMode 字段（运行时由展开保留，类型上已移除）显式删除，
+    // 避免 saveData 把旧值写回。
+    if ("forceViewMode" in (this.data.settings as unknown as Record<string, unknown>)) {
+      delete (this.data.settings as unknown as Record<string, unknown>).forceViewMode;
+    }
 
     // 迁移旧「快速捕捉」设置：旧版为 storagePath/namingPattern/templateFile（每日新建），
     // 新版统一追加写入 filePath 指定的单个文件。路径由用户在设置里自行选择，这里只做兼容迁移。

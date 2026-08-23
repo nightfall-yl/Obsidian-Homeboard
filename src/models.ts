@@ -122,7 +122,6 @@ export interface AttendSettings {
   activityHistoryDays: number;
   quickLinks: QuickLink[];
   heatmap: HeatmapSettings;
-  forceViewMode: ForceViewModeSettings;
   cursorPosition: CursorPositionSettings;
   calendar: CalendarPluginSettings;
   quickCapture: QuickCaptureSettings;
@@ -297,7 +296,6 @@ export const DEFAULT_SETTINGS: AttendSettings = {
   activityHistoryDays: 365,
   quickLinks: [],
   heatmap: DEFAULT_HEATMAP_SETTINGS,
-  forceViewMode: DEFAULT_FORCE_VIEW_MODE_SETTINGS,
   cursorPosition: DEFAULT_CURSOR_POSITION_SETTINGS,
   calendar: DEFAULT_CALENDAR_SETTINGS,
   quickCapture: DEFAULT_QUICK_CAPTURE_SETTINGS,
