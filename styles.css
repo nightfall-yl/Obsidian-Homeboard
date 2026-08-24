@@ -1786,38 +1786,51 @@
   flex: 1;
   min-width: 0;
 }
-.attend-modules-grid .ad-proj__stages {
+/* 全局：阶段管道 —— 与上游 obsidian-dashboard-main 一致，不带作用域 */
+.ad-proj__stages {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--pip-gap, 3px);
+  overflow-x: auto;
+  padding: 4px 0;
 }
-.attend-modules-grid .ad-proj__stage {
+.ad-proj__stage {
+  position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
+  width: var(--pip-w, 40px);
+  flex: 0 0 auto;
   font-size: 9px;
   white-space: nowrap;
-  color: var(--attend-text-faint);
+  color: var(--attend-text);
 }
-.attend-modules-grid .ad-pip {
+.ad-pip {
   flex: 0 0 8px;
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: var(--attend-border-strong);
 }
-.attend-modules-grid .ad-proj__stage.is-done .ad-pip {
+.ad-proj__stage.is-done .ad-pip {
   background: var(--attend-accent-green);
 }
-.attend-modules-grid .ad-proj__stage.is-done {
-  color: var(--attend-text-muted);
-}
-.attend-modules-grid .ad-proj__stage.is-current .ad-pip {
+.ad-proj__stage.is-current .ad-pip {
   background: var(--attend-accent-blue);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--attend-accent-blue) 28%, transparent);
 }
-.attend-modules-grid .ad-proj__stage.is-current {
-  color: var(--attend-text);
+
+/* 主页卡片：阶段管道（复用全局样式 + 主页专属尺寸） */
+.attend-modules-grid .ad-proj__stages {
+  gap: var(--pip-gap, 3px);
+}
+.attend-modules-grid .ad-proj__stage {
+  font-size: 9px;
+}
+.attend-modules-grid .ad-pip {
+  flex: 0 0 8px;
 }
 .attend-modules-grid .ad-proj__chev {
   flex: 0 0 auto;
@@ -2095,7 +2108,7 @@
   border-radius: var(--ad-r1);
   font-size: 11px;
   cursor: pointer;
-  color: var(--ad-text-dim);
+  color: var(--ad-text-mute);
   border: 1px solid transparent;
   background: transparent;
   transition: all 0.12s ease;
@@ -2109,7 +2122,7 @@
   border-color: var(--ad-line);
 }
 .po-tab.is-active {
-  color: var(--ad-accent);
+  color: var(--ad-text-mute);
   background: var(--ad-accent-dim);
   border-color: rgba(123,167,255,0.3);
   font-weight: 500;
@@ -2155,30 +2168,28 @@
   flex-wrap: wrap;
 }
 .po-gantt__zoom-btn {
-  padding: 5px 14px;
-  border: 1px solid var(--attend-border);
-  border-radius: 999px;
+  padding: 3px 10px;
+  border: 1px solid var(--ad-line);
+  border-radius: 10px;
   background: transparent;
-  color: var(--attend-text-muted);
+  color: var(--ad-text-dim);
   cursor: pointer;
-  font-size: 12px;
-  font-weight: 500;
-  transition: background 0.1s, border-color 0.1s, color 0.1s;
+  font-size: 10px;
+  transition: all 0.12s ease;
 }
 .po-gantt__zoom-btn:hover {
-  color: var(--attend-text);
-  border-color: var(--attend-border-strong);
   background: var(--ad-h1);
+  color: var(--ad-text);
 }
 .po-gantt__zoom-btn.is-active {
-  color: var(--attend-text);
-  border-color: var(--attend-accent-blue);
-  background: color-mix(in srgb, var(--attend-accent-blue) 14%, var(--ad-s1));
+  background: var(--ad-accent-dim);
+  color: var(--ad-accent);
+  border-color: rgba(123,167,255,0.3);
 }
 .po-gantt__sep {
   width: 1px;
-  height: 18px;
-  margin: 0 4px;
+  align-self: stretch;
+  margin: 2px 2px;
   background: var(--ad-line);
 }
 
@@ -2560,13 +2571,20 @@
   outline: 1px dashed var(--attend-border-strong);
 }
 
-/* --- 阶段紧凑管道（复用 ad-* 样式类） --- */
+/* --- 阶段紧凑管道（复用 ad-* 样式类，与上游 obsidian-dashboard-main:1745 一致） --- */
 .po-stage-compact {
-  padding: 6px 10px;
-  border-bottom: 1px solid var(--attend-border);
+  margin-left: auto;
+  padding: 2px 6px;
+  background: var(--ad-s2);
+  border: 1px solid var(--ad-line);
+  border-radius: var(--ad-r2);
 }
 .po-stage-compact .ad-proj__stage {
   cursor: pointer;
+  transition: transform .15s, opacity .15s;
+}
+.po-stage-compact .ad-proj__stage:hover {
+  transform: scale(1.1);
 }
 
 /* --- 新建项目弹窗 --- */
@@ -2640,14 +2658,10 @@
   margin-top: 0;
   height: 100%;
   min-height: 0;
+  gap: 0;
 }
-/* flomo 铺满范式：侧栏/标签栏只留分隔线，不再带自身背景块（消除"框中框"观感） */
-.po-board-host.po-board-view .po-sidebar {
-  background: transparent;
-}
-.po-board-host.po-board-view .po-tabs {
-  background: transparent;
-}
+/* flomo 铺满范式：嵌入态恢复 .po-sidebar/.po-tabs 的默认 var(--ad-s1) 背景，
+   与上游独立视图一致——区域间靠底色层次区分，避免"全透明无层次"。 */
 
 /* 嵌入态对齐上游完整 flex 链（obsidian-dashboard-main/styles.css:1467-1610）：
    主区 overflow:hidden 不撑破；content flex:1；panel 竖向 height:100%；
@@ -2697,9 +2711,9 @@
   border-top: 1px solid var(--background-modifier-border);
 }
 
-/* 嵌入态下所有内部背景块统一透明，只保留边框线做分隔（避免亮色下发灰成块） */
-.po-board-host.po-board-view .po-gantt__zoom,
-.po-board-host.po-board-view .po-toolbar,
+/* 嵌入态下其余内部块统一透明，只保留边框线做分隔（避免亮色下发灰成块）。
+   .po-tabs / .po-sidebar / .po-gantt__zoom / .po-toolbar 已恢复 var(--ad-s1) 背景，
+   与上游独立视图一致——区域间靠底色层次区分。 */
 .po-board-host.po-board-view .po-gantt__left,
 .po-board-host.po-board-view .po-table th,
 .po-board-host.po-board-view .po-count,
