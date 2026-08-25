@@ -256,7 +256,10 @@ export class ProjectBoardPanel {
 
       const bar = container.createDiv({ cls: "ad-proj__stages po-stage-compact" });
       const stageMinW = Math.max(20, Math.min(36, Math.floor(160 / stages.length)));
-      bar.style.gap = `${Math.max(1, Math.floor(4 / (stages.length / 4)))}px`;
+      const gap = Math.max(1, Math.floor(4 / (stages.length / 4)));
+      bar.style.gap = `${gap}px`;
+      bar.style.setProperty("--pip-w", stageMinW + "px");
+      bar.style.setProperty("--pip-gap", gap + "px");
 
       stages.forEach((label, i) => {
         // 点击哪个阶段，它及其之前的阶段都算"已完成"（前置圆点高亮）
@@ -264,7 +267,7 @@ export class ProjectBoardPanel {
         const s = bar.createDiv({
           cls: "ad-proj__stage" + (isDone ? " is-done" : "")
         });
-        s.style.minWidth = stageMinW + "px";
+        s.style.width = stageMinW + "px";
         s.createSpan({ cls: "ad-pip" });
         s.appendText(label);
         this.listen(s, "click", () => void this.setProjectStage(proj, i));

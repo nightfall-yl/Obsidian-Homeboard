@@ -1807,8 +1807,28 @@
   font-size: 9px;
   white-space: nowrap;
   color: var(--attend-text);
+  /* 连接线本身不拦截点击 */
+  --proc-line: var(--attend-border-strong);
+}
+.ad-proj__stage::before {
+  content: "";
+  position: absolute;
+  top: 3px; /* 对齐圆点垂直中心（圆点 8px、贴 stage 顶部） */
+  right: calc(50% + 4px);
+  width: calc(var(--pip-w, 40px) - 8px + var(--pip-gap, 3px));
+  height: 2px;
+  background: var(--proc-line);
+  pointer-events: none;
+}
+.ad-proj__stage:first-child::before {
+  display: none;
+}
+.ad-proj__stage.is-done {
+  --proc-line: var(--attend-accent-green);
 }
 .ad-pip {
+  position: relative;
+  z-index: 1;
   flex: 0 0 8px;
   width: 8px;
   height: 8px;
@@ -1817,10 +1837,6 @@
 }
 .ad-proj__stage.is-done .ad-pip {
   background: var(--attend-accent-green);
-}
-.ad-proj__stage.is-current .ad-pip {
-  background: var(--attend-accent-blue);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--attend-accent-blue) 28%, transparent);
 }
 
 /* 主页卡片：阶段管道（复用全局样式 + 主页专属尺寸） */
