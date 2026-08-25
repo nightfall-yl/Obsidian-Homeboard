@@ -1616,10 +1616,10 @@ export class AttendDashboardView extends ItemView {
       stageNodes.style.setProperty("--pip-w", stageMinW + "px");
       stageNodes.style.setProperty("--pip-gap", stageGap + "px");
       projStages.forEach((label, i) => {
-        const isDone = i < projStage;
-        const isCurrent = i === projStage;
+        // 点击哪个阶段，它及其之前的阶段都算"已完成"（前置圆点高亮）
+        const isDone = i <= projStage;
         const s = stageNodes.createDiv(
-          "ad-proj__stage" + (isDone ? " is-done" : "") + (isCurrent ? " is-current" : "")
+          "ad-proj__stage" + (isDone ? " is-done" : "")
         );
         s.style.width = stageMinW + "px";
         s.createSpan("ad-pip");
