@@ -1087,6 +1087,79 @@ export class AttendDashboardView extends ItemView {
     }).open();
   }
 
+  /** 打开项目详情编辑弹窗（复用 ProjectModal 编辑模式），保存后写回 frontmatter 并刷新首页。 */
+  private openProjectEditModal(p: ProjectInfo): void {
+    const stages = this.plugin.data.settings.npdpStages || ["立项", "规划", "开发", "测试", "上线"];
+    new ProjectModal({
+      app: this.app,
+      editData: {
+        name: p.name,
+        color: p.color,
+        startDate: p.startDate || "",
+        endDate: p.endDate || "",
+        description: p.description,
+        stage: p.stage ?? 0,
+        type: p.type,
+      },
+      stages,
+      onSave: (data) => void this.saveProjectEdit(p, data),
+    }).open();
+  }
+
+  /** 保存项目编辑：若改名则重命名文件夹+文件，再写回 frontmatter，刷新模块。 */
+  private async saveProjectEdit(p: ProjectInfo, data: ProjectFormData): Promise<void> {
+    const oldName = p.name;
+    const newName = data.name.trim();
+    const safeNewName = newName.replace(/[*"/<>:|?\\]/g, "-");
+    const rootPath = this.plugin.data.settings.projectsFolder || "Projects";
+    const oldFolderPath = p.path;
+    const newFolderPath = `${rootPath}/${safeNewName}`;
+    let targetFile: TFile | null = null;
+
+    // 改名：重命名文件夹 + project-<name>.md 文件
+    if (newName && newName !== oldName) {
+      const oldFile = this.app.vault.getAbstractFileByPath(`${oldFolderPath}/project-${oldName}.md`);
+      if (!(oldFile instanceof TFile)) {
+        new Notice("找不到项目文件");
+        return;
+      }
+      const oldFolder = this.app.vault.getAbstractFileByPath(oldFolderPath);
+      if (oldFolder instanceof TFolder) {
+        await this.app.vault.rename(oldFolder, newFolderPath);
+      }
+      // rename(folder) 会带走子文件，但文件名仍是 project-<旧名>.md，需要再 rename 文件
+      const renamedFile = this.app.vault.getAbstractFileByPath(`${newFolderPath}/project-${oldName}.md`);
+      if (renamedFile instanceof TFile) {
+        await this.app.vault.rename(renamedFile, `${newFolderPath}/project-${safeNewName}.md`);
+        targetFile = this.app.vault.getAbstractFileByPath(`${newFolderPath}/project-${safeNewName}.md`) as TFile;
+      } else {
+        targetFile = oldFile; // 回退
+      }
+    } else {
+      const f = this.app.vault.getAbstractFileByPath(`${oldFolderPath}/project-${oldName}.md`);
+      if (!(f instanceof TFile)) {
+        new Notice("找不到项目文件");
+        return;
+      }
+      targetFile = f;
+    }
+
+    // 写回 frontmatter
+    const typeLabel = data.type === "nostage" ? "非阶段项目" : "阶段项目";
+    await writeFrontmatter(this.app, targetFile, {
+      项目名称: newName,
+      颜色: data.color,
+      项目类型: typeLabel,
+      描述: data.description,
+      开始日期: data.startDate,
+      结束日期: data.endDate,
+      阶段: String(data.stage),
+    });
+    new Notice("✨ 项目已更新");
+    this.taskStore.invalidate();
+    void this.refresh(true);
+  }
+
   /** 切换任务完成状态（中文 frontmatter）；重复任务用 calcNextRemindDate 推进 */
   private async toggleTask(task: TaskItem, row: HTMLElement): Promise<void> {
     const file = this.app.vault.getAbstractFileByPath(task.sourceFile);
@@ -1552,9 +1625,14 @@ export class AttendDashboardView extends ItemView {
         s.createSpan("ad-pip");
         s.appendText(label);
       });
-      row.createDiv("ad-proj__chev").setText("›");
-      // 点击 = 打开「全部项目」视图并选中该项目甘特
+      // 右侧箭头按钮：点击跳转看板；行其余区域：点击打开编辑弹窗
+      const chev = row.createDiv("ad-proj__chev");
+      setIcon(chev, "chevron-right");
       this.listen(row, "click", () => {
+        this.openProjectEditModal(p);
+      });
+      chev.addEventListener("click", (e: MouseEvent) => {
+        e.stopPropagation();
         void this.navigateProjectBoard(p.name);
       });
     });
@@ -1571,16 +1649,8 @@ export class AttendDashboardView extends ItemView {
     // 标题与计数居左（计数紧跟在标题之后）
     this.alignHeaderTitlesLeft(surface, "attend-projects-titles");
     if (header.querySelector(".attend-projects-new-btn")) return;
-    // 右上角按钮组（居右排列：右1「新建」、右2「全部项目」图标）
+    // 右上角按钮组（仅「新建」按钮；看板入口已移至每行右侧 chev 箭头）
     const actions = header.createDiv("attend-actions");
-    // 「全部项目」图标按钮（仅图标，悬停显示文字）
-    const allBtn = actions.createEl("button", {
-      cls: "attend-projects-all-btn attend-icon-btn clickable-icon",
-      attr: { type: "button", "aria-label": "全部项目" }
-    });
-    setIcon(allBtn, "list");
-    this.listen(allBtn, "click", () => void this.navigateProjectBoard(null));
-    // 「新建」按钮（纯加号图标）
     const btn = actions.createEl("button", {
       cls: "attend-projects-new-btn attend-icon-btn clickable-icon",
       attr: { type: "button", "aria-label": "新建项目" }

@@ -60,9 +60,8 @@ export class ProjectModal extends Modal {
 			attr: { type: 'text', placeholder: '输入项目名称' },
 		});
 		if (ed) {
-			nameInput.value = ed.name;
-			nameInput.disabled = true;
-		}
+		nameInput.value = ed.name;
+	}
 
 		// Project type selector (阶段项目 / 非阶段项目)
 		contentEl.createEl('label', { cls: 'ad-modal-label', text: '项目类型' });

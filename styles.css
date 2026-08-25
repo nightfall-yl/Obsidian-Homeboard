@@ -1752,11 +1752,12 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 9px 10px;
+  padding: 9px 44px 9px 10px;
   border: 1px solid var(--attend-border);
   border-radius: 9px;
   background: color-mix(in srgb, var(--attend-surface) 55%, transparent);
   cursor: pointer;
+  position: relative;
 }
 .attend-modules-grid .ad-proj__row:hover {
   background: var(--attend-surface-hover);
@@ -1833,8 +1834,27 @@
   flex: 0 0 8px;
 }
 .attend-modules-grid .ad-proj__chev {
-  flex: 0 0 auto;
+  position: absolute;
+  top: 50%;
+  right: 18px;
+  transform: translateY(-50%);
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
   color: var(--attend-text-faint);
+  cursor: pointer;
+  transition: color 0.12s ease, background 0.12s ease;
+}
+.attend-modules-grid .ad-proj__chev svg {
+  width: 14px;
+  height: 14px;
+}
+.attend-modules-grid .ad-proj__chev:hover {
+  color: var(--attend-accent-blue);
+  background: var(--background-modifier-hover);
 }
 .attend-modules-grid .ad-proj__sum {
   padding-top: 8px;
