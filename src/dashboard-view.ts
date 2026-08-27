@@ -1425,26 +1425,30 @@ export class AttendDashboardView extends ItemView {
   }
 
   /* ---- 本周待办 & 逾期 ---- */
-  /** 「本周待办 & 逾期」头部：标题居左（副标题留空），右上角列表图标按钮 */
+  /** 「本周待办 & 逾期」头部：标题居左（副标题留空），无右上角按钮；逾期角标随渲染动态插入标题右侧 */
   private layoutWeeklyHeader(surface: HTMLElement): void {
     const header = surface.querySelector<HTMLElement>(".attend-surface-header");
     if (!header) return;
     // 标题居左
     this.alignHeaderTitlesLeft(surface, "attend-weekly-titles");
-    if (header.querySelector(".attend-weekly-list-btn")) return;
-    // 右上角列表图标按钮
-    const actions = header.createDiv("attend-actions");
-    const btn = actions.createEl("button", {
-      cls: "attend-weekly-list-btn attend-icon-btn clickable-icon",
-      attr: { type: "button", "aria-label": "全部任务" }
+  }
+
+  /** 头部右上角逾期角标（红色闪烁，逾期数 > 0 才显示；数字变化时重建） */
+  private renderWeeklyBadge(surface: HTMLElement, count: number): void {
+    const header = surface.querySelector<HTMLElement>(".attend-surface-header");
+    if (!header) return;
+    const old = header.querySelector<HTMLElement>(":scope > .ad-badge");
+    old?.remove();
+    if (count <= 0) return;
+    const badge = header.createSpan({
+      cls: "ad-badge ad-badge--danger",
+      text: String(count)
     });
-    setIcon(btn, "list");
-    this.listen(btn, "click", () => this.navigateProjectBoard(null));
+    badge.title = `${count} 个逾期任务`;
   }
 
   private async renderWeekly(surface: HTMLElement): Promise<void> {
     this.layoutWeeklyHeader(surface);
-    const summaryEl = surface.querySelector<HTMLElement>(".attend-surface-header span");
     const list = surface.createDiv("ad-wo");
     try {
       const tasks = await this.taskStore.scanAllTasks();
@@ -1480,7 +1484,7 @@ export class AttendDashboardView extends ItemView {
         a.dueDate! < b.dueDate! ? -1 : a.dueDate! > b.dueDate! ? 1 : 0
       );
 
-      if (overdue.length > 0) summaryEl?.setText(`逾期 ${overdue.length}`);
+      this.renderWeeklyBadge(surface, overdue.length);
 
       if (overdue.length > 0) {
         const og = list.createDiv("ad-wo__group ad-wo--overdue");

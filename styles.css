@@ -419,7 +419,7 @@
   letter-spacing: -0.01em;
 }
 
-.attend-surface-header > span {
+.attend-surface-header > span:not(.ad-badge) {
   color: var(--attend-text-faint);
   font-size: 11px;
   white-space: nowrap;
@@ -456,6 +456,31 @@
   align-items: center;
   gap: 6px;
   flex-shrink: 0;
+}
+
+/* 本周待办 & 逾期：头部右上角逾期角标（红色闪烁，对齐上游 obsidian-dashboard-main:800-814） */
+.ad-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 999px;
+  font-family: var(--font-monospace, monospace);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+.ad-badge--danger {
+  background: var(--attend-accent-red) !important;
+  color: #fff !important;
+  animation: ad-badge-blink 2.2s ease-in-out infinite;
+}
+@keyframes ad-badge-blink {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 color-mix(in srgb, var(--attend-accent-red) 55%, transparent); }
+  50% { opacity: 0.35; box-shadow: 0 0 0 5px transparent; }
 }
 
 .attend-heatmap-wrapper {
@@ -1741,12 +1766,15 @@
   gap: 8px;
   padding: 4px 14px 14px;
   flex: 1;
-  overflow-y: auto;
+  min-height: 0;
 }
 .attend-modules-grid .ad-proj__list {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto; /* 滚动移到列表层，给 sum 空出贴底空间 */
 }
 .attend-modules-grid .ad-proj__row {
   display: flex;
@@ -1824,7 +1852,7 @@
   display: none;
 }
 .ad-proj__stage.is-done {
-  --proc-line: var(--attend-accent-green);
+  --proc-line: #40c463; /* 热图第二色阶绿（亮/暗模式一致，见 --ad-hm-2） */
 }
 .ad-pip {
   position: relative;
@@ -1836,7 +1864,7 @@
   background: var(--attend-border-strong);
 }
 .ad-proj__stage.is-done .ad-pip {
-  background: var(--attend-accent-green);
+  background: #40c463; /* 同上 */
 }
 
 /* 主页卡片：阶段管道（复用全局样式 + 主页专属尺寸） */
@@ -1873,8 +1901,13 @@
   background: var(--background-modifier-hover);
 }
 .attend-modules-grid .ad-proj__sum {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  margin-top: auto; /* 吸附卡片底部（对齐上游 obsidian-dashboard-main:887） */
   padding-top: 8px;
-  border-top: 1px solid var(--attend-border);
+  border-top: 1px dashed var(--attend-border);
   font-size: 11px;
   color: var(--attend-text-faint);
 }
@@ -1911,6 +1944,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-top: auto; /* 将剩余周数行 + 进度条吸附到卡片底部（对齐上游 obsidian-dashboard-main:1174） */
 }
 .attend-modules-grid .ad-cd__row {
   display: flex;
@@ -2611,7 +2645,6 @@
 .po-stage-compact {
   margin-left: auto;
   padding: 2px 6px;
-  background: var(--ad-s2);
   border: 1px solid var(--ad-line);
   border-radius: var(--ad-r2);
 }
