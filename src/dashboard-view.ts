@@ -18,8 +18,8 @@ import { FlomoBoardPanel } from "./flomo/panel";
 import { appendFlomoToFile } from "./flomo/store";
 import { ProjectModal, type ProjectFormData } from "./project-modal";
 import { TaskModal, type TaskFormData } from "./task-modal";
+import { createTaskFile as createTaskFileShared } from "./data/taskFileCreator";
 import { CountdownModal } from "./countdown-modal";
-import type { RepeatRule } from "./data/taskParser";
 import { TaskStore } from "./data/taskStore";
 import {
   calcNextRemindDate,
@@ -48,43 +48,6 @@ const RING_ANIM = {
 export const VIEW_TYPE_ATTEND_DASHBOARD = "attend-dashboard-view";
 
 /** 从结构化重复设置生成嵌套「重复规则」block（迁移自 obsidian-dashboard-main）。 */
-function buildRepeatRule(data: {
-  freq: string;
-  interval: number;
-  workdaysOnly: boolean;
-  weekdays: number[];
-  monthDay: number;
-  startDate: string | null;
-}): RepeatRule | null {
-  if (!data.freq) return null;
-  const rule: RepeatRule = {};
-  const d = data.startDate ? new Date(data.startDate + "T00:00:00") : new Date();
-
-  if (data.freq === "daily") {
-    if (data.workdaysOnly) {
-      rule["频率"] = "工作日";
-    } else {
-      rule["频率"] = "每天";
-      rule["间隔天数"] = data.interval && data.interval >= 1 ? data.interval : 1;
-    }
-  } else if (data.freq === "weekly") {
-    rule["频率"] = "每周";
-    const days = data.weekdays && data.weekdays.length
-      ? [...data.weekdays].sort((a, b) => a - b)
-      : [((d.getDay() + 6) % 7) + 1];
-    rule["每周几"] = days;
-  } else if (data.freq === "monthly") {
-    rule["频率"] = "每月";
-    const md = data.monthDay && data.monthDay >= 1 && data.monthDay <= 31
-      ? data.monthDay
-      : (isNaN(d.getTime()) ? 1 : d.getDate());
-    rule["每月几号"] = md;
-  } else {
-    return null;
-  }
-  return rule;
-}
-
 /** 农历日期 → "五月廿二" 样式（复用 obsidian-dashboard-main 的 Intl 农历历法实现，无额外依赖） */
 function getLunarDate(d: Date): string {
   try {
@@ -1079,10 +1042,17 @@ export class AttendDashboardView extends ItemView {
   }
 
   /** 打开任务详情编辑弹窗（对齐上游 host openTaskEditModal），保存后刷新首页。 */
-  private openTaskEditModal(task: TaskItem): void {
+  private async openTaskEditModal(task: TaskItem): Promise<void> {
+    const [allTasks, allProjects] = await Promise.all([
+      this.taskStore.scanAllTasks(),
+      this.taskStore.scanAllProjects(),
+    ]);
     new TaskEditModal({
       app: this.app,
       task,
+      allTasks,
+      projects: allProjects,
+      projectsFolder: this.plugin.data.settings.projectsFolder || "Projects",
       onSave: () => void this.refresh(true),
     }).open();
   }
@@ -1653,8 +1623,16 @@ export class AttendDashboardView extends ItemView {
     // 标题与计数居左（计数紧跟在标题之后）
     this.alignHeaderTitlesLeft(surface, "attend-projects-titles");
     if (header.querySelector(".attend-projects-new-btn")) return;
-    // 右上角按钮组（仅「新建」按钮；看板入口已移至每行右侧 chev 箭头）
+    // 右上角按钮组（居右排列：右1「新建」、右2「全部项目」图标）
     const actions = header.createDiv("attend-actions");
+    // 「全部项目」图标按钮（仅图标，悬停显示文字）
+    const allBtn = actions.createEl("button", {
+      cls: "attend-projects-all-btn attend-icon-btn clickable-icon",
+      attr: { type: "button", "aria-label": "全部项目" }
+    });
+    setIcon(allBtn, "list");
+    this.listen(allBtn, "click", () => void this.navigateProjectBoard(null));
+    // 「新建」按钮（纯加号图标）
     const btn = actions.createEl("button", {
       cls: "attend-projects-new-btn attend-icon-btn clickable-icon",
       attr: { type: "button", "aria-label": "新建项目" }
@@ -1748,101 +1726,12 @@ export class AttendDashboardView extends ItemView {
     return this.taskStore.scanAllProjects();
   }
 
-  /** 创建任务文件（Chinese frontmatter，复用 obsidian-dashboard-main 逻辑）。 */
+  /** 创建任务文件：委托给共享模块（首页与项目板共用同一套 frontmatter 逻辑）。 */
   private async createTaskFile(data: TaskFormData): Promise<void> {
-    const projectFolder = await this.findProjectFolder(data.project);
-    if (!projectFolder) {
-      new Notice(`❌ 找不到项目文件夹: ${data.project}`);
-      return;
-    }
-
-    const safeTitle = data.title.replace(/[*"/<>:|?\\]/g, "-");
-    const filename = `${safeTitle}.md`;
-    const filePath = `${projectFolder.path}/${filename}`;
-
-    if (this.app.vault.getAbstractFileByPath(filePath)) {
-      new Notice(`❌ ${data.title} 已存在于该项目中`);
-      return;
-    }
-
-    const statusMap: Record<string, string> = {
-      "todo": "待办",
-      "in-progress": "进行中",
-      "blocked": "已阻塞",
-      "done": "已完成",
-      "cancelled": "已取消"
-    };
-    const typeMap: Record<string, string> = {
-      "task": "普通",
-      "recurring": "重复"
-    };
-
-    const fmPriority = data.priority || "";
-    const fmType = typeMap[data.type] || "普通";
-    const isRecurring = fmType === "重复";
-    const fmStatus = isRecurring ? "进行中" : statusMap[data.status] || "待办";
-
-    const repeatRule = isRecurring
-      ? buildRepeatRule({
-          freq: data.repeatFreq,
-          interval: data.repeatInterval,
-          workdaysOnly: data.repeatWorkdaysOnly,
-          weekdays: data.repeatWeekdays,
-          monthDay: data.repeatMonthDay,
-          startDate: data.startDate
-        })
-      : null;
-
-    const lines: string[] = ["---"];
-    lines.push(`状态: ${yamlScalar(fmStatus)}`);
-    lines.push(`优先级: ${yamlScalar(fmPriority)}`);
-    lines.push(`开始日期: ${yamlScalar(data.startDate)}`);
-    // 截止日期 acts as the recurrence bound for recurring tasks (omitted when 无结束日期).
-    if (data.endDate) lines.push(`截止日期: ${yamlScalar(data.endDate)}`);
-    lines.push(`项目: ${yamlScalar(data.project)}`);
-    lines.push(`tags: ${JSON.stringify(data.tags)}`);
-    lines.push(`类型: ${yamlScalar(fmType)}`);
-    lines.push(`提醒: ${JSON.stringify(data.reminders)}`);
-    lines.push(`备注: ${yamlScalar(data.notes)}`);
-    if (data.parent) lines.push(`父任务: ${yamlScalar(data.parent)}`);
-
-    if (isRecurring && repeatRule) {
-      lines.push("重复规则:");
-      lines.push(`  频率: ${repeatRule["频率"]}`);
-      if (repeatRule["间隔天数"] != null) lines.push(`  间隔天数: ${repeatRule["间隔天数"]}`);
-      if (repeatRule["每周几"] && repeatRule["每周几"].length) lines.push(`  每周几: [${repeatRule["每周几"].join(", ")}]`);
-      if (repeatRule["每月几号"] != null) lines.push(`  每月几号: ${repeatRule["每月几号"]}`);
-      // Initialize 提醒日期 to the start date so the first occurrence is due today/on start.
-      lines.push(`提醒日期: ${data.startDate || todayStr()}`);
-    }
-
-    lines.push("---");
-    lines.push("");
-    lines.push(`# ${data.title}`);
-    lines.push("");
-
-    await this.app.vault.create(filePath, lines.join("\n"));
-    new Notice("✨ 任务已创建");
+    const projectsFolder = this.plugin.data.settings.projectsFolder || "Projects";
+    await createTaskFileShared(this.app, projectsFolder, data);
     this.taskStore.invalidate();
     this.rebuildModuleGrid();
-  }
-
-  private async findProjectFolder(projectName: string): Promise<TFolder | null> {
-    const rootPath = this.plugin.data.settings.projectsFolder || "Projects";
-    const root = this.app.vault.getAbstractFileByPath(rootPath);
-    if (!(root instanceof TFolder)) return null;
-    return this.findProjectFolderRecursive(root, projectName);
-  }
-
-  private findProjectFolderRecursive(folder: TFolder, projectName: string): TFolder | null {
-    for (const child of folder.children) {
-      if (child instanceof TFolder) {
-        if (child.name === projectName) return child;
-        const found = this.findProjectFolderRecursive(child, projectName);
-        if (found) return found;
-      }
-    }
-    return null;
   }
 
   /* ---- 倒计时 ---- */
@@ -1909,6 +1798,14 @@ export class AttendDashboardView extends ItemView {
       const row = bottom.createDiv("ad-cd__row");
       row.createSpan({ text: "剩余周数 " }).createEl("strong", {
         text: String(Math.ceil(diffDays / 7))
+      });
+      // 分隔圆点（内联样式，跟随主题文字色，避免新增 CSS 变量依赖）
+      row.createSpan({
+        cls: "ad-dot",
+        attr: { style: "display:inline-block;width:3px;height:3px;background:var(--attend-text);opacity:.4;border-radius:50%;" }
+      });
+      row.createSpan({ text: "已完成 " }).createEl("strong", {
+        text: pct.toFixed(1) + "%"
       });
       const barWrap = bottom.createDiv("ad-cd__bar");
       const fill = barWrap.createDiv("ad-fill");

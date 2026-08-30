@@ -43,7 +43,7 @@ export class AttendSettingsModal extends Modal {
 
   onOpen(): void {
     this.modalEl.addClass("attend-settings-modal");
-    renderSettings(this.contentEl, this.attendPlugin, () => this.close());
+    renderSettings(this.contentEl, this.attendPlugin);
   }
 
   onClose(): void {
@@ -133,8 +133,7 @@ type SettingsSection = {
 
 function renderSettings(
   container: HTMLElement,
-  plugin: AttendDashboardPlugin,
-  close?: () => void
+  plugin: AttendDashboardPlugin
 ): void {
   container.empty();
   container.addClass("attend-settings-root");
@@ -578,7 +577,7 @@ function renderSettings(
           .onClick(async () => {
             fv.folders.push({ folder: "", viewMode: "" });
             await store.save();
-            renderSettings(container, plugin, close);
+            renderSettings(container, plugin);
           })
       )
   );
@@ -609,7 +608,7 @@ function renderSettings(
             .onClick(async () => {
               fv.folders.splice(index, 1);
               await store.save();
-              renderSettings(container, plugin, close);
+              renderSettings(container, plugin);
             })
         )
     );
@@ -628,7 +627,7 @@ function renderSettings(
           .onClick(async () => {
             fv.files.push({ filePattern: "", viewMode: "" });
             await store.save();
-            renderSettings(container, plugin, close);
+            renderSettings(container, plugin);
           })
       )
   );
@@ -659,7 +658,7 @@ function renderSettings(
             .onClick(async () => {
               fv.files.splice(index, 1);
               await store.save();
-              renderSettings(container, plugin, close);
+              renderSettings(container, plugin);
             })
         )
     );
@@ -671,15 +670,6 @@ function renderSettings(
   // ── Linter（移植自 obsidian-linter，独立 JSON 存储） ──
   renderLinterSettings(markdownEl, plugin);
 
-  if (close) {
-    const actions = container.createDiv("attend-settings-actions");
-    const done = actions.createEl("button", {
-      cls: "mod-cta",
-      text: "完成",
-      attr: { type: "button" }
-    });
-    done.addEventListener("click", close);
-  }
 }
 
 function parseExcludedFolders(value: string): string[] {

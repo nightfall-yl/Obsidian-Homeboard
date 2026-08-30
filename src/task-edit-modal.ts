@@ -1,5 +1,5 @@
-import { App, Modal, TFile } from 'obsidian';
-import { TaskItem, TaskStatus, TaskPriority, STATUS_LIST, PRIORITY_LIST, NodeState, DailyNode, serializeDailyNodesBlock } from './data/taskParser';
+import { App, Modal, Notice, TFile } from 'obsidian';
+import { TaskItem, TaskStatus, TaskPriority, TaskType, ProjectInfo, STATUS_LIST, PRIORITY_LIST, NodeState, DailyNode, serializeDailyNodesBlock } from './data/taskParser';
 import { yamlScalar } from './data/frontmatterWriter';
 
 /* ============================================================
@@ -13,6 +13,12 @@ interface TaskEditModalOptions {
 	task: TaskItem;
 	onSave: () => void;
 	presetTodayNode?: NodeState;
+	/** 同项目其他任务列表，用于父任务下拉（排除自身）。 */
+	allTasks?: TaskItem[];
+	/** 全部项目，用于「所属项目」下拉；缺省时该行不渲染。 */
+	projects?: ProjectInfo[];
+	/** 项目根目录（settings.projectsFolder），切换项目时用于移动文件。 */
+	projectsFolder?: string;
 }
 
 export class TaskEditModal extends Modal {
@@ -36,6 +42,46 @@ export class TaskEditModal extends Modal {
 		this.field('任务名称 *', (wrap) => {
 			wrap.createEl('input', { cls: 'ad-modal-input ad-edit-title', attr: { type: 'text', value: task.content } });
 		});
+
+		// ---- 归属（可编辑，与新建任务弹窗一致）：所属项目 / 类型 一行 ----
+		const projects = this.opts.projects || [];
+		const row0 = contentEl.createDiv({ cls: 'ad-modal-row' });
+		const projCol = row0.createDiv({ cls: 'ad-modal-col' });
+		this.label(projCol, '所属项目 *');
+		const projSel = projCol.createEl('select', { cls: 'ad-modal-input' });
+		if (projects.length) {
+			for (const p of projects) {
+				projSel.createEl('option', { text: p.name, attr: { value: p.name } });
+			}
+		} else {
+			// 未传 projects 时至少保留当前项目，避免保存时把「项目」清空
+			projSel.createEl('option', { text: task.projectId, attr: { value: task.projectId } });
+			projSel.disabled = true;
+		}
+		if (task.projectId) projSel.value = task.projectId;
+
+		const typeCol = row0.createDiv({ cls: 'ad-modal-col' });
+		this.label(typeCol, '类型 *');
+		const typeSel = typeCol.createEl('select', { cls: 'ad-modal-input' });
+		typeSel.createEl('option', { text: '普通', attr: { value: '普通' } });
+		typeSel.createEl('option', { text: '重复', attr: { value: '重复' } });
+		typeSel.value = task.type === '重复' ? '重复' : '普通';
+
+		// ---- Parent task（跟随所属项目联动） ----
+		contentEl.createEl('label', { cls: 'ad-modal-label', text: '父任务' });
+		const parentSel = contentEl.createEl('select', { cls: 'ad-modal-input' });
+		parentSel.createEl('option', { text: '无（顶级任务）', attr: { value: '' } });
+		const populateParents = (projectName: string): void => {
+			// 父任务只能是同一项目下的其他任务（排除自身）
+			const filtered = (this.opts.allTasks || []).filter((t) => t.projectId === projectName && t.id !== task.id);
+			while (parentSel.options.length > 1) parentSel.remove(1);
+			for (const t of filtered) {
+				parentSel.createEl('option', { text: t.content, attr: { value: t.content } });
+			}
+		};
+		populateParents(projSel.value);
+		if (task.parent) parentSel.value = task.parent;
+		projSel.addEventListener('change', () => { populateParents(projSel.value); });
 
 		// ---- Status ----
 		contentEl.createEl('label', { cls: 'ad-modal-label', text: '状态' });
@@ -84,11 +130,11 @@ export class TaskEditModal extends Modal {
 			.addEventListener('click', () => {
 				const titleEl = contentEl.querySelector('.ad-edit-title') as HTMLInputElement;
 				const nodeNoteEl = contentEl.querySelector('.ad-node-note') as HTMLTextAreaElement;
-				void this.saveTask(titleEl?.value?.trim() || task.content, statusSel.value, prioSel.value, startInput.value, endInput.value, notesArea.value, nodeNoteEl?.value ?? '');
+				void this.saveTask(titleEl?.value?.trim() || task.content, statusSel.value, prioSel.value, startInput.value, endInput.value, notesArea.value, projSel.value, parentSel.value, typeSel.value, nodeNoteEl?.value ?? '');
 			});
 	}
 
-	private async saveTask(title: string, status: string, priority: string, startDate: string, endDate: string, notes: string, nodeNote: string): Promise<void> {
+	private async saveTask(title: string, status: string, priority: string, startDate: string, endDate: string, notes: string, project: string, parent: string, type: string, nodeNote: string): Promise<void> {
 		const task = this.opts.task;
 		const file = this.app.vault.getAbstractFileByPath(task.sourceFile);
 		if (!(file instanceof TFile)) return;
@@ -106,14 +152,47 @@ export class TaskEditModal extends Modal {
 			}
 		}
 
+		// ---- Move to another project folder if changed ----
+		const rootPath = this.opts.projectsFolder || 'Projects';
+		const curFileName = file.path.split('/').pop() || '';
+		if (project && project !== task.projectId) {
+			const newPath = `${rootPath}/${project}/${curFileName}`;
+			if (!this.app.vault.getAbstractFileByPath(newPath)) {
+				await this.app.fileManager.renameFile(file, newPath);
+				task.projectId = project;
+				task.id = newPath;
+				task.sourceFile = newPath;
+			} else {
+				new Notice(`「${curFileName}」在目标项目下已存在，无法移动`);
+				return;
+			}
+		}
+
+		// ---- 父任务防环：新父任务的祖先链不能包含本任务 ----
+		if (parent && parent !== task.content) {
+			let cur: string = parent;
+			let guard = 0;
+			while (cur) {
+				if (cur === task.content) {
+					new Notice('父任务设置会形成循环引用');
+					return;
+				}
+				const p = (this.opts.allTasks || []).find((tt) => tt.content === cur);
+				cur = p ? (p.parent || '') : '';
+				if (++guard > 100) break;
+			}
+		}
+
 		const content = await this.app.vault.read(file);
 		const eol = content.includes('\r\n') ? '\r\n' : '\n';
 		const lines = content.split(/\r?\n/);
 		let inFM = false;
 
-		// Track whether priority already exists in frontmatter (frontmatter-scoped,
-		// avoids false positives from body content containing "优先级:").
+		// Track whether priority/parent already exists in frontmatter (frontmatter-scoped,
+		// avoids false positives from body content containing "优先级:" / "父任务:").
 		let hasPriority = false;
+		let hasType = false;
+		let hasParent = false;
 		let statusLineIdx = -1;
 
 		for (let i = 0; i < lines.length; i++) {
@@ -128,6 +207,14 @@ export class TaskEditModal extends Modal {
 			} else if (line.startsWith('优先级:')) {
 				lines[i] = `优先级: ${yamlScalar(priority)}`;
 				hasPriority = true;
+			} else if (line.startsWith('类型:')) {
+				lines[i] = `类型: ${type}`;
+				hasType = true;
+			} else if (line.startsWith('父任务:')) {
+				lines[i] = parent ? `父任务: ${yamlScalar(parent)}` : '';
+				hasParent = true;
+			} else if (line.startsWith('项目:')) {
+				lines[i] = project ? `项目: ${yamlScalar(project)}` : '';
 			} else if (line.startsWith('开始日期:')) {
 				lines[i] = `开始日期: ${startDate}`;
 			} else if (line.startsWith('截止日期:')) {
@@ -137,10 +224,19 @@ export class TaskEditModal extends Modal {
 			}
 		}
 
-		// If priority was set but missing from frontmatter, insert after 状态 line.
+		// If priority/parent was set but missing from frontmatter, insert after 状态 line.
 		// (statusLineIdx is frontmatter-scoped, so we never insert into the body.)
 		if (priority && !hasPriority && statusLineIdx >= 0) {
 			lines.splice(statusLineIdx + 1, 0, `优先级: ${yamlScalar(priority)}`);
+			statusLineIdx++;
+		}
+		if (type && !hasType && statusLineIdx >= 0) {
+			lines.splice(statusLineIdx + 1, 0, `类型: ${type}`);
+			statusLineIdx++;
+		}
+		if (parent && !hasParent && statusLineIdx >= 0) {
+			lines.splice(statusLineIdx + 1, 0, `父任务: ${yamlScalar(parent)}`);
+			statusLineIdx++;
 		}
 
 		// ---- Daily nodes (multi-day check-in) ----
@@ -223,6 +319,8 @@ export class TaskEditModal extends Modal {
 		task.startDate = startDate || null;
 		task.dueDate = endDate || null;
 		task.notes = notes;
+		task.type = (type as TaskType) || '普通';
+		task.parent = parent;
 		task.dailyNodes = nodes;
 		if (willDone && !wasDone) {
 			task.completeTime = nowFmt();

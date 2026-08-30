@@ -52,12 +52,12 @@
   --attend-text: var(--text-normal);
   --attend-text-muted: var(--text-muted);
   --attend-text-faint: var(--text-faint);
-  --attend-accent-blue: var(--color-blue, #88c0d0);
-  --attend-accent-green: var(--color-green, #a3be8c);
-  --attend-accent-yellow: var(--color-yellow, #ebcb8b);
-  --attend-accent-purple: var(--color-purple, #b48ead);
-  --attend-accent-red: var(--color-red, #bf616a);
-  --attend-accent-rose: var(--color-pink, #e0528d);
+  --attend-accent-blue: #3b82f6;
+  --attend-accent-green: #16a34a;
+  --attend-accent-yellow: #f59e0b;
+  --attend-accent-purple: #a855f7;
+  --attend-accent-red: #ef4444;
+  --attend-accent-rose: #ec4899;
   --attend-chart-grid: color-mix(in srgb, var(--text-muted) 20%, transparent);
   box-sizing: border-box;
   width: min(100%, 1480px);
@@ -207,7 +207,7 @@
   width: 23px;
   height: 23px;
   place-items: center;
-  color: var(--attend-bg);
+  color: #fff;
   border-radius: 6px;
   background: var(--attend-accent-blue);
   font-size: 10px;
@@ -999,7 +999,12 @@
   }
 
   .theme-dark .attend-settings-root {
-    --setting-items-background: var(--background-primary-alt);
+    --setting-items-background: var(--background-secondary);
+  }
+
+  /* 主页设置弹窗：底色对齐 Obsidian 原生设置页，分组卡片才能显出 */
+  .attend-settings-modal {
+    --modal-background: var(--settings-background);
   }
 }
 
@@ -1764,7 +1769,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 4px 14px 14px;
+  padding: 4px 0 14px; /* 去掉左右内边距，让滚动容器贴卡面右缘（对齐最近笔记滚动条） */
   flex: 1;
   min-height: 0;
 }
@@ -1775,6 +1780,7 @@
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto; /* 滚动移到列表层，给 sum 空出贴底空间 */
+  padding: 0 14px; /* 原父层左右 14px 缩进移至滚动容器，保证行内容缩进不变 */
 }
 .attend-modules-grid .ad-proj__row {
   display: flex;
@@ -1906,7 +1912,7 @@
   justify-content: flex-start;
   flex-shrink: 0;
   margin-top: auto; /* 吸附卡片底部（对齐上游 obsidian-dashboard-main:887） */
-  padding-top: 8px;
+  padding: 8px 14px 0; /* 左右缩进补回原父层 14px */
   border-top: 1px dashed var(--attend-border);
   font-size: 11px;
   color: var(--attend-text-faint);
@@ -1976,7 +1982,8 @@
 
 /* ==================== 全部项目视图（ProjectBoardView）==================== */
 /* 独立 ItemView，容器不在 .attend-dashboard 内，故在此补全 --attend-* 变量。 */
-.po-board-view {
+.po-board-view,
+.ad-task-modal {
   /* attend 变量（供 gantt/table/calendar 等其他 po 子视图使用，保持主题跟随） */
   --attend-bg: var(--background-primary);
   --attend-surface: var(--background-secondary);
@@ -1986,21 +1993,18 @@
   --attend-text: var(--text-normal);
   --attend-text-muted: var(--text-muted);
   --attend-text-faint: var(--text-faint);
-  --attend-accent-blue: var(--color-blue, #88c0d0);
-  --attend-accent-green: var(--color-green, #a3be8c);
-  --attend-accent-yellow: var(--color-yellow, #ebcb8b);
-  --attend-accent-purple: var(--color-purple, #b48ead);
-  --attend-accent-red: var(--color-red, #bf616a);
-  --attend-accent-rose: var(--color-pink, #e0528d);
+  --attend-accent-blue: #3b82f6;
+  --attend-accent-green: #16a34a;
+  --attend-accent-yellow: #f59e0b;
+  --attend-accent-purple: #a855f7;
+  --attend-accent-red: #ef4444;
+  --attend-accent-rose: #ec4899;
   --attend-chart-grid: color-mix(in srgb, var(--text-muted) 20%, transparent);
-  /* 上游 --ad-* 调色板（1:1 移植 .po-container/.po-sidebar/.po-main 使用；固定调色板，不跟随 Obsidian 主题） */
-  --ad-bg: #0F1014;
+  /* 上游 --ad-* 调色板（1:1 移植 .po-container/.po-sidebar/.po-main 使用；固定调色板，不跟随 Obsidian 主题）
+     与 .ad-task-modal 共享同一份定义，避免双源漂移（如圆角 12px/10px 类问题） */
   --ad-s1: #16181F;
-  --ad-s2: #1D2029;
   --ad-s3: #252934;
   --ad-h1: #1F232E;
-  --ad-h2: #262B38;
-  --ad-hair: rgba(255,255,255,0.045);
   --ad-line: rgba(255,255,255,0.08);
   --ad-line-s: rgba(255,255,255,0.14);
   --ad-text: #E8E6E0;
@@ -2009,11 +2013,11 @@
   --ad-accent: #7BA7FF;
   --ad-accent-dim: rgba(123,167,255,0.18);
   --ad-accent-2: #A78BFA;
-  --ad-warn: #E8A37C;
-  --ad-danger: #E07F87;
-  --ad-success: #93C49A;
-  --ad-r1: 4px; --ad-r2: 6px; --ad-r3: 10px;
+  --ad-r1: 4px; --ad-r2: 6px; --ad-r3: 8px;
   --ad-on-accent: #0F1014;
+}
+
+.po-board-view {
   position: relative;
   height: 100%;
   overflow-y: auto;
@@ -2029,15 +2033,12 @@
   background-size: 14px 14px;
   background-position: -1px -1px;
 }
-/* 亮色主题：上游 shadcn 中性调色板覆盖（与上游 dashboard-plugin 亮色块 1:1） */
-.theme-light .po-board-view {
-  --ad-bg: oklch(0.99 0 0);
+/* 亮色主题：上游 shadcn 中性调色板覆盖（与上游 dashboard-plugin 亮色块 1:1）；与 .ad-task-modal 共享 */
+.theme-light .po-board-view,
+body.theme-light .ad-task-modal {
   --ad-s1: oklch(1 0 0);
-  --ad-s2: oklch(0.97 0 0);
   --ad-s3: oklch(0.94 0 0);
   --ad-h1: oklch(0.97 0 0);
-  --ad-h2: oklch(0.94 0 0);
-  --ad-hair: oklch(0.92 0 0);
   --ad-line: oklch(0.92 0 0);
   --ad-line-s: oklch(0.86 0 0);
   --ad-text: oklch(0.13 0 0);
@@ -2046,11 +2047,8 @@
   --ad-accent: oklch(0.13 0 0);
   --ad-accent-dim: oklch(0.13 0 0 / 0.10);
   --ad-accent-2: oklch(0.81 0.17 75.35);
-  --ad-warn: oklch(0.70 0.15 70);
-  --ad-danger: oklch(0.63 0.19 23.03);
-  --ad-success: oklch(0.55 0.16 150);
   --ad-on-accent: oklch(1 0 0);
-  --ad-r1: 0.375rem; --ad-r2: 0.5rem; --ad-r3: 0.75rem;
+  --ad-r1: 4px; --ad-r2: 6px; --ad-r3: 8px;
 }
 
 .po-board-view .po-container {
@@ -2174,12 +2172,12 @@
   background: var(--ad-s1);
 }
 .po-tab {
-  padding: 6px 14px;
-  border-radius: var(--ad-r1);
+  padding: 5px 12px;
+  border-radius: var(--ad-r3);
   font-size: 11px;
   cursor: pointer;
   color: var(--ad-text-mute);
-  border: 1px solid transparent;
+  border: 1px solid var(--ad-line);
   background: transparent;
   transition: all 0.12s ease;
   display: flex;
@@ -2187,12 +2185,12 @@
   gap: 5px;
 }
 .po-tab:hover {
-  color: var(--ad-text-mute);
+  color: var(--ad-text);
   background: var(--ad-h1);
   border-color: var(--ad-line);
 }
 .po-tab.is-active {
-  color: var(--ad-text-mute);
+  color: var(--ad-accent);
   background: var(--ad-accent-dim);
   border-color: rgba(123,167,255,0.3);
   font-weight: 500;
@@ -2233,18 +2231,18 @@
   align-items: center;
   gap: 8px;
   padding: 10px 12px;
-  border-bottom: 1px solid var(--attend-border);
+  border-bottom: 1px solid var(--ad-line);
   background: var(--ad-s1);
   flex-wrap: wrap;
 }
 .po-gantt__zoom-btn {
-  padding: 3px 10px;
+  padding: 5px 12px;
   border: 1px solid var(--ad-line);
-  border-radius: 10px;
+  border-radius: var(--ad-r3);
   background: transparent;
-  color: var(--ad-text-dim);
+  color: var(--ad-text-mute);
   cursor: pointer;
-  font-size: 10px;
+  font-size: 11px;
   transition: all 0.12s ease;
 }
 .po-gantt__zoom-btn:hover {
@@ -2309,9 +2307,28 @@
   cursor: pointer;
 }
 .po-gantt__label-title {
+  flex: 1 1 auto;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: 12px;
+}
+/* 任务名后「+」加号：默认隐藏，行 hover 时显现，点击以该任务为父任务新建子任务；居右对齐 */
+.po-gantt__label-add {
+  flex-shrink: 0;
+  margin-left: auto;
+  width: 16px;
+  text-align: center;
+  color: var(--attend-text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+.po-gantt__label-row:hover .po-gantt__label-add {
+  opacity: 1;
+}
+.po-gantt__label-add:hover {
+  color: var(--interactive-accent);
 }
 .po-gantt__right {
   flex: 1 1 auto;
@@ -2472,25 +2489,25 @@
   color: var(--attend-text-muted);
 }
 .po-chip {
-  padding: 5px 14px;
-  border: 1px solid var(--attend-border);
-  border-radius: 999px;
+  padding: 5px 12px;
+  border: 1px solid var(--ad-line);
+  border-radius: var(--ad-r3);
   background: transparent;
-  color: var(--attend-text-muted);
+  color: var(--ad-text-mute);
   cursor: pointer;
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 11px;
   transition: background 0.1s, border-color 0.1s, color 0.1s;
 }
 .po-chip:hover {
-  color: var(--attend-text);
-  border-color: var(--attend-border-strong);
+  color: var(--ad-text);
+  border-color: var(--ad-line);
   background: var(--ad-h1);
 }
 .po-chip.is-active {
-  color: var(--attend-text);
-  border-color: var(--attend-accent-blue);
-  background: color-mix(in srgb, var(--attend-accent-blue) 14%, var(--ad-s1));
+  color: var(--ad-accent);
+  border-color: rgba(123,167,255,0.3);
+  background: var(--ad-accent-dim);
+  font-weight: 500;
 }
 .po-table-wrap {
   flex: 1 1 auto;
@@ -2578,11 +2595,13 @@
   color: var(--attend-text);
 }
 .po-prio {
+  display: inline-block;
   padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 11px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 600;
   border: 1px solid currentColor;
-  background: color-mix(in srgb, currentColor 10%, transparent);
+  background: color-mix(in srgb, currentColor 12%, transparent);
 }
 .po-p-high {
   color: var(--attend-accent-red);
@@ -2591,7 +2610,7 @@
   color: var(--attend-accent-yellow);
 }
 .po-p-low {
-  color: var(--attend-accent-green);
+  color: var(--attend-text-muted);
 }
 .po-mono {
   font-family: var(--font-monospace);
@@ -2599,30 +2618,30 @@
   color: var(--attend-text-muted);
 }
 .po-status {
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 11px;
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 500;
   border: 1px solid currentColor;
-  background: color-mix(in srgb, currentColor 10%, transparent);
-  color: var(--attend-text-muted);
+  background: color-mix(in srgb, currentColor 12%, transparent);
 }
 .po-todo {
   color: var(--attend-text-muted);
-  border-color: var(--attend-border-strong);
-  background: color-mix(in srgb, var(--ad-h1) 70%, transparent);
+  background: color-mix(in srgb, var(--attend-text-muted) 15%, transparent);
 }
 .po-progress {
   color: var(--attend-accent-blue);
 }
 .po-blocked {
-  color: var(--attend-accent-red);
+  color: var(--attend-accent-yellow);
 }
 .po-done {
   color: var(--attend-accent-green);
+  background: color-mix(in srgb, var(--attend-accent-green) 12%, transparent);
 }
 .po-cancelled {
   color: var(--attend-text-faint);
-  border-color: var(--attend-border);
   background: transparent;
   text-decoration: line-through;
 }
@@ -2699,9 +2718,12 @@
   border: 1px solid var(--background-modifier-border);
   border-radius: 12px;
   overflow: hidden;
-  background: var(--background-primary);
+  background: var(--ad-sunk);
   /* --ad-* 重定向为 Obsidian 主题变量，使嵌入态跟随主题、与 flomo 一致、区分线清晰 */
   --ad-bg: var(--background-primary);
+  /* 主区底色：亮色=页底(primary)；暗色模式下由 .theme-dark 覆盖为比页底深一档(sunk)，
+     与 head/sidebar 反转 —— 对齐 macOS 暗色逻辑（侧栏/标题栏比内容区浅一档） */
+  --ad-sunk: var(--background-primary);
   --ad-s1: var(--background-secondary);
   --ad-s2: var(--background-secondary);
   --ad-s3: var(--background-modifier-hover);
@@ -2719,6 +2741,17 @@
   --ad-danger: var(--text-error, #e0605f);
   --ad-success: var(--text-success, #4fa86a);
   --ad-on-accent: var(--background-primary);
+}
+/* macOS 式明暗反转：暗色模式下 head/sidebar 比主内容区浅一档、主区更深；
+   亮色保持 Obsidian 默认（sidebar 用 --background-secondary 深一档）。基于 --background-primary
+   派生 sunk 层，不依赖主题 secondary/primary 的相对明暗关系，故任意主题都正确。 */
+.theme-dark .po-board-host.po-board-view {
+  --ad-s1: var(--background-primary);
+  --ad-sunk: color-mix(in srgb, var(--background-primary) 90%, black);
+}
+.theme-dark .flomo-container {
+  --ad-s1: var(--background-primary);
+  --ad-sunk: color-mix(in srgb, var(--background-primary) 90%, black);
 }
 .po-board-host.po-board-view .po-container {
   border: none;
@@ -2822,8 +2855,8 @@ body.theme-dark .po-board-host.po-board-view .po-gantt__band-odd {
   color: var(--text-normal);
 }
 .po-board-host.po-board-view .po-chip.is-active {
-  background: color-mix(in srgb, var(--interactive-accent) 14%, transparent);
-  border-color: var(--interactive-accent);
+  background: var(--ad-accent-dim);
+  border-color: rgba(123,167,255,0.3);
 }
 
 /* 项目板嵌入态统一复用 .po-board-host 作唯一卡片外壳（flomo 对齐），内部 .po-container
@@ -2848,6 +2881,27 @@ body.theme-dark .po-board-host.po-board-view .po-gantt__band-odd {
   overflow: hidden;
   font-size: 14px;
   color: var(--text-normal);
+  /* 与嵌入态 .po-board-view 一致的 --ad-* 重定向（跟随 Obsidian 主题变量），
+     让全部便签面板的设计语言与全部项目面板统一，不依赖祖先元素继承 */
+  --ad-bg: var(--background-primary);
+  --ad-s1: var(--background-secondary);
+  --ad-sunk: var(--background-primary);
+  --ad-s2: var(--background-secondary);
+  --ad-s3: var(--background-modifier-hover);
+  --ad-h1: var(--background-modifier-hover);
+  --ad-h2: var(--background-modifier-hover);
+  --ad-hair: var(--background-modifier-border);
+  --ad-line: var(--background-modifier-border);
+  --ad-line-s: var(--background-modifier-border-hover);
+  --ad-text: var(--text-normal);
+  --ad-text-mute: var(--text-muted);
+  --ad-text-dim: var(--text-faint);
+  --ad-accent: var(--interactive-accent);
+  --ad-accent-dim: color-mix(in srgb, var(--interactive-accent) 18%, transparent);
+  --ad-warn: var(--text-warning, #b97333);
+  --ad-danger: var(--text-error, #e0605f);
+  --ad-success: var(--text-success, #4fa86a);
+  --ad-on-accent: var(--background-primary);
 }
 .flomo-shell {
   display: flex;
@@ -2862,8 +2916,8 @@ body.theme-dark .po-board-host.po-board-view .po-gantt__band-odd {
   flex-shrink: 0;
   overflow-y: auto;
   padding: 16px 10px 24px;
-  border-right: 1px solid var(--background-modifier-border);
-  background: var(--background-primary);
+  border-right: 1px solid var(--ad-line);
+  background: var(--ad-s1);
 }
 
 /* 侧栏折叠状态 —— 复刻自 obsidian-memoria-main/styles.css */
@@ -2904,13 +2958,13 @@ body.is-mobile .flomo-shell .flomo-sidebar {
 .flomo-stat-num {
   font-size: 22px;
   font-weight: 700;
-  color: var(--text-normal);
+  color: var(--ad-text);
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
 }
 .flomo-stat-label {
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--ad-text-mute);
   margin-top: 4px;
   letter-spacing: 0.4px;
 }
@@ -2920,7 +2974,7 @@ body.is-mobile .flomo-shell .flomo-sidebar {
   padding: 14px 12px 6px;
   font-size: 11px;
   font-weight: 600;
-  color: var(--text-faint);
+  color: var(--ad-text-dim);
   letter-spacing: 0.6px;
   text-transform: uppercase;
 }
@@ -2932,25 +2986,28 @@ body.is-mobile .flomo-shell .flomo-sidebar {
   gap: 10px;
   padding: 7px 12px;
   margin: 1px 2px;
-  border-radius: 6px;
+  border: 1px solid transparent;
+  border-radius: var(--ad-r1);
   font-size: 13px;
-  color: var(--text-muted);
+  color: var(--ad-text-mute);
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
-  transition: background 0.12s, color 0.12s;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
 }
 .flomo-nav-item:hover {
-  background: var(--background-modifier-hover);
-  color: var(--text-normal);
+  background: var(--ad-h1);
+  border-color: var(--ad-line);
+  color: var(--ad-text);
 }
 .flomo-nav-item.active {
-  background: var(--interactive-accent);
-  color: var(--text-on-accent);
+  background: var(--ad-accent-dim);
+  border-color: rgba(123,167,255,0.25);
+  color: var(--ad-text);
   font-weight: 500;
 }
 .flomo-nav-item.active .flomo-nav-count {
-  color: var(--text-on-accent);
+  color: var(--ad-text);
   opacity: 0.85;
 }
 .flomo-nav-icon {
@@ -2974,7 +3031,7 @@ body.is-mobile .flomo-shell .flomo-sidebar {
 }
 .flomo-nav-count {
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--ad-text-dim);
   font-variant-numeric: tabular-nums;
 }
 
@@ -2985,15 +3042,19 @@ body.is-mobile .flomo-shell .flomo-sidebar {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  /* 主区底色：暗色模式下由 .theme-dark .flomo-container 覆盖为比页底深一档(sunk)，
+     与 head/sidebar 反转（macOS 逻辑）；亮色沿用页底。显式声明，不依赖宿主透明穿透，
+     因为 flomo 宿主只带 po-board-host、不命中 .po-board-host.po-board-view 的暗色背景。 */
+  background: var(--ad-sunk);
 }
 .flomo-topbar {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 12px 24px;
-  border-bottom: 1px solid var(--background-modifier-border);
+  border-bottom: 1px solid var(--ad-line);
   flex-shrink: 0;
-  background: var(--background-primary);
+  background: var(--ad-s1);
 }
 .flomo-topbar .flomo-search-wrap {
   margin-left: auto;
@@ -3346,9 +3407,9 @@ body.is-mobile .flomo-shell .flomo-sidebar {
 .flomo-card {
   padding: 14px 18px;
   margin-bottom: 12px;
-  background: var(--background-primary-alt, var(--background-secondary));
+  background: var(--background-primary);
   border: 1px solid var(--background-modifier-border);
-  border-radius: 10px;
+  border-radius: 12px;
   transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
 }
 .flomo-card:hover {
@@ -3357,7 +3418,7 @@ body.is-mobile .flomo-shell .flomo-sidebar {
 }
 .flomo-card.is-pinned {
   border-color: var(--interactive-accent);
-  background: color-mix(in srgb, var(--interactive-accent) 4%, var(--background-primary-alt, var(--background-secondary)));
+  background: color-mix(in srgb, var(--interactive-accent) 4%, var(--background-primary));
 }
 .flomo-card.is-starred::before {
   content: "";
@@ -4061,43 +4122,7 @@ body.is-mobile .flomo-shell .flomo-sidebar {
 /* ============================================================
    项目弹窗（1:1 fork obsidian-dashboard-main ProjectModal）
    ============================================================ */
-/* 弹窗挂在 <body> 下，脱离 heatmap 作用域，需自带 --ad-* 变量（暗色） */
-.ad-task-modal {
-  --ad-s1:          #16181F;
-  --ad-s2:          #1D2029;
-  --ad-s3:          #252934;
-  --ad-h1:          #1F232E;
-  --ad-hair:        rgba(255,255,255,0.045);
-  --ad-line:        rgba(255,255,255,0.08);
-  --ad-line-s:      rgba(255,255,255,0.14);
-  --ad-text:        #E8E6E0;
-  --ad-text-mute:   #92959E;
-  --ad-text-dim:    #5E6068;
-  --ad-accent:      #7BA7FF;
-  --ad-accent-dim:  rgba(123,167,255,0.18);
-  --ad-accent-2:    #A78BFA;
-  --ad-r1: 4px; --ad-r2: 6px; --ad-r3: 10px;
-  --ad-on-accent:  #0F1014;
-}
-
-/* 浅色 palette */
-body.theme-light .ad-task-modal {
-  --ad-s1:          oklch(1   0 0);
-  --ad-s2:          oklch(0.97 0 0);
-  --ad-s3:          oklch(0.94 0 0);
-  --ad-h1:          oklch(0.97 0 0);
-  --ad-hair:        oklch(0.92 0 0);
-  --ad-line:        oklch(0.92 0 0);
-  --ad-line-s:      oklch(0.86 0 0);
-  --ad-text:        oklch(0.13 0 0);
-  --ad-text-mute:   oklch(0.44 0 0);
-  --ad-text-dim:    oklch(0.56 0 0);
-  --ad-accent:      oklch(0.13 0 0);
-  --ad-accent-dim:  oklch(0.13 0 0 / 0.10);
-  --ad-accent-2:    oklch(0.81 0.17 75.35);
-  --ad-r1: 0.375rem; --ad-r2: 0.5rem; --ad-r3: 0.75rem;
-  --ad-on-accent:   oklch(1   0 0);
-}
+/* 弹窗挂在 <body> 下，与上方 .po-board-view 共享同一份 --ad-* 调色板（合并块），此处只放布局 */
 
 .ad-task-modal {
   padding: 18px 20px 20px;
@@ -4173,6 +4198,37 @@ input[type="date"].ad-modal-input { cursor: pointer; }
   font-weight: 600;
 }
 .ad-modal-btn--primary:hover { filter: brightness(1.08); }
+
+/* utility: double-class specificity to beat component display rules */
+.ad-hidden.ad-hidden { display: none; }
+
+/* reminders */
+.ad-rem-group { display: flex; flex-wrap: wrap; gap: 12px; }
+.ad-rem-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--ad-text-mute);
+  cursor: pointer;
+}
+.ad-rem-item input[type="checkbox"] { accent-color: var(--ad-accent); }
+
+/* tag chips */
+.ad-tag-wrap { display: flex; flex-direction: column; gap: 6px; }
+.ad-tag-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.ad-tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  font-size: 11px;
+  background: var(--ad-accent-dim);
+  color: var(--ad-accent);
+  border-radius: var(--ad-r1);
+  border: 1px solid color-mix(in srgb, var(--ad-accent) 20%, transparent);
+}
+.ad-tag-x { cursor: pointer; font-size: 13px; opacity: 0.7; }
 
 .ad-color-group { display: flex; flex-wrap: wrap; gap: 8px; }
 .ad-color-swatch {

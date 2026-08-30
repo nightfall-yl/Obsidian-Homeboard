@@ -1,6 +1,5 @@
 import {
   Menu,
-  Modal,
   Notice,
   TFile,
   TFolder,
@@ -16,6 +15,9 @@ import { STATUS_LIST } from "./data/taskParser";
 import type { TaskItem, ProjectInfo, TaskStatus } from "./data/taskParser";
 import { writeFrontmatter, yamlScalar } from "./data/frontmatterWriter";
 import { TaskEditModal } from "./task-edit-modal";
+import { TaskModal, type TaskFormData } from "./task-modal";
+import { ProjectModal, type ProjectFormData } from "./project-modal";
+import { createTaskFile as createTaskFileShared } from "./data/taskFileCreator";
 
 /** setViewState 传入的 state：用于从首页项目卡片跳转到指定项目甘特。 */
 export interface ProjectBoardState {
@@ -963,6 +965,12 @@ export class ProjectBoardPanel {
         });
       }
       lr.createSpan({ cls: "po-gantt__label-title", text: t.content });
+      // 任务名后加号：以该任务为父任务，打开新建任务弹窗（等价于「加子任务」）
+      const addBtn = lr.createSpan({ cls: "po-gantt__label-add", text: "+" });
+      this.listen(addBtn, "click", (e) => {
+        e.stopPropagation();
+        this.openNewSubtaskModal(t.content, t.projectId);
+      });
       this.listen(lr, "click", () => this.openTaskEditModal(t));
       this.listen(lr, "contextmenu", (e) => {
         e.preventDefault();
@@ -1486,12 +1494,6 @@ export class ProjectBoardPanel {
       紧急不重要: "po-p-med",
       不重要不紧急: "po-p-low"
     };
-    const prioShort: Record<string, string> = {
-      重要且紧急: "高",
-      重要不紧急: "中",
-      紧急不重要: "中",
-      不重要不紧急: "低"
-    };
 
     const colorMap: Record<string, string> = {};
     projects.forEach((p) => { colorMap[p.name] = p.color; });
@@ -1525,7 +1527,7 @@ export class ProjectBoardPanel {
     if (t.priority) {
       tdPrio.createSpan({
         cls: "po-prio " + (prioMap[t.priority] || ""),
-        text: prioShort[t.priority] || t.priority
+        text: t.priority
       });
     }
 
@@ -1874,11 +1876,36 @@ export class ProjectBoardPanel {
     new TaskEditModal({
       app: this.app,
       task,
+      allTasks: this.currentTasks,
+      projects: this.currentProjects,
+      projectsFolder: this.plugin.data.settings.projectsFolder || "Projects",
       onSave: () => {
         this.taskStore.invalidate();
         void this.renderAll(true);
       },
     }).open();
+  }
+
+  /** 以 parentName 为父任务打开新建任务弹窗（任务名 + 号触发，等价于「加子任务」）。 */
+  private openNewSubtaskModal(parentName: string, projectName: string): void {
+    const allTasks = (tasks: TaskItem[]) =>
+      tasks.map((x) => ({ id: x.id, title: x.content, projectId: x.projectId }));
+    new TaskModal({
+      app: this.app,
+      projects: this.currentProjects.map((p) => ({ name: p.name, path: p.path })),
+      allTasks: allTasks(this.currentTasks),
+      defaultParent: parentName,
+      defaultProject: projectName,
+      onSave: (data) => void this.createTaskFile(data),
+    }).open();
+  }
+
+  /** 创建任务文件（委托共享模块，与首页「新建任务」共用同一套 frontmatter 逻辑）。 */
+  private async createTaskFile(data: TaskFormData): Promise<void> {
+    const projectsFolder = this.plugin.data.settings.projectsFolder || "Projects";
+    await createTaskFileShared(this.app, projectsFolder, data);
+    this.taskStore.invalidate();
+    this.renderPanels();
   }
 
   /** 切换任务完成状态；重复任务用 calcNextRemindDate 推进提醒日期。 */
@@ -1935,20 +1962,19 @@ export class ProjectBoardPanel {
     }
   }
 
-  /** 新建项目（最小化名称输入，创建 {projectsFolder}/{name}/project-{name}.md）。 */
+  /** 新建项目：复用 ProjectModal（与主页右上角「新建项目」同一套富表单），
+   *  创建 {projectsFolder}/{name}/project-{name}.md。 */
   private createProjectFile(): void {
-    const modal = new PromptProjectNameModal(
-      this.app,
-      (name) => {
-        const n = (name || "").trim();
-        if (n) void this.createProjectFolder(n);
+    new ProjectModal({
+      app: this.app,
+      onSave: (data) => {
+        void this.createProjectFolder(data);
       },
-      () => this.taskStore.invalidate()
-    );
-    modal.open();
+    }).open();
   }
 
-  private async createProjectFolder(name: string): Promise<void> {
+  private async createProjectFolder(data: ProjectFormData): Promise<void> {
+    const name = data.name;
     const rootPath = this.plugin.data.settings.projectsFolder || "Projects";
     await this.ensureFolder(rootPath);
     const safeName = name.replace(/[*"/<>:|?\\]/g, "-");
@@ -1961,15 +1987,18 @@ export class ProjectBoardPanel {
       String(now.getMonth() + 1).padStart(2, "0") +
       "-" +
       String(now.getDate()).padStart(2, "0");
+    const typeLabel = data.type === "nostage" ? "非阶段项目" : "阶段项目";
     const projectFilePath = `${projectFolderPath}/project-${safeName}.md`;
     if (!(this.app.vault.getAbstractFileByPath(projectFilePath) instanceof TFile)) {
       const lines = [
         "---",
         `项目名称: ${yamlScalar(name)}`,
-        "颜色: #3b82f6",
-        "项目类型: 阶段项目",
+        `颜色: ${yamlScalar(data.color)}`,
+        `项目类型: ${yamlScalar(typeLabel)}`,
         "tags: [配置]",
-        "描述: ",
+        `描述: ${yamlScalar(data.description)}`,
+        `开始日期: ${yamlScalar(data.startDate)}`,
+        `结束日期: ${yamlScalar(data.endDate)}`,
         `创建时间: ${createDate}`,
         "---",
         "",
@@ -2011,54 +2040,6 @@ export class ProjectBoardPanel {
   private clearRenderResources(): void {
     this.renderDisposers.forEach((dispose) => dispose());
     this.renderDisposers = [];
-  }
-}
-
-/** 新建项目的最小名称输入弹窗（attend 无项目编辑弹窗，故内联一个轻量方案）。 */
-export class PromptProjectNameModal extends Modal {
-  constructor(
-    app: App,
-    private onSubmit: (value: string) => void,
-    private onDirty: () => void
-  ) {
-    super(app);
-  }
-
-  onOpen(): void {
-    this.modalEl.addClass("po-prompt-modal");
-    const { contentEl } = this;
-    contentEl.empty();
-    contentEl.createEl("h3", { text: "新建项目" });
-    contentEl.createEl("p", {
-      cls: "setting-item-description",
-      text: "输入项目名称，将自动在项目文件夹下创建 {名称}/project-{名称}.md。"
-    });
-    const input = contentEl.createEl("input", {
-      cls: "po-prompt-input",
-      attr: { type: "text", placeholder: "输入项目名称" }
-    });
-    setTimeout(() => input.focus(), 50);
-    const btn = contentEl.createEl("button", {
-      cls: "mod-cta",
-      text: "创建",
-      attr: { type: "button" }
-    });
-    const submit = (): void => {
-      const v = input.value;
-      if ((v || "").trim()) {
-        this.onDirty();
-        this.onSubmit(v);
-      }
-      this.close();
-    };
-    btn.addEventListener("click", submit);
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") submit();
-    });
-  }
-
-  onClose(): void {
-    this.contentEl.empty();
   }
 }
 
