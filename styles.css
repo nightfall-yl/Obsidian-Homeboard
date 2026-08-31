@@ -426,12 +426,12 @@
 }
 
 .attend-projects-titles,
-.attend-progress-titles,
 .attend-qc-titles,
 .attend-todo-titles,
 .attend-weekly-titles,
 .attend-countdown-titles,
-.attend-activity-titles {
+.attend-activity-titles,
+.attend-daily-phrase-titles {
   display: flex;
   align-items: baseline;
   gap: 8px;
@@ -439,12 +439,12 @@
 }
 
 .attend-projects-titles > span,
-.attend-progress-titles > span,
 .attend-qc-titles > span,
 .attend-todo-titles > span,
 .attend-weekly-titles > span,
 .attend-countdown-titles > span,
-.attend-activity-titles > span {
+.attend-activity-titles > span,
+.attend-daily-phrase-titles > span {
   color: var(--attend-text-faint);
   font-size: 11px;
   white-space: nowrap;
@@ -755,6 +755,7 @@
 
 .attend-detail-modal {
   width: min(680px, 90vw);
+  background: var(--modal-background);
 }
 
 .attend-modal-header h2 {
@@ -830,8 +831,26 @@
   border-bottom: 0;
 }
 
-.attend-modal-row:hover {
+.attend-detail-modal .attend-modal-row:hover {
   background: var(--background-modifier-hover);
+}
+
+.attend-detail-modal .attend-modal-row:hover,
+.attend-detail-modal .attend-modal-row:focus,
+.attend-detail-modal .attend-modal-row:focus-visible,
+.attend-detail-modal .attend-modal-row:active {
+  border: 0;
+  border-bottom: 1px solid var(--background-modifier-border);
+  box-shadow: none;
+  outline: none;
+}
+
+.attend-detail-modal .attend-modal-row:last-child,
+.attend-detail-modal .attend-modal-row:last-child:hover,
+.attend-detail-modal .attend-modal-row:last-child:focus,
+.attend-detail-modal .attend-modal-row:last-child:focus-visible,
+.attend-detail-modal .attend-modal-row:last-child:active {
+  border-bottom: 0;
 }
 
 .attend-modal-row-icon,
@@ -1627,56 +1646,6 @@
   font-weight: 400;
   color: inherit;
   text-align: center;
-}
-
-/* ---- 工作进度（双环形图，随卡片尺寸等比缩放） ---- */
-.attend-modules-grid .ad-dp {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-evenly;
-  gap: 8px;
-  padding: 10px 18px 20px;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-}
-.attend-modules-grid .ad-dp__ring {
-  position: relative;
-  flex: 0 0 auto;
-  width: var(--ad-dp-ring, 118px);
-  height: var(--ad-dp-ring, 118px);
-}
-.attend-modules-grid .ad-dp__ring svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  transform: rotate(-90deg);
-}
-.attend-modules-grid .ad-dp .ad-track {
-  fill: none;
-  stroke: var(--attend-border-strong);
-  stroke-width: 8;
-}
-.attend-modules-grid .ad-dp .ad-fill {
-  fill: none;
-  stroke: var(--attend-accent-blue);
-  stroke-width: 8;
-  stroke-linecap: round;
-}
-.attend-modules-grid .ad-dp__center {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  font-size: var(--ad-dp-font, 24px);
-  font-weight: 750;
-  color: var(--attend-text);
-}
-.attend-modules-grid .ad-dp__stat strong {
-  font-size: var(--ad-dp-stat, 12px);
-  font-weight: 600;
-  color: var(--attend-text);
 }
 
 /* ---- 待办进展 ---- */
@@ -4386,3 +4355,65 @@ body.theme-light .ad-task-modal .ad-node-cell.is-skip-overdue { border-color: #9
 }
 .ad-node-note:focus { border-color: var(--ad-accent); }
 .ad-node-note-wrap { margin-top: 12px; }
+
+/* ===== 每日口语模块 ===== */
+.attend-daily-phrase-surface .ad-dp {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  padding: 10px 18px 20px;
+  overflow: auto;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+/* 文本区：占满剩余高度并垂直居中；按钮独立于文本，落于卡片底部 */
+.attend-daily-phrase-surface .ad-dp__content {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.ad-dp__en {
+  font-size: 18px;
+  line-height: 1.45;
+  font-weight: 600;
+  color: var(--text-normal);
+  word-break: break-word;
+}
+.ad-dp__zh {
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--text-muted);
+  word-break: break-word;
+}
+.ad-dp__scene {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-faint);
+  border-left: 2px solid var(--interactive-accent);
+  padding-left: 8px;
+}
+.ad-dp__scene-label {
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-right: 4px;
+}
+.ad-dp__scene-text { color: var(--text-faint); }
+.ad-dp__btns {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  justify-content: center;
+}
+.ad-dp__btns .clickable-icon { padding: 4px; }
+.ad-dp__hint {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}

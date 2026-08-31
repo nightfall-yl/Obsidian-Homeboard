@@ -16,7 +16,8 @@ import {
   DEFAULT_CURSOR_POSITION_SETTINGS,
   DEFAULT_QUICK_CAPTURE_SETTINGS,
   DEFAULT_DIARY_SETTINGS,
-  DEFAULT_COUNTDOWN_SETTINGS
+  DEFAULT_COUNTDOWN_SETTINGS,
+  DEFAULT_DAILY_PHRASE_SETTINGS
 } from "./models";
 import { lightSchemeOptions, darkSchemeOptions } from "./minimal/schemes";
 
@@ -169,6 +170,9 @@ function renderSettings(
   if (!plugin.data.settings.countdown) {
     plugin.data.settings.countdown = { ...DEFAULT_COUNTDOWN_SETTINGS };
   }
+  if (!plugin.data.settings.dailyPhrase) {
+    plugin.data.settings.dailyPhrase = { ...DEFAULT_DAILY_PHRASE_SETTINGS };
+  }
   if (!plugin.data.settings.npdpStages) {
     plugin.data.settings.npdpStages = ["立项", "规划", "开发", "测试", "上线"];
   }
@@ -192,7 +196,17 @@ function renderSettings(
     plugin.data.settings.poTaskOrder = [];
   }
   if (!Array.isArray(plugin.data.settings.mobileHiddenModules)) {
-    plugin.data.settings.mobileHiddenModules = ["todo", "progress", "weekly", "projects", "countdown"];
+    plugin.data.settings.mobileHiddenModules = ["todo", "weekly", "projects", "countdown"];
+  }
+  // 对齐当前默认：本应默认在移动端显示、且用户仍在主页保留的模块，
+  // 不应残留在 mobileHiddenModules（旧数据/手动误隐藏会导致移动端整卡消失，如每日口语）。
+  // 仅清理「默认可见且仍在 homeModuleOrder」的模块，不动用户真正想隐藏的 todo/progress 等。
+  {
+    const mobileVisibleByDefault = ["qc", "dailyPhrase", "recent"];
+    const order = plugin.data.settings.homeModuleOrder ?? [];
+    plugin.data.settings.mobileHiddenModules = plugin.data.settings.mobileHiddenModules.filter(
+      (id) => !(mobileVisibleByDefault.includes(id) && order.includes(id))
+    );
   }
 
   const sections: SettingsSection[] = [
@@ -420,6 +434,25 @@ function renderSettings(
       })
   );
 
+  modulesGroup.addSetting((setting) =>
+    setting
+      .setName("每日口语来源")
+      .setDesc("每日口语 .md 文件（按 ## 分条 + en:/zh:/scene: 字段解析）。输入时联想库内笔记，选中回填路径。")
+      .addText((text) => {
+        text
+          .setPlaceholder("选择或输入一个笔记文件路径，例如 00 inbox/每日口语.md")
+          .setValue(plugin.data.settings.dailyPhrase.filePath)
+          .onChange(async (value) => {
+            plugin.data.settings.dailyPhrase.filePath = value.trim();
+            await plugin.saveSettings();
+          });
+        new ProjectFileSuggest(plugin.app, text.inputEl, (path) => {
+          plugin.data.settings.dailyPhrase.filePath = path;
+          void plugin.saveSettings();
+        });
+      })
+  );
+
   // ── 移动端模块显隐 ──
   const mobileGroup = new SettingGroup(dashboardEl).setHeading("移动端模块显隐");
   mobileGroup.addSetting((setting) =>
@@ -428,8 +461,8 @@ function renderSettings(
 
   const moduleLabels: Record<string, string> = {
     qc: "快速捕获",
+    dailyPhrase: "每日口语",
     todo: "TODO",
-    progress: "工作进度",
     weekly: "待办进展",
     projects: "项目情况",
     countdown: "倒计时",

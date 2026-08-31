@@ -1,9 +1,10 @@
-import { ItemView, Menu, Notice, Platform, TFile, TFolder, setIcon } from "obsidian";
+import { ItemView, Menu, Notice, Platform, TFile, TFolder, normalizePath, setIcon } from "obsidian";
 import type { WorkspaceLeaf } from "obsidian";
 import { DateTime } from "luxon";
 import { formatCompactNumber } from "./core";
 import { DetailModal, type DetailItem } from "./detail-modal";
 import type AttendDashboardPlugin from "./main";
+import { parseDailyPhrases, type PhraseItem } from "./daily-phrase/parser";
 import type {
   DashboardSnapshot,
   HeatmapSettings,
@@ -36,14 +37,6 @@ import { priorityWeight } from "./data/taskParseCore";
 import { writeFrontmatter, yamlScalar } from "./data/frontmatterWriter";
 import { TaskEditModal } from "./task-edit-modal";
 import type { ProjectInfo, TaskItem, TaskStatus } from "./data/taskParser";
-
-/** 双环形图动画参数（迁移自 obsidian-dashboard-main） */
-const RING_ANIM = {
-  /** 单次动画时长（毫秒） */
-  duration: 900,
-  /** 缓动曲线：easeOutCubic —— 起步快、收尾缓，符合进度填充的直觉 */
-  easing: (t: number): number => 1 - Math.pow(1 - t, 3)
-};
 
 export const VIEW_TYPE_ATTEND_DASHBOARD = "attend-dashboard-view";
 
@@ -157,6 +150,16 @@ function fmtDate(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
+/** 确定性字符串哈希（FNV-1a），用于按日期种子选句 */
+function hashString(s: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
 export class AttendDashboardView extends ItemView {
   private refreshTimer: number | null = null;
   private renderDisposers: Array<() => void> = [];
@@ -205,10 +208,6 @@ export class AttendDashboardView extends ItemView {
   private moduleDrag: ModuleDragState | null = null;
   /** 老家主模块数据层（迁移自 obsidian-dashboard-main） */
   private taskStore: TaskStore;
-  /** 双环形图动画状态，跨刷新延续当前显值 */
-  private ringAnim: Record<string, { raf: number; value: number }> = {};
-  /** 双环形图随卡片尺寸缩放的观察器（测量卡片宽高 → 驱动 --ad-dp-ring 等 CSS 变量） */
-  private dpResizeObservers: ResizeObserver[] = [];
 
   constructor(
     leaf: WorkspaceLeaf,
@@ -1266,134 +1265,6 @@ export class AttendDashboardView extends ItemView {
     }
   }
 
-  /* ---- 工作进度（双环形图） ---- */
-  private async renderProgress(surface: HTMLElement): Promise<void> {
-    this.layoutProgressHeader(surface);
-    const dp = surface.createDiv("ad-dp");
-    let todayDone = 0;
-    let todayTotal = 0;
-    let allDone = 0;
-    let allTotal = 0;
-    try {
-      const tasks = await this.taskStore.scanAllTasks();
-      const todayTasks = getTodayUniverse(tasks);
-      const skipCount = todayTasks.filter((t) => isSkipToday(t)).length;
-      todayTotal = todayTasks.length - skipCount;
-      todayDone = todayTasks.filter((t) => isDoneToday(t)).length;
-      const nonCancelled = tasks.filter((t) => t.status !== "已取消");
-      allTotal = nonCancelled.length;
-      allDone = nonCancelled.filter((t) => t.status === "已完成").length;
-
-      const todayPct = todayTotal ? Math.round((todayDone / todayTotal) * 100) : 0;
-      this.buildRing(dp, todayPct, "ad-dp__pct-daily", "daily");
-      dp.createDiv({ cls: "ad-dp__stat" }).createEl("strong", {
-        text: `今日已完成 ${todayDone} / 今日总任务 ${todayTotal}`
-      });
-      const allPct = allTotal ? Math.round((allDone / allTotal) * 100) : 0;
-      this.buildRing(dp, allPct, "ad-dp__pct-proj", "proj");
-      dp.createDiv({ cls: "ad-dp__stat" }).createEl("strong", {
-        text: `已完成 ${allDone} / 总任务 ${allTotal}`
-      });
-      this.observeDpRing(surface, dp);
-    } catch {
-      this.renderEmpty(dp, { title: "暂无数据" });
-    }
-  }
-
-  /**
-   * 让两个环形图随卡片尺寸等比缩放、始终完整显示：
-   * 以卡片可用宽度/高度为界，计算圆环直径写入 --ad-dp-ring，
-   * 中心百分比与下方统计文字随之用 --ad-dp-font / --ad-dp-stat 缩放。
-   */
-  private observeDpRing(surface: HTMLElement, dp: HTMLElement): void {
-    if (surface.dataset.adDpObserved === "1") return;
-    surface.dataset.adDpObserved = "1";
-    const apply = (): void => {
-      const header = surface.querySelector<HTMLElement>(".attend-surface-header");
-      const availW = surface.clientWidth || 0;
-      const availH =
-        surface.clientHeight - (header?.offsetHeight ?? 56) - 16;
-      // 两环比宽、比高后的最大直径：宽按 24%，高按 (可用高 - 两条统计文字余量) / 2
-      let ring = Math.floor(Math.min(availW * 0.24, (availH - 52) / 2));
-      ring = Math.max(36, Math.min(118, ring));
-      const font = Math.max(11, Math.min(26, Math.round(ring * 0.22)));
-      const stat = Math.max(9, Math.floor(ring * 0.11));
-      dp.style.setProperty("--ad-dp-ring", ring + "px");
-      dp.style.setProperty("--ad-dp-font", font + "px");
-      dp.style.setProperty("--ad-dp-stat", stat + "px");
-    };
-    apply();
-    const ro = new ResizeObserver(() => apply());
-    ro.observe(surface);
-    this.dpResizeObservers.push(ro);
-  }
-
-  private buildRing(parent: HTMLElement, pct: number, pctCls: string, ringKey: string): void {
-    const C = 263.9;
-    const wrap = parent.createDiv("ad-dp__ring");
-    const svg = wrap.createSvg("svg");
-    svg.setAttribute("viewBox", "0 0 100 100");
-    const track = svg.createSvg("circle");
-    track.setAttribute("cx", "50");
-    track.setAttribute("cy", "50");
-    track.setAttribute("r", "42");
-    track.classList.add("ad-track");
-    const fill = svg.createSvg("circle");
-    fill.setAttribute("cx", "50");
-    fill.setAttribute("cy", "50");
-    fill.setAttribute("r", "42");
-    fill.classList.add("ad-fill");
-    fill.setAttribute("stroke-dasharray", C.toFixed(2));
-    const from = this.ringAnim[ringKey]?.value ?? 0;
-    const to = Math.max(0, Math.min(100, pct));
-    fill.setAttribute("stroke-dashoffset", (C * (1 - from / 100)).toFixed(2));
-    const center = wrap.createDiv("ad-dp__center");
-    const pctEl = center.createDiv(`ad-dp__pct ${pctCls}`);
-    pctEl.textContent = Math.round(from) + "%";
-    this.ringAnim[ringKey] = { raf: 0, value: to };
-    this.animateRing(fill, pctEl, C, from, to, ringKey);
-  }
-
-  private animateRing(
-    fill: SVGElement,
-    pctEl: HTMLElement,
-    C: number,
-    from: number,
-    to: number,
-    ringKey: string
-  ): void {
-    const reduceMotion =
-      typeof window !== "undefined" &&
-      typeof window.matchMedia === "function" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduceMotion || from === to) {
-      fill.setAttribute("stroke-dashoffset", (C * (1 - to / 100)).toFixed(2));
-      pctEl.textContent = Math.round(to) + "%";
-      if (this.ringAnim[ringKey]) this.ringAnim[ringKey].value = to;
-      return;
-    }
-    const { duration, easing } = RING_ANIM;
-    const state = this.ringAnim[ringKey];
-    if (state?.raf) cancelAnimationFrame(state.raf);
-    const start = performance.now();
-    const step = (now: number): void => {
-      const t = Math.min(1, (now - start) / duration);
-      const val = from + (to - from) * easing(t);
-      fill.setAttribute("stroke-dashoffset", (C * (1 - val / 100)).toFixed(2));
-      pctEl.textContent = Math.round(val) + "%";
-      const s = this.ringAnim[ringKey];
-      if (!s) return;
-      s.value = val;
-      if (t < 1) {
-        s.raf = requestAnimationFrame(step);
-      } else {
-        s.value = to;
-        s.raf = 0;
-      }
-    };
-    if (state) state.raf = requestAnimationFrame(step);
-  }
-
   /* ---- 待办进展 ---- */
   /** 「待办进展」头部：标题居左（副标题留空），无右上角按钮；逾期角标随渲染动态插入标题右侧 */
   private layoutWeeklyHeader(surface: HTMLElement): void {
@@ -1689,22 +1560,6 @@ export class AttendDashboardView extends ItemView {
     this.rebuildModuleGrid();
   }
 
-  /** 「工作进度」头部：标题 + 副标题（左上），右上角「新建任务」按钮 */
-  private layoutProgressHeader(surface: HTMLElement): void {
-    const header = surface.querySelector<HTMLElement>(".attend-surface-header");
-    if (!header) return;
-    // 标题与副标题居左
-    this.alignHeaderTitlesLeft(surface, "attend-progress-titles");
-    if (header.querySelector(".attend-progress-new-btn")) return;
-    // 右上角「新建任务」按钮（纯加号图标）
-    const btn = header.createEl("button", {
-      cls: "attend-progress-new-btn attend-icon-btn clickable-icon",
-      attr: { type: "button", "aria-label": "新建任务" }
-    });
-    setIcon(btn, "plus");
-    this.listen(btn, "click", () => this.createTask());
-  }
-
   /** 打开「新建任务」弹窗（数据源扫描完成后）。 */
   private createTask(): void {
     this.allProjects()
@@ -1826,6 +1681,90 @@ export class AttendDashboardView extends ItemView {
   }
 
   /** 解析 ISO yyyy-mm-dd 为目标 Date（当地 0 点）；非法或留空回退到「下一年 1 月 1 日」 */
+  /** 每日口语的当前浏览状态（按天保持，整页重渲不丢失手动翻页位置） */
+  private dailyPhraseState: { date: string; index: number } | null = null;
+
+  /**
+   * 每日口语模块：读设置指定的 .md，解析为条目，按日期种子确定性随机展示当天一句；
+   * 支持上一句/下一句（循环）与「换一句」（即时随机）。
+   */
+  private async renderDailyPhrase(surface: HTMLElement): Promise<void> {
+    // 将标题与副标题包裹进居左容器，与其他模块使用同一设计语言
+    this.alignHeaderTitlesLeft(surface, "attend-daily-phrase-titles");
+    const wrap = surface.createDiv("ad-dp");
+    const hint = (msg: string): void => {
+      wrap.createDiv({ cls: "ad-dp__hint", text: msg });
+    };
+
+    const cfg = this.plugin.data.settings.dailyPhrase;
+    const path = (cfg?.filePath ?? "").trim();
+    if (!path) {
+      hint("未指定数据源：设置 › 主页模块 › 每日口语来源 选择一个 .md 文件");
+      return;
+    }
+    const file = this.app.vault.getAbstractFileByPath(normalizePath(path));
+    if (!(file instanceof TFile)) {
+      hint(`未找到文件：${path}`);
+      return;
+    }
+
+    let items: PhraseItem[];
+    try {
+      const content = await this.app.vault.cachedRead(file);
+      items = parseDailyPhrases(content);
+    } catch (e) {
+      hint(`读取或解析失败：${(e as Error).message}`);
+      return;
+    }
+    if (items.length === 0) {
+      hint("未能从该文件解析出任何口语条目（检查 en/zh/scene 格式）");
+      return;
+    }
+
+    const today = fmtDate(new Date());
+    if (!this.dailyPhraseState || this.dailyPhraseState.date !== today) {
+      // 以日期为种子做确定性哈希 → 当天稳定、隔天换
+      const seed = hashString(`${today}:${items.length}`);
+      this.dailyPhraseState = { date: today, index: seed % items.length };
+    }
+    const total = items.length;
+
+    const content = wrap.createDiv("ad-dp__content");
+    const enEl = content.createDiv("ad-dp__en");
+    const zhEl = content.createDiv("ad-dp__zh");
+    const sceneEl = content.createDiv("ad-dp__scene");
+    sceneEl.createSpan({ cls: "ad-dp__scene-label", text: "使用场景" });
+    const sceneText = sceneEl.createSpan("ad-dp__scene-text");
+
+    const btns = wrap.createDiv("ad-dp__btns");
+    const prev = this.createIconButton(btns, "chevron-left", "上一句");
+    const shuffle = this.createIconButton(btns, "dice", "换一句");
+    const next = this.createIconButton(btns, "chevron-right", "下一句");
+
+    const show = (i: number): void => {
+      const idx = ((i % total) + total) % total;
+      this.dailyPhraseState = { date: today, index: idx };
+      const it = items[idx]!;
+      enEl.setText(it.en);
+      zhEl.setText(it.zh);
+      sceneText.setText(it.scene || "—");
+    };
+
+    prev.addEventListener("click", () => show(this.dailyPhraseState!.index - 1));
+    next.addEventListener("click", () => show(this.dailyPhraseState!.index + 1));
+    shuffle.addEventListener("click", () => {
+      if (total <= 1) {
+        show(0);
+        return;
+      }
+      let r = Math.floor(Math.random() * total);
+      if (r === this.dailyPhraseState!.index) r = (r + 1) % total;
+      show(r);
+    });
+
+    show(this.dailyPhraseState.index);
+  }
+
   private parseCountdownDate(s: string): Date {
     const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec((s ?? "").trim());
     if (m) {
@@ -2054,7 +1993,9 @@ export class AttendDashboardView extends ItemView {
     if (wasEdit) return; // 已编辑态（重渲染后补挂）只重挂手柄，不重复挂点击守卫
     // 编辑态下拦截卡片内容的点击，避免误触发模块自身的点击行为
     this.adClickGuard = (e: Event): void => {
-      if ((e.target as HTMLElement).closest(".attend-card__resize")) return;
+      const t = e.target as HTMLElement;
+      if (t.closest(".attend-card__resize")) return;
+      if (t.closest(".attend-addmenu-backdrop")) return; // 放行添加卡片菜单，避免误拦截卡项点击
       e.stopPropagation();
       e.preventDefault();
     };
@@ -2187,10 +2128,10 @@ export class AttendDashboardView extends ItemView {
     return [
       { id: "qc", title: "快速捕获", subtitle: "闪念胶囊", cls: "attend-qc-surface", build: (s) => this.renderQuickCapture(s) },
       { id: "todo", title: "TODO", subtitle: "", cls: "attend-todo-surface", build: (s) => void this.renderTodo(s) },
-      { id: "progress", title: "工作进度", subtitle: "今日 · 全部", cls: "attend-progress-surface", build: (s) => void this.renderProgress(s) },
       { id: "weekly", title: "待办进展", subtitle: "", cls: "attend-weekly-surface", build: (s) => void this.renderWeekly(s) },
       { id: "projects", title: "项目情况", subtitle: "", cls: "attend-projects-surface", build: (s) => void this.renderProjects(s) },
-      { id: "countdown", title: "倒计时", subtitle: "Days Left", cls: "attend-countdown-surface", build: (s) => this.renderCountdown(s) }
+      { id: "countdown", title: "倒计时", subtitle: "Days Left", cls: "attend-countdown-surface", build: (s) => this.renderCountdown(s) },
+      { id: "dailyPhrase", title: "每日口语", subtitle: "Daily Phrase", cls: "attend-daily-phrase-surface", build: (s) => void this.renderDailyPhrase(s) }
     ];
   }
 
@@ -2503,7 +2444,8 @@ export class AttendDashboardView extends ItemView {
     for (const t of disabled) {
       const item = menu.createDiv({ cls: "attend-addmenu__item" });
       item.createSpan({ text: t.title });
-      item.addEventListener("click", () => {
+      // 使用 pointerup 替代 click，避免 Obsidian 事件拦截导致 click 不触发
+      item.addEventListener("pointerup", () => {
         backdrop.remove();
         this.addModuleCard(t.id);
       });
@@ -2593,14 +2535,6 @@ export class AttendDashboardView extends ItemView {
       window.clearTimeout(this.adLongPressTimer);
       this.adLongPressTimer = null;
     }
-    // 取消双环形图未完成动画
-    Object.values(this.ringAnim).forEach((state) => {
-      if (state.raf) cancelAnimationFrame(state.raf);
-    });
-    this.ringAnim = {};
-    // 断开双环缩放观察器
-    this.dpResizeObservers.forEach((ro) => ro.disconnect());
-    this.dpResizeObservers = [];
     this.heatmapObs?.disconnect();
     this.heatmapObs = null;
     this.heatmapObsTarget = null;

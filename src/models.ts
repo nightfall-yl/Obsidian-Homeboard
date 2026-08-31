@@ -112,6 +112,11 @@ export interface CountdownSettings {
   targetDate: string;
 }
 
+export interface DailyPhraseSettings {
+  /** 数据源 .md（相对仓库根），按 ## 分条 + en:/zh:/scene: 字段解析每日口语 */
+  filePath: string;
+}
+
 export interface AttendSettings {
   displayName: string;
   openOnStartup: boolean;
@@ -142,6 +147,7 @@ export interface AttendSettings {
   /** 甘特图任务行手动排序（drag & drop 持久化） */
   poTaskOrder: string[];
   countdown: CountdownSettings;
+  dailyPhrase: DailyPhraseSettings;
   /** 主页模块卡片的宽/高格数（拖拽调宽持久化；缺省视为 1×1） */
   moduleSizes: Record<string, { cols: number; rows: number }>;
   /** 主页模块的显示顺序与可见性（拖拽排序/删除/添加持久化；缺失 id 视为隐藏） */
@@ -286,6 +292,10 @@ export const DEFAULT_COUNTDOWN_SETTINGS: CountdownSettings = {
   targetDate: "2027-01-01",
 };
 
+export const DEFAULT_DAILY_PHRASE_SETTINGS: DailyPhraseSettings = {
+  filePath: "",
+};
+
 export const DEFAULT_SETTINGS: AttendSettings = {
   displayName: "",
   openOnStartup: true,
@@ -311,9 +321,10 @@ export const DEFAULT_SETTINGS: AttendSettings = {
   poProjectOrder: [],
   poTaskOrder: [],
   countdown: DEFAULT_COUNTDOWN_SETTINGS,
+  dailyPhrase: DEFAULT_DAILY_PHRASE_SETTINGS,
   moduleSizes: {},
-  homeModuleOrder: ["qc", "todo", "progress", "weekly", "projects", "countdown"],
-  mobileHiddenModules: ["todo", "progress", "weekly", "projects", "countdown"],
+  homeModuleOrder: ["qc", "dailyPhrase", "todo", "weekly", "projects", "countdown"],
+  mobileHiddenModules: ["todo", "weekly", "projects", "countdown"],
 };
 
 export const DEFAULT_DATA: AttendPluginData = {

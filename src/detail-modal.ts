@@ -64,6 +64,10 @@ export class DetailModal extends Modal {
         this.renderList(list);
       });
       window.setTimeout(() => search.focus(), 0);
+    } else {
+      // 无搜索框时收走焦点，避免首条笔记 row 自动获得焦点环
+      this.contentEl.setAttribute("tabindex", "-1");
+      this.contentEl.focus();
     }
 
     this.renderList(list);
