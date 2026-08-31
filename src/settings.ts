@@ -430,7 +430,7 @@ function renderSettings(
     qc: "快速捕获",
     todo: "TODO",
     progress: "工作进度",
-    weekly: "本周待办 & 逾期",
+    weekly: "待办进展",
     projects: "项目情况",
     countdown: "倒计时",
     recent: "最近笔记"

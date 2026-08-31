@@ -1394,8 +1394,8 @@ export class AttendDashboardView extends ItemView {
     if (state) state.raf = requestAnimationFrame(step);
   }
 
-  /* ---- 本周待办 & 逾期 ---- */
-  /** 「本周待办 & 逾期」头部：标题居左（副标题留空），无右上角按钮；逾期角标随渲染动态插入标题右侧 */
+  /* ---- 待办进展 ---- */
+  /** 「待办进展」头部：标题居左（副标题留空），无右上角按钮；逾期角标随渲染动态插入标题右侧 */
   private layoutWeeklyHeader(surface: HTMLElement): void {
     const header = surface.querySelector<HTMLElement>(".attend-surface-header");
     if (!header) return;
@@ -2188,7 +2188,7 @@ export class AttendDashboardView extends ItemView {
       { id: "qc", title: "快速捕获", subtitle: "闪念胶囊", cls: "attend-qc-surface", build: (s) => this.renderQuickCapture(s) },
       { id: "todo", title: "TODO", subtitle: "", cls: "attend-todo-surface", build: (s) => void this.renderTodo(s) },
       { id: "progress", title: "工作进度", subtitle: "今日 · 全部", cls: "attend-progress-surface", build: (s) => void this.renderProgress(s) },
-      { id: "weekly", title: "本周待办 & 逾期", subtitle: "", cls: "attend-weekly-surface", build: (s) => void this.renderWeekly(s) },
+      { id: "weekly", title: "待办进展", subtitle: "", cls: "attend-weekly-surface", build: (s) => void this.renderWeekly(s) },
       { id: "projects", title: "项目情况", subtitle: "", cls: "attend-projects-surface", build: (s) => void this.renderProjects(s) },
       { id: "countdown", title: "倒计时", subtitle: "Days Left", cls: "attend-countdown-surface", build: (s) => this.renderCountdown(s) }
     ];

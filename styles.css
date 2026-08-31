@@ -458,7 +458,7 @@
   flex-shrink: 0;
 }
 
-/* 本周待办 & 逾期：头部右上角逾期角标（红色闪烁，对齐上游 obsidian-dashboard-main:800-814） */
+/* 待办进展：头部右上角逾期角标（红色闪烁，对齐上游 obsidian-dashboard-main:800-814） */
 .ad-badge {
   display: inline-flex;
   align-items: center;
@@ -1276,7 +1276,7 @@
 }
 
 /* ============================================================
-   迁入的 6 个主页模块卡片（快速捕捉 / TODO / 工作进度 / 本周待办&逾期 / 项目情况 / 倒计时）
+   迁入的 6 个主页模块卡片（快速捕捉 / TODO / 工作进度 / 待办进展 / 项目情况 / 倒计时）
    视觉遵循 attend 浅色卡片风格：复用 --attend-* 变量，柔和边框 + 圆角 + 浅色填充。
    ============================================================ */
 
@@ -1584,12 +1584,18 @@
 }
 .attend-modules-grid .ad-todo__tag {
   flex: 0 0 auto;
-  padding: 2px 8px;
-  border-radius: 999px;
+  padding: 1px 8px;
+  border-radius: 8px;
   font-size: 10px;
+  font-weight: 600;
+  border: 1px solid currentColor;
+  background: color-mix(in srgb, currentColor 12%, transparent);
   color: var(--attend-text-muted);
-  background: var(--attend-surface-hover);
 }
+.attend-modules-grid .ad-todo__tag[data-prio="重要且紧急"] { color: var(--attend-accent-red); }
+.attend-modules-grid .ad-todo__tag[data-prio="重要不紧急"],
+.attend-modules-grid .ad-todo__tag[data-prio="紧急不重要"] { color: var(--attend-accent-yellow); }
+.attend-modules-grid .ad-todo__tag[data-prio="不重要不紧急"] { color: var(--attend-text-muted); }
 .attend-modules-grid .ad-todo__empty {
   flex: 1;
   align-self: stretch;
@@ -1673,7 +1679,7 @@
   color: var(--attend-text);
 }
 
-/* ---- 本周待办 & 逾期 ---- */
+/* ---- 待办进展 ---- */
 .attend-modules-grid .ad-wo {
   display: flex;
   flex-direction: column;
@@ -1746,11 +1752,17 @@
 .attend-modules-grid .ad-wo__urg {
   flex: 0 0 auto;
   padding: 1px 7px;
-  border-radius: 999px;
+  border-radius: 8px;
   font-size: 10px;
+  font-weight: 600;
+  border: 1px solid currentColor;
+  background: color-mix(in srgb, currentColor 12%, transparent);
   color: var(--attend-text-muted);
-  background: var(--attend-surface-hover);
 }
+.attend-modules-grid .ad-wo__urg[data-urg="high"] { color: var(--attend-accent-red); }
+.attend-modules-grid .ad-wo__urg[data-urg="mid"] { color: var(--attend-accent-yellow); }
+.attend-modules-grid .ad-wo__urg[data-urg="low"] { color: var(--attend-accent-blue); }
+.attend-modules-grid .ad-wo__urg[data-urg="none"] { color: var(--attend-text-muted); }
 .attend-modules-grid .ad-wo__empty {
   padding: 20px 12px;
   text-align: center;
@@ -2584,12 +2596,12 @@ body.theme-light .ad-task-modal {
   transition: background 0.1s, border-color 0.1s, color 0.1s;
 }
 .po-check:hover {
-  border-color: var(--attend-accent-green);
+  border-color: var(--ad-accent);
 }
 .po-check.is-done {
-  background: var(--attend-accent-green);
-  border-color: var(--attend-accent-green);
-  color: var(--attend-bg);
+  background: var(--ad-accent-dim);
+  border-color: var(--ad-accent);
+  color: var(--ad-accent);
 }
 .po-name-cell {
   color: var(--attend-text);

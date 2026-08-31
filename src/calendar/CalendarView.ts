@@ -37,6 +37,10 @@ export class CalendarView extends ItemView {
       },
     });
 
+    // 让日历视图内容区为滚动条预留固定槽位，避免「滚动条出现/消失 → 可用宽度变化 → 重新缩放 → 高度变化」的反馈循环（部分系统滚动条会占用宽度）
+    const contentEl = this.containerEl.children[1] as HTMLElement;
+    contentEl.style.scrollbarGutter = "stable";
+
     this.registerEvent(
       this.app.vault.on("create", () => {
         dailyNotes.reindex();
