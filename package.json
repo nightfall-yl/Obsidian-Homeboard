@@ -38,6 +38,7 @@
     "esbuild": "0.25.5",
     "esbuild-svelte": "^0.9.5",
     "eslint": "^10.8.0",
+    "eslint-plugin-obsidianmd": "^0.4.2",
     "globals": "^17.6.0",
     "obsidian": "latest",
     "obsidian-dataview": "^0.5.64",

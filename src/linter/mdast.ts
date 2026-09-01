@@ -61,7 +61,7 @@ function parseTextToAST(text: string): Root {
 export function getPositions(type: string, text: string): Position[] {
   const ast = parseTextToAST(text);
   const positions: Position[] = [];
-  visit(ast as unknown as Root, type, (node) => {
+  visit(ast, type, (node) => {
     const p = (node as { position?: Position }).position;
     if (p) positions.push(p);
   });

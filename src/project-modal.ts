@@ -1,5 +1,7 @@
-import { App, Modal } from 'obsidian';
-import { ProjectType, PROJECT_TYPE_LIST } from './data/taskParser';
+import type { App} from 'obsidian';
+import { Modal } from 'obsidian';
+import type { ProjectType} from './data/taskParser';
+import { PROJECT_TYPE_LIST } from './data/taskParser';
 
 export interface ProjectFormData {
 	name: string;

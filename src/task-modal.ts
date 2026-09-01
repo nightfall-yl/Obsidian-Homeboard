@@ -1,4 +1,5 @@
-import { App, Modal } from 'obsidian';
+import type { App} from 'obsidian';
+import { Modal } from 'obsidian';
 
 /* ============================================================
    Task Creation Modal — 1:1 fork of
@@ -348,7 +349,7 @@ export class TaskModal extends Modal {
 					repeatFreq: isRecurring ? freqSel.value : '',
 					repeatInterval: intervalEl instanceof HTMLInputElement ? (parseInt(intervalEl.value, 10) || 1) : 1,
 					repeatWorkdaysOnly: !!(workdayEl instanceof HTMLInputElement && workdayEl.checked),
-					repeatWeekdays: Array.from(weekdayEls).filter((cb): cb is HTMLInputElement => cb instanceof HTMLInputElement).map((cb) => parseInt(cb.value, 10)),
+					repeatWeekdays: Array.from(weekdayEls).filter((cb): cb is HTMLInputElement => cb.instanceOf(HTMLInputElement)).map((cb) => parseInt(cb.value, 10)),
 					repeatMonthDay: monthDayEl instanceof HTMLInputElement ? (parseInt(monthDayEl.value, 10) || 1) : 1,
 					noEndDate: noEnd,
 					reminders: [...this.selectedReminders],

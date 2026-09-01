@@ -1,5 +1,6 @@
-import { App, Plugin } from "obsidian";
-import { DEFAULT_SETTINGS, MinimalSettings } from "./settings";
+import type { App, Plugin } from "obsidian";
+import type { MinimalSettings } from "./settings";
+import { DEFAULT_SETTINGS } from "./settings";
 import {
   loadRules,
   unloadRules,

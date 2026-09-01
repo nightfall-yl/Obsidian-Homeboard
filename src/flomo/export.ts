@@ -4,8 +4,9 @@
  * 支持导出当前筛选结果为 md / html / json 三种格式。
  */
 
-import { App, Notice, normalizePath } from "obsidian";
-import { Flomo } from "./types";
+import type { App} from "obsidian";
+import { Notice, normalizePath } from "obsidian";
+import type { Flomo } from "./types";
 
 export type ExportFormat = "md" | "html" | "json";
 

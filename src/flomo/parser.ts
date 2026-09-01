@@ -2,7 +2,8 @@
 // 1:1 fork 自 obsidian-memoria-main/src/parser.ts 的核心子集。
 // 负责把 YYYY.md 文件解析成 Flomo[]，以及把 Flomo 序列化回文件。
 
-import { Flomo, PIN_TAG, STAR_TAG } from "./types";
+import type { Flomo} from "./types";
+import { PIN_TAG, STAR_TAG } from "./types";
 
 const WEEKDAY_CN = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
 
@@ -99,7 +100,7 @@ export function parseFile(filePath: string, raw: string): Flomo[] {
 export function parseLocalDateTime(date: string, time: string): Date {
   const [y, mo, d] = date.split("-").map((s) => parseInt(s, 10));
   const [h, mi] = time.split(":").map((s) => parseInt(s, 10));
-  return new Date(y!, mo! - 1, d!, h!, mi!, 0, 0);
+  return new Date(y!, mo! - 1, d, h, mi, 0, 0);
 }
 
 /** 抽取 #tag（支持中文、嵌套如 #父/子） */

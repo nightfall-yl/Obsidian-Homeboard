@@ -140,7 +140,7 @@ export class StatsService {
       .sort((left, right) => left.words - right.words);
     const recentNotes = [...notes]
       .sort(compareByModifiedDescending)
-      .slice(0, 6);
+      .slice(0, 5);
     const today = localDateKey(new Date());
     const modifiedToday = notes.filter(
       (note) => localDateKey(note.file.stat.mtime) === today

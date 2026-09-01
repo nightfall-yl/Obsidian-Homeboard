@@ -1,4 +1,5 @@
-import { App, Notice, TFolder } from "obsidian";
+import type { App} from "obsidian";
+import { Notice, TFolder } from "obsidian";
 import { yamlScalar } from "./frontmatterWriter";
 import { todayStr } from "./taskLogic";
 import type { RepeatRule } from "./taskParser";

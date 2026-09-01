@@ -4,7 +4,8 @@
  * `static-data.json`，与 Dashboard 主 data.json 解耦，避免带动 activity 等
  * 重量级缓存整体序列化。三个功能写入触发场景不同，但均为轻量小对象，整文件重写成本可忽略。
  */
-import { Plugin, normalizePath } from "obsidian";
+import type { Plugin} from "obsidian";
+import { normalizePath } from "obsidian";
 import type { ForceViewModeSettings } from "./models";
 import { DEFAULT_FORCE_VIEW_MODE_SETTINGS } from "./models";
 import {
@@ -70,7 +71,7 @@ export class StaticStore {
       try {
         if (await adapter.exists(path)) {
           persisted = JSON.parse(
-            (await adapter.read(path)) as string
+            (await adapter.read(path))
           ) as Partial<StaticSettings>;
           break;
         }
@@ -117,7 +118,7 @@ export class StaticStore {
       try {
         if (await adapter.exists(minPath)) {
           const legacy = JSON.parse(
-            (await adapter.read(minPath)) as string
+            (await adapter.read(minPath))
           ) as Partial<MinimalSettings>;
           this.settings.minimal = { ...MINIMAL_DEFAULT, ...legacy };
           migrated = true;
@@ -131,7 +132,7 @@ export class StaticStore {
       try {
         if (await adapter.exists(linterPath)) {
           const legacy = JSON.parse(
-            (await adapter.read(linterPath)) as string
+            (await adapter.read(linterPath))
           ) as Partial<LinterSettings>;
           this.settings.linter = {
             ...LINTER_DEFAULT,

@@ -16,19 +16,22 @@ import {
 import type { App, EventRef } from "obsidian";
 import type AttendDashboardPlugin from "../main";
 import { FlomoStore } from "./store";
+import type {
+  Flomo} from "./types";
 import {
-  Flomo,
   RESERVED_TAGS,
 } from "./types";
+import type {
+  SearchQuery} from "./search";
 import {
   parseSearchQuery,
   matchesQuery,
-  EMPTY_QUERY,
-  SearchQuery,
+  EMPTY_QUERY
 } from "./search";
 import { fmtDate as fmtDateLocale } from "./parser";
 const fmtDateLocal = fmtDateLocale;
-import { exportMemos, ExportFormat } from "./export";
+import type { ExportFormat } from "./export";
+import { exportMemos } from "./export";
 import { replaceTextareaRange } from "./textarea-utils";
 
 /** 面板打开时的初始分页条数 */
@@ -814,7 +817,7 @@ export class FlomoBoardPanel {
       area.style.height = "auto";
       area.style.height = area.scrollHeight + "px";
     }
-    requestAnimationFrame(() => area.removeClass("flomo-no-transition"));
+    window.requestAnimationFrame(() => area.removeClass("flomo-no-transition"));
   }
 
   private async submitInput(): Promise<void> {
@@ -1357,7 +1360,7 @@ export class FlomoBoardPanel {
     };
     for (let i = result.length - 1; i > 0; i--) {
       const j = Math.floor(random() * (i + 1));
-      [result[i]!, result[j]!] = [result[j]!, result[i]!];
+      [result[i], result[j]] = [result[j]!, result[i]!];
     }
     return result;
   }
@@ -1590,7 +1593,7 @@ export class FlomoBoardPanel {
       card.addEventListener("pointerdown", (e) => {
         const t = e.target as HTMLElement;
         if (t.closest("a") || t.closest("button")) return;
-        const start = e as PointerEvent;
+        const start = e;
         sx = start.clientX;
         sy = start.clientY;
         pm = window.setTimeout(() => {
@@ -1600,7 +1603,7 @@ export class FlomoBoardPanel {
       });
       card.addEventListener("pointermove", (e) => {
         if (pm === null) return;
-        const p = e as PointerEvent;
+        const p = e;
         if (Math.abs(p.clientX - sx) > 6 || Math.abs(p.clientY - sy) > 6) cancel();
       });
       card.addEventListener("pointerup", cancel);
@@ -1702,7 +1705,7 @@ export class FlomoBoardPanel {
     while ((n = walker.nextNode())) nodes.push(n as Text);
     for (const node of nodes) {
       const hits: { start: number; end: number }[] = [];
-      const lower = node.textContent!.toLowerCase();
+      const lower = node.textContent.toLowerCase();
       for (const term of includeTerms) {
         const tl = term.toLowerCase();
         let idx = lower.indexOf(tl);
@@ -1722,16 +1725,16 @@ export class FlomoBoardPanel {
           merged.push({ ...h });
         }
       }
-      const frag = document.createDocumentFragment();
+      const frag = createFragment();
       let cursor = 0;
       for (const h of merged) {
-        if (h.start > cursor) frag.append(node.textContent!.slice(cursor, h.start));
+        if (h.start > cursor) frag.append(node.textContent.slice(cursor, h.start));
         const mark = el.createSpan("flomo-search-hit");
-        mark.setText(node.textContent!.slice(h.start, h.end));
+        mark.setText(node.textContent.slice(h.start, h.end));
         frag.append(mark);
         cursor = h.end;
       }
-      if (cursor < node.textContent!.length) frag.append(node.textContent!.slice(cursor));
+      if (cursor < node.textContent.length) frag.append(node.textContent.slice(cursor));
       node.replaceWith(frag);
     }
   }
@@ -2001,7 +2004,7 @@ export class FlomoBoardPanel {
     document.body.appendChild(pop);
 
     // 点击外部关闭
-    setTimeout(() => {
+    window.setTimeout(() => {
       const onDocClick = (ev: MouseEvent) => {
         if (!pop.contains(ev.target as Node)) {
           pop.remove();
@@ -2042,7 +2045,7 @@ export class FlomoBoardPanel {
   private pickImageFromDisk(): void {
     this.disposeImagePicker();
 
-    const inp = document.createElement("input");
+    const inp = createEl("input");
     inp.type = "file";
     inp.accept = "image/*";
     inp.multiple = true;

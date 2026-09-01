@@ -1,4 +1,5 @@
-import { App, Plugin, PluginManifest, TFile } from "obsidian";
+import type { App, PluginManifest} from "obsidian";
+import { Plugin, TFile } from "obsidian";
 import {
   AttendDashboardView,
   VIEW_TYPE_ATTEND_DASHBOARD
@@ -106,7 +107,7 @@ export default class AttendDashboardPlugin extends Plugin {
     this.cursorPositionManager?.onunload();
     this.minimalManager?.onunload();
     this.linterManager?.onunload();
-    this.app.workspace.detachLeavesOfType(VIEW_TYPE_CALENDAR);
+    
     if (this.saveTimer !== null) {
       window.clearTimeout(this.saveTimer);
       this.saveTimer = null;

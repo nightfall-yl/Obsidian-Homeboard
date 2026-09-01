@@ -837,13 +837,13 @@ function renderLinterSettings(
       .setName("保存时格式化文件")
       .setDesc(
         (() => {
-          const frag = document.createDocumentFragment();
+          const frag = createFragment();
           frag.append("保存时对当前文件执行格式化（按 ");
-          const k1 = document.createElement("code");
+          const k1 = createEl("code");
           k1.textContent = "Cmd/Ctrl+S";
           frag.append(k1);
           frag.append("，或在使用 vim 键位时执行 ");
-          const k2 = document.createElement("code");
+          const k2 = createEl("code");
           k2.textContent = ":w";
           frag.append(k2);
           frag.append("）。");
@@ -992,9 +992,9 @@ function renderLinterSettings(
       .setName("格式")
       .setDesc(
         (() => {
-          const frag = document.createDocumentFragment();
+          const frag = createFragment();
           frag.append("使用的 Moment 日期格式（参见 ");
-          const a = document.createElement("a");
+          const a = createEl("a");
           a.href =
             "https://momentjscom.readthedocs.io/en/latest/moment/04-displaying/01-format/";
           a.textContent = "Moment 格式选项";

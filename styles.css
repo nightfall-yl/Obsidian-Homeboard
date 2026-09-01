@@ -43,6 +43,12 @@
   overflow: hidden;
 }
 
+/* 全局提供 --attend-surface 别名（等同 --background-secondary），
+   使 body 顶层容器（如 Cell 弹窗 Modal）也能读取该色变量 */
+:root {
+  --attend-surface: var(--background-secondary);
+}
+
 .attend-dashboard {
   --attend-bg: var(--background-primary);
   --attend-surface: var(--background-secondary);
@@ -657,24 +663,27 @@
 }
 
 .attend-recent-list {
-  border-top: 1px solid var(--attend-border);
-  overflow-y: auto;
+  display: flex;
   min-height: 0;
+  padding: 0 14px 14px;
   flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
 }
 
 .attend-modules-grid .attend-recent-row {
   display: grid;
   width: 100%;
-  min-height: 51px;
+  min-height: 0;
+  flex: 1;
   padding: 9px 14px;
   grid-template-columns: 24px minmax(0, 1fr) auto 16px;
   gap: 9px;
   align-items: center;
   color: var(--attend-text);
   border: 0;
-  border-bottom: 1px solid var(--attend-border);
-  border-radius: 0;
+  border-radius: 7px;
   background: color-mix(in srgb, var(--attend-surface) 55%, transparent);
   box-shadow: none;
   text-align: left;
@@ -682,7 +691,7 @@
 }
 
 .attend-modules-grid .attend-recent-row:last-child {
-  border-bottom: 0;
+  /* 与 last-child 无特殊处理，间隔由 .attend-recent-list 的 gap 统一控制 */
 }
 
 .attend-modules-grid .attend-recent-row:hover {
@@ -821,7 +830,7 @@
   border: 0;
   border-bottom: 1px solid var(--background-modifier-border);
   border-radius: 0;
-  background: transparent;
+  background: var(--background-secondary) !important;
   box-shadow: none;
   text-align: left;
   cursor: pointer;
@@ -831,18 +840,19 @@
   border-bottom: 0;
 }
 
+/* 非聚焦=background-secondary（随主题），聚焦=background-modifier-hover（比之更深）。
+   均加 !important 防止 Obsidian .modal button 默认样式覆盖。仅 hover 高亮 */
 .attend-detail-modal .attend-modal-row:hover {
-  background: var(--background-modifier-hover);
+  background: var(--background-modifier-hover) !important;
 }
 
-.attend-detail-modal .attend-modal-row:hover,
+/* 压掉 Obsidian 对 <button> 的 focus/active 焦点视觉（inset 阴影/描边），
+   避免首次打开时第一行获得焦点而在其下缘出现粗线 */
 .attend-detail-modal .attend-modal-row:focus,
 .attend-detail-modal .attend-modal-row:focus-visible,
 .attend-detail-modal .attend-modal-row:active {
-  border: 0;
-  border-bottom: 1px solid var(--background-modifier-border);
-  box-shadow: none;
   outline: none;
+  box-shadow: none;
 }
 
 .attend-detail-modal .attend-modal-row:last-child,

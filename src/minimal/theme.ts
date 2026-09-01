@@ -1,5 +1,5 @@
-import { App } from "obsidian";
-import { MinimalSettings } from "./settings";
+import type { App } from "obsidian";
+import type { MinimalSettings } from "./settings";
 import { removeDarkScheme, removeLightScheme } from "./styles";
 
 export function updateDarkStyle(app: App, settings: MinimalSettings): void {

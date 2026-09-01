@@ -313,7 +313,7 @@ export class AttendDashboardView extends ItemView {
         `${this.app.vault.getName()} · ${snapshot?.noteCount ?? 0} 篇笔记 · ${formatCompactNumber(snapshot?.totalWords ?? 0)} 字数`
       );
     }
-    const body = this.dashboardRootEl!.createDiv("attend-dashboard-body");
+    const body = this.dashboardRootEl.createDiv("attend-dashboard-body");
     this.dashboardBodyEl = body;
     return body;
   }
@@ -709,7 +709,7 @@ export class AttendDashboardView extends ItemView {
     dow.style.setProperty("--hm-rgap", rgap + "px");
 
     // 月份标签行与格子列左对齐：整体左移「星期列实际宽 + 网格列间距」
-    const gridEl = cells.parentElement as HTMLElement | null;
+    const gridEl = cells.parentElement;
     const gridGap = gridEl
       ? parseFloat(getComputedStyle(gridEl).columnGap) || 4
       : 4;
@@ -2116,7 +2116,7 @@ export class AttendDashboardView extends ItemView {
 
   /** 缩放过程中在卡片中央显示当前比例，如「2 × 1」 */
   private showModuleResizeBadge(card: HTMLElement, cols: number, rows: number): void {
-    let badge = card.querySelector(".attend-card__ratio") as HTMLElement | null;
+    let badge = card.querySelector(".attend-card__ratio");
     if (!badge) badge = card.createDiv({ cls: "attend-card__ratio" });
     badge.setText(`${cols} × ${rows}`);
   }
@@ -2161,7 +2161,7 @@ export class AttendDashboardView extends ItemView {
       const surface = this.createModuleCard(grid, t.title, t.subtitle, t.id);
       surface.addClass(t.cls);
       const r = t.build(surface);
-      if (r && typeof (r as Promise<void>).then === "function") void r;
+      if (r && typeof (r).then === "function") void r;
     }
     this.initModulesCols(grid);
     this.wireModuleInteractions(grid);
@@ -2254,7 +2254,7 @@ export class AttendDashboardView extends ItemView {
     const cols = card.style.getPropertyValue("--cols") || "1";
     const rows = card.style.getPropertyValue("--rows") || "1";
     // 占位符：保留当前卡片在网格中的尺寸与槽位，其余卡片据此让位
-    const ph = document.createElement("div");
+    const ph = createDiv();
     ph.className = "attend-ph";
     ph.style.setProperty("--cols", cols);
     ph.style.setProperty("--rows", rows);
@@ -2345,8 +2345,8 @@ export class AttendDashboardView extends ItemView {
     const x = ds.lastX;
     const y = ds.lastY;
     const cards = Array.from(
-      board.querySelectorAll(".attend-surface:not(.attend-card--dragging)")
-    ) as HTMLElement[];
+      board.querySelectorAll<HTMLElement>(".attend-surface:not(.attend-card--dragging)")
+    );
 
     let ref: HTMLElement | null = null;
     for (const c of cards) {
@@ -2437,7 +2437,7 @@ export class AttendDashboardView extends ItemView {
     const disabled = this.getModuleTemplates().filter((t) => !visible.has(t.id));
     const backdrop = grid.createDiv({ cls: "attend-addmenu-backdrop" });
     const menu = backdrop.createDiv({ cls: "attend-addmenu" });
-    menu.createEl("div", { cls: "attend-addmenu__title", text: "添加卡片" });
+    menu.createDiv({ cls: "attend-addmenu__title", text: "添加卡片" });
     if (disabled.length === 0) {
       menu.createDiv({ cls: "attend-addmenu__empty", text: "所有卡片都已显示" });
     }

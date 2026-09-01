@@ -31,6 +31,14 @@ export class DetailModal extends Modal {
     this.contentEl.empty();
   }
 
+  // 手机端 Obsidian 在 Modal.close() 中会无条件执行 animateClose()：
+  // 把弹窗整体 translateY(整高) 下滑一整屏再移除（rd.isPhone ? animateClose() : 直接移除），
+  // 对于本居中小弹窗就表现为「关闭时先往下移动一段距离才消失」。
+  // 这里让关闭动画立即完成、不做任何位移，从而去掉这段下滑；打开时的上滑入场仍保留。
+  animateClose(): Promise<void> {
+    return Promise.resolve();
+  }
+
   private render(): void {
     this.contentEl.empty();
     const header = this.contentEl.createDiv("attend-modal-header");

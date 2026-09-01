@@ -1,5 +1,7 @@
-import { App, Modal, Notice, TFile } from 'obsidian';
-import { TaskItem, TaskStatus, TaskPriority, TaskType, ProjectInfo, STATUS_LIST, PRIORITY_LIST, NodeState, DailyNode, serializeDailyNodesBlock } from './data/taskParser';
+import type { App} from 'obsidian';
+import { Modal, Notice, TFile } from 'obsidian';
+import type { TaskItem, TaskStatus, TaskPriority, TaskType, ProjectInfo, NodeState, DailyNode} from './data/taskParser';
+import { STATUS_LIST, PRIORITY_LIST, serializeDailyNodesBlock } from './data/taskParser';
 import { yamlScalar } from './data/frontmatterWriter';
 
 /* ============================================================

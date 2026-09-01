@@ -2,8 +2,10 @@
 // 1:1 fork 自 obsidian-memoria-main/src/store.ts 的核心子集（主视图所需）。
 // 负责从 vault 读取 YYYY.md 文件 -> 解析成 flomos，并支持追加/编辑/删除/置顶/收藏。
 
-import { App, TFile, normalizePath } from "obsidian";
-import { Flomo, FlomoBoardConfig, PIN_TAG, STAR_TAG } from "./types";
+import type { App} from "obsidian";
+import { TFile, normalizePath } from "obsidian";
+import type { Flomo, FlomoBoardConfig} from "./types";
+import { PIN_TAG, STAR_TAG } from "./types";
 import {
   parseFile,
   renderMemo,

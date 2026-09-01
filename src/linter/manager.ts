@@ -4,7 +4,8 @@
  * 负责：独立存取设置、保存时格式化（拦截 `editor:save-file`）、文件夹忽略判定、
  * 以及按用户启用范围执行两个规则（YAML 时间戳 / 不同内容间换行）。
  */
-import { App, Plugin, TFile, type Editor } from "obsidian";
+import type { App, Plugin, TFile} from "obsidian";
+import { type Editor } from "obsidian";
 import { normalizePath } from "obsidian";
 import { DEFAULT_SETTINGS, type LinterSettings } from "./settings";
 import { applyTwoSpaces } from "./two-spaces";

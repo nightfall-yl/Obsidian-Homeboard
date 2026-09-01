@@ -1,4 +1,5 @@
-import { Plugin, TAbstractFile, Editor, TFile, MarkdownView } from "obsidian";
+import type { Plugin, TAbstractFile, Editor, TFile} from "obsidian";
+import { MarkdownView } from "obsidian";
 import type { CursorPositionSettings } from "./models";
 
 interface EphemeralState {

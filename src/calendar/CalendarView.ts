@@ -1,4 +1,5 @@
-import { ItemView, WorkspaceLeaf, Menu, Notice } from "obsidian";
+import type { WorkspaceLeaf} from "obsidian";
+import { ItemView, Menu, Notice } from "obsidian";
 import { createDailyNote, getDailyNote } from "obsidian-daily-notes-interface";
 import Calendar from "./ui/Calendar.svelte";
 import { activeFile, calendarSettings, dailyNotes } from "./ui/stores";

@@ -200,7 +200,7 @@ export class ProjectBoardPanel {
       setIcon(tabGlyph, td.icon);
       btn.createSpan({ text: td.label });
       btn.dataset.view = td.key;
-      panels[td.key!] = content.createDiv({
+      panels[td.key] = content.createDiv({
         cls: "po-panel" + (td.key === this.currentView ? " is-active" : ""),
         attr: { "data-view": td.key }
       });

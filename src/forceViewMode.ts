@@ -1,8 +1,9 @@
-import {
+import type {
   WorkspaceLeaf,
   Plugin,
+  TFile} from "obsidian";
+import {
   MarkdownView,
-  TFile,
   TFolder,
   debounce,
 } from "obsidian";
