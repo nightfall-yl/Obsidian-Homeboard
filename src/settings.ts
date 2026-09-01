@@ -212,7 +212,7 @@ function renderSettings(
   const sections: SettingsSection[] = [
     {
       id: "dashboard",
-      label: "Dashboard 设置",
+      label: "Dashboard",
       icon: "layout-dashboard",
     },
     {
@@ -255,12 +255,8 @@ function renderSettings(
     }
   });
 
-  // ===================== Dashboard 设置 =====================
+  // ===================== Dashboard =====================
   const dashboardEl = sectionEls.get("dashboard")!;
-  dashboardEl.createEl("p", {
-    cls: "setting-item-description attend-settings-intro",
-    text: "所有统计与活动记录都只保存在当前仓库，不会发送到网络。"
-  });
 
   // ── 通用 ──
   const generalGroup = new SettingGroup(dashboardEl).setHeading("通用");
@@ -523,10 +519,9 @@ function renderSettings(
 
   // ===================== Markdown + =====================
   const markdownEl = sectionEls.get("markdown")!;
-  markdownEl.createEl("p", {
-    cls: "setting-item-description attend-settings-intro",
-    text: "与 Markdown 编辑体验相关的扩展设置。"
-  });
+
+  // ── Minimal 主题（移植自 obsidian-minimal-settings，独立 JSON 存储） ──
+  renderMinimalSettings(markdownEl, plugin);
 
   // ── 视图模式（存储于 Section2 的 static-data.json，经 StaticStore） ──
   const store = plugin.section2Store;
@@ -696,9 +691,6 @@ function renderSettings(
         )
     );
   });
-
-  // ── Minimal 主题（移植自 obsidian-minimal-settings，独立 JSON 存储） ──
-  renderMinimalSettings(markdownEl, plugin);
 
   // ── Linter（移植自 obsidian-linter，独立 JSON 存储） ──
   renderLinterSettings(markdownEl, plugin);

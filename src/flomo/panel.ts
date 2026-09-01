@@ -376,7 +376,7 @@ export class FlomoBoardPanel {
     const pinnedCount = all.filter((m) => m.isPinned).length;
     const starredCount = all.filter((m) => m.isStarred).length;
     const todayCount = all.filter((m) => m.date === todayStr).length;
-    const weekCount = this.flomosInDays(7, all);
+    const weekCount = this.flomosThisWeek(all);
     const todoCount = all.filter((m) => /\[ \]/.test(m.content)).length;
     const onThisDayCount = all.filter(
       (m) =>
@@ -607,15 +607,17 @@ export class FlomoBoardPanel {
     wrap.createDiv({ cls: "flomo-stat-label", text: label });
   }
 
-  private flomosInDays(n: number, arr: Flomo[]): number {
-    const pad = (x: number) => String(x).padStart(2, "0");
-    const days = new Set<string>();
-    for (let i = 0; i < n; i++) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      days.add(`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`);
-    }
-    return arr.filter((m) => days.has(m.date)).length;
+  /**
+   * 本周（本周一 00:00 起）的笔记数。
+   * 必须与主列表 preset==="week" 的过滤条件保持同一定义：原实现用「滚动 7 天窗口」，
+   * 会把上周的笔记算进本周，导致侧栏显示 1 而列表显示「本周还没有笔记」。
+   */
+  private flomosThisWeek(arr: Flomo[]): number {
+    const now = new Date();
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+    monday.setHours(0, 0, 0, 0);
+    return arr.filter((m) => m.datetime >= monday).length;
   }
 
   /* ---- 输入卡片：新增便签（Placeholder 「此刻，你在想什么？」+ 5 个工具图标 + 发送） ---- */

@@ -1,4 +1,4 @@
-import { FuzzySuggestModal, Modal, setIcon } from "obsidian";
+import { AbstractInputSuggest, Modal, setIcon } from "obsidian";
 import type { App } from "obsidian";
 import type AttendDashboardPlugin from "./main";
 import type { QuickLink } from "./models";
@@ -8,16 +8,23 @@ interface CommandEntry {
   name: string;
 }
 
-class CommandSuggestModal extends FuzzySuggestModal<CommandEntry> {
-  private readonly onSelect: (id: string) => void;
+/**
+ * 「命令」输入框联想（与「快速捕获文件」的 ProjectFileSuggest 同一交互）：
+ * 聚焦/输入时在框下弹出命令列表，选中回填命令 ID，无需额外「选择」按钮。
+ */
+class CommandInputSuggest extends AbstractInputSuggest<CommandEntry> {
+  private readonly onApply: (id: string) => void;
 
-  constructor(app: App, onSelect: (id: string) => void) {
-    super(app);
-    this.onSelect = onSelect;
-    this.setPlaceholder("搜索命令...");
+  constructor(
+    app: App,
+    inputEl: HTMLInputElement,
+    onApply: (id: string) => void
+  ) {
+    super(app, inputEl);
+    this.onApply = onApply;
   }
 
-  getItems(): CommandEntry[] {
+  private getCommands(): CommandEntry[] {
     const registry = (this.app as unknown as {
       commands?: { commands?: Record<string, { name?: string }> };
     }).commands?.commands ?? {};
@@ -26,12 +33,30 @@ class CommandSuggestModal extends FuzzySuggestModal<CommandEntry> {
       .sort((left, right) => left.name.localeCompare(right.name, "zh-CN"));
   }
 
-  getItemText(item: CommandEntry): string {
-    return item.name;
+  getSuggestions(query: string): CommandEntry[] {
+    const lower = query.trim().toLowerCase();
+    const limit = this.limit || 100;
+    const items = this.getCommands();
+    if (!lower) return items.slice(0, limit);
+    return items
+      .filter(
+        (c) =>
+          c.name.toLowerCase().includes(lower) ||
+          c.id.toLowerCase().includes(lower)
+      )
+      .slice(0, limit);
   }
 
-  onChooseItem(item: CommandEntry): void {
-    this.onSelect(item.id);
+  renderSuggestion(item: CommandEntry, el: HTMLElement): void {
+    el.empty();
+    el.createDiv({ text: item.name, cls: "attend-cmd-suggest-name" });
+    el.createDiv({ text: item.id, cls: "attend-cmd-suggest-id" });
+  }
+
+  selectSuggestion(item: CommandEntry, _evt: MouseEvent | KeyboardEvent): void {
+    this.setValue(item.id);
+    this.close();
+    this.onApply(item.id);
   }
 }
 
@@ -62,9 +87,18 @@ export class QuickLinkModal extends Modal {
 
     const header = this.contentEl.createDiv("attend-link-editor-header");
     header.createEl("h2", { text: "管理快捷链接" });
-    header.createEl("p", {
-      text: "自定义顶部快捷入口。url 指向笔记（笔记名或路径），action 为命令 ID（填写后优先执行命令）。图标填写 Lucide 图标名，如 home。"
+    const intro = header.createEl("p", {
+      cls: "setting-item-description"
     });
+    intro.appendText(
+      "自定义顶部快捷入口。url 指向笔记（笔记名或路径），action 为命令 ID（填写后优先执行命令）。图标填写 "
+    );
+    intro.createEl("a", {
+      text: "Lucide",
+      href: "https://lucide.dev/icons/",
+      attr: { target: "_blank", rel: "noopener noreferrer" }
+    });
+    intro.appendText(" 图标名，如 home。");
 
     const list = this.contentEl.createDiv("attend-link-editor-list");
 
@@ -163,22 +197,15 @@ export class QuickLinkModal extends Modal {
       text: "命令（可选）"
     });
     const actionInput = actionField.createEl("input", {
-      attr: { type: "text", placeholder: "命令 ID" }
+      attr: { type: "text" }
     });
     actionInput.value = link.action ?? "";
     actionInput.addEventListener("change", () => {
       link.action = actionInput.value.trim() || undefined;
     });
-    const pickBtn = actionField.createEl("button", {
-      cls: "attend-link-editor-pick",
-      text: "选择",
-      attr: { type: "button" }
-    });
-    pickBtn.addEventListener("click", () => {
-      new CommandSuggestModal(this.app, (id) => {
-        link.action = id;
-        actionInput.value = id;
-      }).open();
+    new CommandInputSuggest(this.app, actionInput, (id) => {
+      link.action = id;
+      actionInput.value = id;
     });
   }
 

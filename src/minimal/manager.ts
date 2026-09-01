@@ -17,7 +17,6 @@ import {
   updateTheme,
   updateSidebar,
 } from "./theme";
-import { registerAllCommands } from "./commands";
 import type { StaticStore } from "../static-store";
 
 /**
@@ -39,7 +38,6 @@ export class MinimalManager {
     loadRules();
     this.setupListeners();
     this.refresh();
-    registerAllCommands(this);
   }
 
   onunload(): void {
@@ -160,10 +158,6 @@ export class MinimalManager {
 
   refresh(): void {
     updateStyle(this.settings);
-  }
-
-  registerCommand(id: string, name: string, callback: () => void): void {
-    this.plugin.addCommand({ id, name, callback });
   }
 
   setFontSize(): void {

@@ -1119,10 +1119,6 @@
   gap: 3px;
 }
 
-.attend-link-editor-field:last-child {
-  grid-column: 1 / -1;
-}
-
 .attend-link-editor-label {
   color: var(--text-faint);
   font-size: 10px;
@@ -1146,19 +1142,15 @@
   outline: none;
 }
 
-.attend-link-editor-pick {
-  margin-left: 6px;
-  padding: 5px 10px;
-  color: var(--text-normal);
-  border: 1px solid var(--background-modifier-border);
-  border-radius: 6px;
-  background: var(--background-modifier-hover);
-  font-size: 11px;
-  cursor: pointer;
+.attend-cmd-suggest-name {
+  font-size: 13px;
 }
 
-.attend-link-editor-pick:hover {
-  border-color: var(--background-modifier-border-hover);
+.attend-cmd-suggest-id {
+  color: var(--text-faint);
+  font-size: 10px;
+  margin-top: 2px;
+  word-break: break-all;
 }
 
 .attend-link-editor-button {
@@ -1981,8 +1973,10 @@
   --attend-accent-red: #ef4444;
   --attend-accent-rose: #ec4899;
   --attend-chart-grid: color-mix(in srgb, var(--text-muted) 20%, transparent);
-  /* 上游 --ad-* 调色板（1:1 移植 .po-container/.po-sidebar/.po-main 使用；固定调色板，不跟随 Obsidian 主题）
-     与 .ad-task-modal 共享同一份定义，避免双源漂移（如圆角 12px/10px 类问题） */
+  /* 上游 --ad-* 调色板（1:1 移植 .po-container/.po-sidebar/.po-main 使用）
+     与 .ad-task-modal 共享同一份定义，避免双源漂移（如圆角 12px/10px 类问题）。
+     强调色改为跟随 Obsidian 主题（与嵌入态 .po-board-host.po-board-view / .flomo-container
+     的重定向一致），使独立视图与内嵌面板、跨 Win/Mac 表现统一；#7BA7FF 仅作变量缺失时的兜底。 */
   --ad-s1: #16181F;
   --ad-s3: #252934;
   --ad-h1: #1F232E;
@@ -1991,8 +1985,8 @@
   --ad-text: #E8E6E0;
   --ad-text-mute: #92959E;
   --ad-text-dim: #5E6068;
-  --ad-accent: #7BA7FF;
-  --ad-accent-dim: rgba(123,167,255,0.18);
+  --ad-accent: var(--interactive-accent, #7BA7FF);
+  --ad-accent-dim: color-mix(in srgb, var(--ad-accent) 18%, transparent);
   --ad-accent-2: #A78BFA;
   --ad-r1: 4px; --ad-r2: 6px; --ad-r3: 8px;
   --ad-on-accent: #0F1014;
@@ -2025,8 +2019,8 @@ body.theme-light .ad-task-modal {
   --ad-text: oklch(0.13 0 0);
   --ad-text-mute: oklch(0.44 0 0);
   --ad-text-dim: oklch(0.56 0 0);
-  --ad-accent: oklch(0.13 0 0);
-  --ad-accent-dim: oklch(0.13 0 0 / 0.10);
+  /* --ad-accent / --ad-accent-dim 故意不再覆盖：继承基础块的 var(--interactive-accent)，
+     使亮色下同样跟随主题，与嵌入态表现一致（上游近黑强调色会导致亮色下与嵌入态分裂） */
   --ad-accent-2: oklch(0.81 0.17 75.35);
   --ad-on-accent: oklch(1 0 0);
   --ad-r1: 4px; --ad-r2: 6px; --ad-r3: 8px;
@@ -2088,7 +2082,7 @@ body.theme-light .ad-task-modal {
 }
 .po-sidebar__item.is-active {
   background: var(--ad-accent-dim);
-  border-color: rgba(123,167,255,0.25);
+  border-color: color-mix(in srgb, var(--ad-accent) 25%, transparent);
   color: var(--ad-text);
   font-weight: 500;
 }
@@ -2173,7 +2167,7 @@ body.theme-light .ad-task-modal {
 .po-tab.is-active {
   color: var(--ad-accent);
   background: var(--ad-accent-dim);
-  border-color: rgba(123,167,255,0.3);
+  border-color: color-mix(in srgb, var(--ad-accent) 30%, transparent);
   font-weight: 500;
 }
 .po-content {
@@ -2233,7 +2227,7 @@ body.theme-light .ad-task-modal {
 .po-gantt__zoom-btn.is-active {
   background: var(--ad-accent-dim);
   color: var(--ad-accent);
-  border-color: rgba(123,167,255,0.3);
+  border-color: color-mix(in srgb, var(--ad-accent) 30%, transparent);
 }
 .po-gantt__sep {
   width: 1px;
@@ -2486,7 +2480,7 @@ body.theme-light .ad-task-modal {
 }
 .po-chip.is-active {
   color: var(--ad-accent);
-  border-color: rgba(123,167,255,0.3);
+  border-color: color-mix(in srgb, var(--ad-accent) 30%, transparent);
   background: var(--ad-accent-dim);
   font-weight: 500;
 }
@@ -2837,7 +2831,7 @@ body.theme-dark .po-board-host.po-board-view .po-gantt__band-odd {
 }
 .po-board-host.po-board-view .po-chip.is-active {
   background: var(--ad-accent-dim);
-  border-color: rgba(123,167,255,0.3);
+  border-color: color-mix(in srgb, var(--ad-accent) 30%, transparent);
 }
 
 /* 项目板嵌入态统一复用 .po-board-host 作唯一卡片外壳（flomo 对齐），内部 .po-container
@@ -2883,6 +2877,9 @@ body.theme-dark .po-board-host.po-board-view .po-gantt__band-odd {
   --ad-danger: var(--text-error, #e0605f);
   --ad-success: var(--text-success, #4fa86a);
   --ad-on-accent: var(--background-primary);
+  /* 圆角变量：.flomo-container 不匹配 .po-board-view，此前取不到 --ad-r1/r2/r3，
+     导致 .flomo-nav-item 等圆角塌成 0；补上后与全部项目左边栏同为 4px */
+  --ad-r1: 4px; --ad-r2: 6px; --ad-r3: 8px;
 }
 .flomo-shell {
   display: flex;
@@ -2983,7 +2980,7 @@ body.is-mobile .flomo-shell .flomo-sidebar {
 }
 .flomo-nav-item.active {
   background: var(--ad-accent-dim);
-  border-color: rgba(123,167,255,0.25);
+  border-color: color-mix(in srgb, var(--ad-accent) 25%, transparent);
   color: var(--ad-text);
   font-weight: 500;
 }

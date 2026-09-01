@@ -1,4 +1,4 @@
-import { App, Notice, Plugin, PluginManifest, TFile } from "obsidian";
+import { App, Plugin, PluginManifest, TFile } from "obsidian";
 import {
   AttendDashboardView,
   VIEW_TYPE_ATTEND_DASHBOARD
@@ -58,28 +58,6 @@ export default class AttendDashboardPlugin extends Plugin {
       void this.openDashboard("new-tab");
     });
 
-    this.addCommand({
-      id: "open-dashboard",
-      name: "打开首页看板",
-      callback: () => void this.openDashboard("new-tab")
-    });
-
-    this.addCommand({
-      id: "open-project-board",
-      name: "打开全部项目",
-      callback: () => void this.openProjectBoard()
-    });
-
-    this.addCommand({
-      id: "refresh-dashboard",
-      name: "重新扫描首页统计",
-      callback: () => {
-        this.stats.invalidate();
-        this.refreshDashboardViews(true);
-        new Notice("Dashboard 正在重新扫描");
-      }
-    });
-
     this.addSettingTab(new AttendSettingTab(this.app, this));
 
     // Calendar
@@ -90,13 +68,6 @@ export default class AttendDashboardPlugin extends Plugin {
         void this.activateCalendarView();
       });
     }
-    this.addCommand({
-      id: "open-attend-calendar",
-      name: "打开日历",
-      callback: () => {
-        void this.activateCalendarView();
-      },
-    });
 
     // Force View Mode（设置存于 Section2 的 static-data.json）
     this.forceViewModeManager = new ForceViewModeManager(this, this.section2Store.settings.forceViewMode);
