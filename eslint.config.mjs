@@ -28,7 +28,10 @@ export default tseslint.config(
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/no-floating-promises": "error",
       "@typescript-eslint/no-misused-promises": "error",
-      "no-console": "warn"
+      "no-console": "warn",
+      // 本插件 UI 以中文为主，该规则会把非首词强转小写（"Sean"→"sean"、
+      // "Dashboard"→"dashboard"、"UTC"→"utc"），对中文与品牌名基本是误报。
+      "obsidianmd/ui/sentence-case": "off"
     }
   },
   {

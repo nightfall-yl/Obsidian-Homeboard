@@ -1,6 +1,6 @@
 import { AbstractInputSuggest, Modal, setIcon } from "obsidian";
 import type { App } from "obsidian";
-import type AttendDashboardPlugin from "./main";
+import type AstraDashboardPlugin from "./main";
 import type { QuickLink } from "./models";
 
 interface CommandEntry {
@@ -49,8 +49,8 @@ class CommandInputSuggest extends AbstractInputSuggest<CommandEntry> {
 
   renderSuggestion(item: CommandEntry, el: HTMLElement): void {
     el.empty();
-    el.createDiv({ text: item.name, cls: "attend-cmd-suggest-name" });
-    el.createDiv({ text: item.id, cls: "attend-cmd-suggest-id" });
+    el.createDiv({ text: item.name, cls: "astra-cmd-suggest-name" });
+    el.createDiv({ text: item.id, cls: "astra-cmd-suggest-id" });
   }
 
   selectSuggestion(item: CommandEntry, _evt: MouseEvent | KeyboardEvent): void {
@@ -65,7 +65,7 @@ export class QuickLinkModal extends Modal {
 
   constructor(
     app: App,
-    private readonly dashboardPlugin: AttendDashboardPlugin
+    private readonly dashboardPlugin: AstraDashboardPlugin
   ) {
     super(app);
     this.links = dashboardPlugin.data.settings.quickLinks.map((link) => ({
@@ -83,9 +83,9 @@ export class QuickLinkModal extends Modal {
 
   private render(): void {
     this.contentEl.empty();
-    this.modalEl.addClass("attend-quick-link-modal");
+    this.modalEl.addClass("astra-quick-link-modal");
 
-    const header = this.contentEl.createDiv("attend-link-editor-header");
+    const header = this.contentEl.createDiv("astra-link-editor-header");
     header.createEl("h2", { text: "管理快捷链接" });
     const intro = header.createEl("p", {
       cls: "setting-item-description"
@@ -100,11 +100,11 @@ export class QuickLinkModal extends Modal {
     });
     intro.appendText(" 图标名，如 home。");
 
-    const list = this.contentEl.createDiv("attend-link-editor-list");
+    const list = this.contentEl.createDiv("astra-link-editor-list");
 
     if (this.links.length === 0) {
       list.createDiv({
-        cls: "attend-link-editor-empty",
+        cls: "astra-link-editor-empty",
         text: "还没有快捷链接，点击下方新增。"
       });
     } else {
@@ -113,7 +113,7 @@ export class QuickLinkModal extends Modal {
       });
     }
 
-    const addBar = this.contentEl.createDiv("attend-link-editor-add");
+    const addBar = this.contentEl.createDiv("astra-link-editor-add");
     const addBtn = addBar.createEl("button", {
       cls: "mod-cta",
       text: "新增链接",
@@ -124,7 +124,7 @@ export class QuickLinkModal extends Modal {
       this.render();
     });
 
-    const actions = this.contentEl.createDiv("attend-settings-actions");
+    const actions = this.contentEl.createDiv("astra-settings-actions");
     const done = actions.createEl("button", {
       cls: "mod-cta",
       text: "完成",
@@ -143,15 +143,15 @@ export class QuickLinkModal extends Modal {
     link: QuickLink,
     index: number
   ): void {
-    const row = list.createDiv("attend-link-editor-row");
+    const row = list.createDiv("astra-link-editor-row");
 
-    const head = row.createDiv("attend-link-editor-row-head");
+    const head = row.createDiv("astra-link-editor-row-head");
     head.createSpan({
-      cls: "attend-link-editor-index",
+      cls: "astra-link-editor-index",
       text: String(index + 1)
     });
 
-    const controls = head.createSpan("attend-link-editor-controls");
+    const controls = head.createSpan("astra-link-editor-controls");
     this.createIconButton(
       controls,
       "arrow-up",
@@ -170,7 +170,7 @@ export class QuickLinkModal extends Modal {
       this.remove(index)
     );
 
-    const fields = row.createDiv("attend-link-editor-fields");
+    const fields = row.createDiv("astra-link-editor-fields");
     this.createField(fields, "名称", link.label, (value) => {
       link.label = value;
     });
@@ -191,9 +191,9 @@ export class QuickLinkModal extends Modal {
       }
     );
 
-    const actionField = fields.createDiv("attend-link-editor-field");
+    const actionField = fields.createDiv("astra-link-editor-field");
     actionField.createSpan({
-      cls: "attend-link-editor-label",
+      cls: "astra-link-editor-label",
       text: "命令（可选）"
     });
     const actionInput = actionField.createEl("input", {
@@ -215,8 +215,8 @@ export class QuickLinkModal extends Modal {
     value: string,
     onChange: (value: string) => void
   ): void {
-    const field = parent.createDiv("attend-link-editor-field");
-    field.createSpan({ cls: "attend-link-editor-label", text: label });
+    const field = parent.createDiv("astra-link-editor-field");
+    field.createSpan({ cls: "astra-link-editor-label", text: label });
     const input = field.createEl("input", { attr: { type: "text" } });
     input.value = value;
     input.addEventListener("change", () => onChange(input.value));
@@ -230,7 +230,7 @@ export class QuickLinkModal extends Modal {
     action: () => void
   ): void {
     const btn = parent.createEl("button", {
-      cls: "attend-link-editor-button",
+      cls: "astra-link-editor-button",
       attr: {
         type: "button",
         "aria-label": label,

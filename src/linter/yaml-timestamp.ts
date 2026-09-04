@@ -116,7 +116,6 @@ function handleDateCreatedValue(
 
   if (s.dateCreatedSourceOfTruth === "frontmatter") {
     if (parsed == null) {
-      console.log("[LinterLite] date created parse failed, keeping original:", existingValue);
       return { text, modified: false };
     }
     const formatted = s.convertToUTC
@@ -175,7 +174,6 @@ function handleDateModifiedValue(
 
   if (parsed == null || !parsed.isValid()) {
     // 解析失败：保留旧值，不覆盖
-    console.log("[LinterLite] date modified parse failed, keeping original:", existingValue);
     return text;
   }
 

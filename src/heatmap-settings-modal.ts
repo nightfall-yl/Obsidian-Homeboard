@@ -1,6 +1,6 @@
 import { Modal, Setting } from "obsidian";
 import type { App } from "obsidian";
-import type AttendDashboardPlugin from "./main";
+import type AstraDashboardPlugin from "./main";
 import type {
   HeatmapDateFieldType,
   HeatmapSettings
@@ -11,7 +11,7 @@ export class HeatmapSettingsModal extends Modal {
 
   constructor(
     app: App,
-    private readonly plugin: AttendDashboardPlugin
+    private readonly plugin: AstraDashboardPlugin
   ) {
     super(app);
     this.settings = { ...plugin.data.settings.heatmap };
@@ -27,7 +27,7 @@ export class HeatmapSettingsModal extends Modal {
 
   private render(): void {
     this.contentEl.empty();
-    this.modalEl.addClass("attend-heatmap-settings-modal");
+    this.modalEl.addClass("astra-heatmap-settings-modal");
 
     // 以下设置为固定默认值，不再提供配置项
     this.settings.startOfWeek = 1; // 每周起始日固定周一
@@ -39,7 +39,7 @@ export class HeatmapSettingsModal extends Modal {
     this.renderBasicSection(this.contentEl);
     this.renderDataSourceSection(this.contentEl);
 
-    const actions = this.contentEl.createDiv("attend-settings-actions");
+    const actions = this.contentEl.createDiv("astra-settings-actions");
     const done = actions.createEl("button", {
       cls: "mod-cta",
       text: "完成",
@@ -54,7 +54,7 @@ export class HeatmapSettingsModal extends Modal {
 
   private renderBasicSection(parent: HTMLElement): void {
     const heading = parent.createEl("h3", { text: "基本设置" });
-    heading.addClass("attend-heatmap-section-heading");
+    heading.addClass("astra-heatmap-section-heading");
 
     new Setting(parent)
       .setName("标题")
@@ -70,7 +70,7 @@ export class HeatmapSettingsModal extends Modal {
 
   private renderDataSourceSection(parent: HTMLElement): void {
     const heading = parent.createEl("h3", { text: "数据源" });
-    heading.addClass("attend-heatmap-section-heading");
+    heading.addClass("astra-heatmap-section-heading");
 
     // 数据源类型固定为"文档"（PAGE），数据源值固定为空（全部文件），不再提供配置。
     this.settings.dataSourceType = "PAGE";

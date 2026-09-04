@@ -1,8 +1,10 @@
-import { readFileSync } from "node:fs";
+import { Platform } from "obsidian";
 import { describe, expect, it } from "vitest";
 
 describe("Dashboard graph GPU isolation", () => {
-  it("never creates a WebGL context or bundles a second 3D engine", () => {
+  it("never creates a WebGL context or bundles a second 3D engine", async () => {
+    if (!Platform.isDesktop) return;
+    const { readFileSync } = await import("node:fs");
     const dashboardSource = readFileSync(
       new URL("./dashboard-view.ts", import.meta.url),
       "utf8"

@@ -2,8 +2,9 @@ import { ItemView, Menu, Notice, Platform, TFile, TFolder, normalizePath, setIco
 import type { WorkspaceLeaf } from "obsidian";
 import { DateTime } from "luxon";
 import { formatCompactNumber } from "./core";
+import { confirmDialog } from "./confirm-modal";
 import { DetailModal, type DetailItem } from "./detail-modal";
-import type AttendDashboardPlugin from "./main";
+import type AstraDashboardPlugin from "./main";
 import { parseDailyPhrases, type PhraseItem } from "./daily-phrase/parser";
 import type {
   DashboardSnapshot,
@@ -12,7 +13,7 @@ import type {
   QuickLink
 } from "./models";
 import { QuickLinkModal, quickLinkInitial } from "./quick-link-modal";
-import { AttendSettingsModal } from "./settings";
+import { AstraSettingsModal } from "./settings";
 import { HeatmapSettingsModal } from "./heatmap-settings-modal";
 import { ProjectBoardPanel } from "./project-board-view";
 import { FlomoBoardPanel } from "./flomo/panel";
@@ -38,7 +39,7 @@ import { writeFrontmatter, yamlScalar } from "./data/frontmatterWriter";
 import { TaskEditModal } from "./task-edit-modal";
 import type { ProjectInfo, TaskItem, TaskStatus } from "./data/taskParser";
 
-export const VIEW_TYPE_ATTEND_DASHBOARD = "attend-dashboard-view";
+export const VIEW_TYPE_ASTRA_DASHBOARD = "astra-dashboard-view";
 
 /** 从结构化重复设置生成嵌套「重复规则」block（迁移自 obsidian-dashboard-main）。 */
 /** 农历日期 → "五月廿二" 样式（复用 obsidian-dashboard-main 的 Intl 农历历法实现，无额外依赖） */
@@ -99,7 +100,14 @@ const MOD_MIN_RATIO: Record<string, number> = {
 };
 /** 把任意输入夹到合法的格数区间（非法值回退为 1） */
 function clampModSpan(v: unknown): number {
-  const n = typeof v === "number" ? Math.round(v) : parseInt(String(v ?? ""), 10);
+  // 只有 number / 数字字符串可解析；其余（含 null、对象）落到 NaN 再回退为 1。
+  // 不要对 unknown 直接 String()，对象会被字符串化成 "[object Object]"。
+  const n =
+    typeof v === "number"
+      ? Math.round(v)
+      : typeof v === "string"
+        ? parseInt(v, 10)
+        : NaN;
   if (!Number.isFinite(n) || n < 1) return 1;
   return Math.min(MOD_MAX_SPAN, n);
 }
@@ -160,16 +168,16 @@ function hashString(s: string): number {
   return h >>> 0;
 }
 
-export class AttendDashboardView extends ItemView {
+export class AstraDashboardView extends ItemView {
   private refreshTimer: number | null = null;
   private renderDisposers: Array<() => void> = [];
   /** 当前是否正在显示子面板（FlomoBoardPanel / ProjectBoardPanel 等），
    *  为 true 时跳过 vault 事件触发的刷新，避免重建摧毁子面板。 */
   private showingPanel = false;
   /** 视图根容器（包含常驻 header + 可重建 body）。结构对齐 obsidian-dashboard-main：
-   *    attend-dashboard-root  ← contentEl 下唯一稳定节点
-   *      ├─ attend-dashboard-header   ← 常驻（欢迎/日期/按钮），不随页面切换重建
-   *      └─ attend-dashboard-body     ← 可替换区域，render/navigate 只重建这一层 */
+   *    astra-dashboard-root  ← contentEl 下唯一稳定节点
+   *      ├─ astra-dashboard-header   ← 常驻（欢迎/日期/按钮），不随页面切换重建
+   *      └─ astra-dashboard-body     ← 可替换区域，render/navigate 只重建这一层 */
   private dashboardRootEl: HTMLElement | null = null;
   /** 常驻 header 中的「笔记数 · 字数」统计行，每次渲染都刷新文案（header 只建一次） */
   private headerStatsEl: HTMLElement | null = null;
@@ -211,7 +219,7 @@ export class AttendDashboardView extends ItemView {
 
   constructor(
     leaf: WorkspaceLeaf,
-    private readonly plugin: AttendDashboardPlugin
+    private readonly plugin: AstraDashboardPlugin
   ) {
     super(leaf);
     this.taskStore = new TaskStore(
@@ -231,7 +239,7 @@ export class AttendDashboardView extends ItemView {
   }
 
   getViewType(): string {
-    return VIEW_TYPE_ATTEND_DASHBOARD;
+    return VIEW_TYPE_ASTRA_DASHBOARD;
   }
 
   getDisplayText(): string {
@@ -255,12 +263,12 @@ export class AttendDashboardView extends ItemView {
     } else {
       // 首次构建：清空 contentEl，创建 root + header
       this.contentEl.empty();
-      const root = this.contentEl.createDiv("attend-dashboard attend-dashboard-root");
+      const root = this.contentEl.createDiv("astra-dashboard astra-dashboard-root");
       this.dashboardRootEl = root;
       // 常驻 header：欢迎/日期/按钮（对齐 obsidian-dashboard-main 的 ad-header，
       //  作为内容区顶部行，与 Obsidian 原生 view-header（标签栏）并存）
-      const header = root.createDiv("attend-dashboard-header");
-      const copy = header.createDiv("attend-dashboard-heading");
+      const header = root.createDiv("astra-dashboard-header");
+      const copy = header.createDiv("astra-dashboard-heading");
       const displayName = this.plugin.data.settings.displayName;
       copy.createEl("h1", {
         text: `${greeting()}${displayName ? `，${displayName}` : ""}`
@@ -269,17 +277,17 @@ export class AttendDashboardView extends ItemView {
         text: `${this.app.vault.getName()} · ${snapshot?.noteCount ?? 0} 篇笔记 · ${formatCompactNumber(snapshot?.totalWords ?? 0)} 字数`,
       });
       this.headerStatsEl = statsEl;
-      const actions = header.createDiv("attend-dashboard-actions");
-      const dateRow = actions.createDiv("attend-dashboard-date");
-      const lunarRow = actions.createDiv("attend-dashboard-lunar");
-      const buttons = actions.createDiv("attend-dashboard-tools");
+      const actions = header.createDiv("astra-dashboard-actions");
+      const dateRow = actions.createDiv("astra-dashboard-date");
+      const lunarRow = actions.createDiv("astra-dashboard-lunar");
+      const buttons = actions.createDiv("astra-dashboard-tools");
       const homeBtn = this.createIconButton(buttons, "home", "返回主页");
       // 常驻 header 按钮用 Component 的 registerDomEvent 注册：只在视图关闭时清理，
       // 不会被每次 render 的 clearRenderResources() 清掉监听器
       this.registerDomEvent(homeBtn, "click", () => this.navigateHome());
       const settingsBtn = this.createIconButton(buttons, "settings", "打开设置");
       this.registerDomEvent(settingsBtn, "click", () => {
-        new AttendSettingsModal(this.app, this.plugin).open();
+        new AstraSettingsModal(this.app, this.plugin).open();
       });
       // 实时刷新日期时间/星期/农历
       const updateClock = (): void => {
@@ -313,14 +321,14 @@ export class AttendDashboardView extends ItemView {
         `${this.app.vault.getName()} · ${snapshot?.noteCount ?? 0} 篇笔记 · ${formatCompactNumber(snapshot?.totalWords ?? 0)} 字数`
       );
     }
-    const body = this.dashboardRootEl.createDiv("attend-dashboard-body");
+    const body = this.dashboardRootEl.createDiv("astra-dashboard-body");
     this.dashboardBodyEl = body;
     return body;
   }
 
   async onOpen(): Promise<void> {
     this.showingPanel = false;
-    this.contentEl.addClass("attend-dashboard-view-content");
+    this.contentEl.addClass("astra-dashboard-view-content");
     this.renderLoading();
     await this.refresh(true);
   }
@@ -360,7 +368,7 @@ export class AttendDashboardView extends ItemView {
   private renderLoading(): void {
     const body = this.ensureDashboardRoot(this.lastSnapshot);
     body.empty();
-    const mark = body.createDiv("attend-loading-mark");
+    const mark = body.createDiv("astra-loading-mark");
     setIcon(mark, "loader-circle");
     body.createEl("h2", { text: "正在扫描知识库" });
     body.createEl("p", { text: "首次统计可能需要几秒钟。" });
@@ -370,7 +378,7 @@ export class AttendDashboardView extends ItemView {
     this.clearRenderResources();
     const body = this.ensureDashboardRoot(this.lastSnapshot);
     body.empty();
-    const mark = body.createDiv("attend-error-mark");
+    const mark = body.createDiv("astra-error-mark");
     setIcon(mark, "circle-alert");
     body.createEl("h2", { text: "暂时无法生成首页" });
     body.createEl("p", {
@@ -396,27 +404,27 @@ export class AttendDashboardView extends ItemView {
 
     // 热力图固定独占一行（副标题位 = 热图窗口文案「近 N 周」）
     const activitySurface = this.createSurface(body, "写作活动", "");
-    activitySurface.addClass("attend-activity-surface");
-    activitySurface.addClass("attend-surface-fullrow");
+    activitySurface.addClass("astra-activity-surface");
+    activitySurface.addClass("astra-surface-fullrow");
     // 与其它模块一致：把副标题紧跟标题（gap 8px），而非 space-between 推到最右
-    this.alignHeaderTitlesLeft(activitySurface, "attend-activity-titles");
+    this.alignHeaderTitlesLeft(activitySurface, "astra-activity-titles");
     this.hmSubtitleEl = activitySurface.querySelector(
-      ".attend-surface-header span"
+      ".astra-surface-header span"
     );
     if (this.hmSubtitleEl) this.hmSubtitleEl.setText(`近 52 周`);
     this.addHeatmapSettingsButton(activitySurface);
     this.renderHeatmap(activitySurface);
 
     // 主页模块卡片：顺序/显隐/增删由 homeModuleOrder 驱动（拖拽排序/删除/添加持久化）
-    const modulesWrap = body.createDiv("attend-modules-wrap");
+    const modulesWrap = body.createDiv("astra-modules-wrap");
     this.modulesWrapEl = modulesWrap;
     this.lastSnapshot = snapshot; // 供网格重建（增删/重排）时补渲最近笔记
     this.buildModuleCards(modulesWrap);
   }
 
   private renderQuickLinks(root: HTMLElement): void {
-    const section = root.createDiv("attend-quick-plugins");
-    const scroller = section.createDiv("attend-quick-plugins-scroll");
+    const section = root.createDiv("astra-quick-plugins");
+    const scroller = section.createDiv("astra-quick-plugins-scroll");
     this.listen(scroller, "wheel", (event) => {
       if (
         scroller.scrollWidth > scroller.clientWidth &&
@@ -431,27 +439,27 @@ export class AttendDashboardView extends ItemView {
 
     if (links.length === 0) {
       scroller.createSpan({
-        cls: "attend-quick-plugins-empty",
+        cls: "astra-quick-plugins-empty",
         text: "添加常用链接入口"
       });
     } else {
       links.forEach((link) => {
         const item = scroller.createDiv({
-          cls: "attend-plugin-shortcut",
+          cls: "astra-plugin-shortcut",
           attr: {
             role: "button",
             tabindex: "0",
             "aria-label": `打开 ${link.label}`
           }
         });
-        const mark = item.createSpan({ cls: "attend-plugin-shortcut-mark" });
+        const mark = item.createSpan({ cls: "astra-plugin-shortcut-mark" });
         if (link.icon) {
           setIcon(mark, link.icon);
         } else {
           mark.setText(quickLinkInitial(link.label));
         }
         item.createSpan({
-          cls: "attend-plugin-shortcut-name",
+          cls: "astra-plugin-shortcut-name",
           text: link.label
         });
         this.listen(item, "click", () => this.openQuickLink(link));
@@ -465,7 +473,7 @@ export class AttendDashboardView extends ItemView {
     }
 
     const manage = this.createIconButton(section, "sliders-horizontal", "管理快捷链接");
-    manage.addClass("attend-quick-plugins-manage");
+    manage.addClass("astra-quick-plugins-manage");
     this.listen(manage, "click", () => {
       new QuickLinkModal(this.app, this.plugin).open();
     });
@@ -487,7 +495,7 @@ export class AttendDashboardView extends ItemView {
   }
 
   private renderMetrics(root: HTMLElement, snapshot: DashboardSnapshot): void {
-    const metrics = root.createDiv("attend-metrics");
+    const metrics = root.createDiv("astra-metrics");
     this.createMetricCard(
       metrics,
       "files",
@@ -551,10 +559,10 @@ export class AttendDashboardView extends ItemView {
   }
 
   private addHeatmapSettingsButton(surface: HTMLElement): void {
-    const header = surface.querySelector<HTMLElement>(".attend-surface-header");
+    const header = surface.querySelector<HTMLElement>(".astra-surface-header");
     if (!header) return;
     const btn = this.createIconButton(header, "sliders-horizontal", "热图设置");
-    btn.addClass("attend-heatmap-settings-btn");
+    btn.addClass("astra-heatmap-settings-btn");
     this.listen(btn, "click", () => {
       new HeatmapSettingsModal(this.app, this.plugin).open();
     });
@@ -563,9 +571,9 @@ export class AttendDashboardView extends ItemView {
   // 热力图：完全照搬 obsidian-dashboard-main 的 ad-ns 实现——
   // 一年（1月1日→12月31日）全部数据一次性渲染，再由 layoutHeatmap 按实际宽度
   // 决定展示最近几周；格子尺寸恒为 HM_CELL(15px) 只调间距，物理屏幕越宽 Cell 间隔越宽。
-  // 数据按 attend 弹窗的「日期字段」设置统计每日笔记数，主题为 GitHub 绿。
+  // 数据按 astra 弹窗的「日期字段」设置统计每日笔记数，主题为 GitHub 绿。
   private renderHeatmap(surface: HTMLElement): void {
-    const card = surface.createDiv("attend-heatmap-wrapper ad-ns");
+    const card = surface.createDiv("astra-heatmap-wrapper ad-ns");
     this.heatmapCard = card;
 
     const noteCounts = this.getHeatmapNoteCounts();
@@ -628,7 +636,7 @@ export class AttendDashboardView extends ItemView {
           : `${mm}-${dd} · ${count} 篇笔记`;
 
         if (!isFuture && count > 0) {
-          cell.style.cursor = "pointer";
+          cell.addClass("astra-heat-cell--clickable");
           this.listen(cell, "click", () => {
             const files = this.getHeatmapNotesForDate(dateStr);
             if (files.length === 0) return;
@@ -843,32 +851,32 @@ export class AttendDashboardView extends ItemView {
     surface: HTMLElement,
     snapshot: DashboardSnapshot
   ): void {
-    const list = surface.createDiv("attend-recent-list");
+    const list = surface.createDiv("astra-recent-list");
     if (snapshot.recentNotes.length === 0) {
-      list.createDiv({ cls: "attend-empty-state", text: "还没有笔记" });
+      list.createDiv({ cls: "astra-empty-state", text: "还没有笔记" });
       return;
     }
     snapshot.recentNotes.forEach((note) => {
       const row = list.createEl("button", {
-        cls: "attend-recent-row",
+        cls: "astra-recent-row",
         attr: { type: "button" }
       });
-      const icon = row.createSpan("attend-recent-icon");
+      const icon = row.createSpan("astra-recent-icon");
       setIcon(icon, "file-text");
-      const copy = row.createSpan("attend-recent-copy");
+      const copy = row.createSpan("astra-recent-copy");
       copy.createSpan({
-        cls: "attend-recent-title",
+        cls: "astra-recent-title",
         text: note.file.basename
       });
       copy.createSpan({
-        cls: "attend-recent-path",
+        cls: "astra-recent-path",
         text: note.file.parent?.path ?? "/"
       });
       row.createSpan({
-        cls: "attend-recent-time",
+        cls: "astra-recent-time",
         text: relativeTime(note.file.stat.mtime)
       });
-      const arrow = row.createSpan("attend-row-arrow");
+      const arrow = row.createSpan("astra-row-arrow");
       setIcon(arrow, "chevron-right");
       this.listen(row, "click", () => {
         void this.app.workspace.getLeaf(false).openFile(note.file);
@@ -894,7 +902,7 @@ export class AttendDashboardView extends ItemView {
 
   /** 将卡片头部的 h2 + span 包裹进居左容器（副标题紧跟标题后面） */
   private alignHeaderTitlesLeft(surface: HTMLElement, titlesCls: string): HTMLElement | null {
-    const header = surface.querySelector<HTMLElement>(".attend-surface-header");
+    const header = surface.querySelector<HTMLElement>(".astra-surface-header");
     if (!header) return null;
     if (header.querySelector(`.${titlesCls}`)) return header.querySelector<HTMLElement>(`.${titlesCls}`);
     const h2 = header.querySelector<HTMLElement>(":scope > h2");
@@ -909,15 +917,15 @@ export class AttendDashboardView extends ItemView {
   /* ---- 快速捕获 ---- */
   /** 在快速捕获模块头部右侧添加「全部便签」图标按钮，点击内嵌打开便签面板。 */
   private layoutQuickCaptureHeader(surface: HTMLElement): void {
-    const header = surface.querySelector<HTMLElement>(".attend-surface-header");
+    const header = surface.querySelector<HTMLElement>(".astra-surface-header");
     if (!header) return;
     // 将标题与副标题包裹在居左容器中（副标题紧跟在标题之后）
-    this.alignHeaderTitlesLeft(surface, "attend-qc-titles");
+    this.alignHeaderTitlesLeft(surface, "astra-qc-titles");
     // 右侧按钮
-    if (header.querySelector(".attend-icon-btn")) return;
-    const actions = header.createDiv("attend-actions");
+    if (header.querySelector(".astra-icon-btn")) return;
+    const actions = header.createDiv("astra-actions");
     const allBtn = actions.createEl("button", {
-      cls: "attend-icon-btn clickable-icon",
+      cls: "astra-icon-btn clickable-icon",
       attr: { type: "button", "aria-label": "全部便签" }
     });
     setIcon(allBtn, "clipboard-list");
@@ -988,8 +996,7 @@ export class AttendDashboardView extends ItemView {
         syncState();
         new Notice(`✨ 已写入 ${savedPath}`);
         void this.refresh();
-      } catch (err) {
-        console.error("[Attend] 快速捕获失败", err);
+      } catch {
         new Notice("⚠️ 捕获失败，请检查「快速捕获文件」设置");
       } finally {
         window.setTimeout(() => submit.removeClass("is-flashing"), 400);
@@ -1006,7 +1013,7 @@ export class AttendDashboardView extends ItemView {
 
   /** 跟随内容自动伸缩输入框高度（与便签面板一致，上限 240px） */
   private autoGrowQuickCapture(area: HTMLTextAreaElement): void {
-    area.style.height = "auto";
+    area.setCssProps({ height: "auto" });
     area.style.height = `${Math.min(area.scrollHeight, 240)}px`;
   }
 
@@ -1058,7 +1065,7 @@ export class AttendDashboardView extends ItemView {
 
   /** 打开项目详情编辑弹窗（复用 ProjectModal 编辑模式），保存后写回 frontmatter 并刷新首页。 */
   private openProjectEditModal(p: ProjectInfo): void {
-    const stages = this.plugin.data.settings.npdpStages || ["立项", "规划", "开发", "测试", "上线"];
+    const stages = this.plugin.data.settings.npdpStages || ["Charter", "PDCP", "TR", "ADCP", "COR"];
     new ProjectModal({
       app: this.app,
       editData: {
@@ -1100,7 +1107,7 @@ export class AttendDashboardView extends ItemView {
       const renamedFile = this.app.vault.getAbstractFileByPath(`${newFolderPath}/project-${oldName}.md`);
       if (renamedFile instanceof TFile) {
         await this.app.vault.rename(renamedFile, `${newFolderPath}/project-${safeNewName}.md`);
-        targetFile = this.app.vault.getAbstractFileByPath(`${newFolderPath}/project-${safeNewName}.md`) as TFile;
+        targetFile = renamedFile;
       } else {
         targetFile = oldFile; // 回退
       }
@@ -1168,7 +1175,12 @@ export class AttendDashboardView extends ItemView {
   /** 删除任务源笔记 */
   private async deleteTask(task: TaskItem): Promise<void> {
     if (!task.sourceFile) return;
-    const confirmed = confirm(`确定删除任务 "${task.content}"？`);
+    const confirmed = await confirmDialog(this.app, {
+      title: "删除任务",
+      message: `确定删除任务 "${task.content}"？`,
+      confirmText: "删除",
+      danger: true
+    });
     if (!confirmed) return;
     const file = this.app.vault.getAbstractFileByPath(task.sourceFile);
     if (file instanceof TFile) {
@@ -1181,15 +1193,15 @@ export class AttendDashboardView extends ItemView {
   /* ---- TODO（每日 / 重复任务） ---- */
   /** 「TODO」头部：标题 + 副标题（左上），右上角「新建任务」图标按钮 */
   private layoutTodoHeader(surface: HTMLElement): void {
-    const header = surface.querySelector<HTMLElement>(".attend-surface-header");
+    const header = surface.querySelector<HTMLElement>(".astra-surface-header");
     if (!header) return;
     // 标题与副标题居左
-    this.alignHeaderTitlesLeft(surface, "attend-todo-titles");
-    if (header.querySelector(".attend-todo-new-btn")) return;
+    this.alignHeaderTitlesLeft(surface, "astra-todo-titles");
+    if (header.querySelector(".astra-todo-new-btn")) return;
     // 右上角「新建任务」图标按钮
-    const actions = header.createDiv("attend-actions");
+    const actions = header.createDiv("astra-actions");
     const btn = actions.createEl("button", {
-      cls: "attend-todo-new-btn attend-icon-btn clickable-icon",
+      cls: "astra-todo-new-btn astra-icon-btn clickable-icon",
       attr: { type: "button", "aria-label": "新建任务" }
     });
     setIcon(btn, "plus");
@@ -1198,7 +1210,7 @@ export class AttendDashboardView extends ItemView {
 
   private async renderTodo(surface: HTMLElement): Promise<void> {
     this.layoutTodoHeader(surface);
-    const summaryEl = surface.querySelector<HTMLElement>(".attend-surface-header span");
+    const summaryEl = surface.querySelector<HTMLElement>(".astra-surface-header span");
     const list = surface.createDiv("ad-todo");
     try {
       const tasks = await this.taskStore.scanAllTasks();
@@ -1265,18 +1277,18 @@ export class AttendDashboardView extends ItemView {
     }
   }
 
-  /* ---- 待办进展 ---- */
-  /** 「待办进展」头部：标题居左（副标题留空），无右上角按钮；逾期角标随渲染动态插入标题右侧 */
+  /* ---- 任务进展 ---- */
+  /** 「任务进展」头部：标题居左（副标题留空），无右上角按钮；逾期角标随渲染动态插入标题右侧 */
   private layoutWeeklyHeader(surface: HTMLElement): void {
-    const header = surface.querySelector<HTMLElement>(".attend-surface-header");
+    const header = surface.querySelector<HTMLElement>(".astra-surface-header");
     if (!header) return;
     // 标题居左
-    this.alignHeaderTitlesLeft(surface, "attend-weekly-titles");
+    this.alignHeaderTitlesLeft(surface, "astra-weekly-titles");
   }
 
   /** 头部右上角逾期角标（红色闪烁，逾期数 > 0 才显示；数字变化时重建） */
   private renderWeeklyBadge(surface: HTMLElement, count: number): void {
-    const header = surface.querySelector<HTMLElement>(".attend-surface-header");
+    const header = surface.querySelector<HTMLElement>(".astra-surface-header");
     if (!header) return;
     const old = header.querySelector<HTMLElement>(":scope > .ad-badge");
     old?.remove();
@@ -1413,7 +1425,7 @@ export class AttendDashboardView extends ItemView {
 
   /* ---- 项目情况（阶段管道） ---- */
   private async renderProjects(surface: HTMLElement): Promise<void> {
-    const summaryEl = surface.querySelector<HTMLElement>(".attend-surface-header span");
+    const summaryEl = surface.querySelector<HTMLElement>(".astra-surface-header span");
     this.layoutProjectsHeader(surface);
     const stages = this.plugin.data.settings.npdpStages;
     const maxStageFilter = this.plugin.data.settings.npdpProgressFilter ?? stages.length;
@@ -1489,23 +1501,23 @@ export class AttendDashboardView extends ItemView {
 
   /** 「项目情况」头部：标题 + 计数（左上），右上角「新建」按钮 */
   private layoutProjectsHeader(surface: HTMLElement): void {
-    const header = surface.querySelector<HTMLElement>(".attend-surface-header");
+    const header = surface.querySelector<HTMLElement>(".astra-surface-header");
     if (!header) return;
     // 标题与计数居左（计数紧跟在标题之后）
-    this.alignHeaderTitlesLeft(surface, "attend-projects-titles");
-    if (header.querySelector(".attend-projects-new-btn")) return;
+    this.alignHeaderTitlesLeft(surface, "astra-projects-titles");
+    if (header.querySelector(".astra-projects-new-btn")) return;
     // 右上角按钮组（居右排列：右1「新建」、右2「全部项目」图标）
-    const actions = header.createDiv("attend-actions");
+    const actions = header.createDiv("astra-actions");
     // 「全部项目」图标按钮（仅图标，悬停显示文字）
     const allBtn = actions.createEl("button", {
-      cls: "attend-projects-all-btn attend-icon-btn clickable-icon",
+      cls: "astra-projects-all-btn astra-icon-btn clickable-icon",
       attr: { type: "button", "aria-label": "全部项目" }
     });
     setIcon(allBtn, "list");
     this.listen(allBtn, "click", () => void this.navigateProjectBoard(null));
     // 「新建」按钮（纯加号图标）
     const btn = actions.createEl("button", {
-      cls: "attend-projects-new-btn attend-icon-btn clickable-icon",
+      cls: "astra-projects-new-btn astra-icon-btn clickable-icon",
       attr: { type: "button", "aria-label": "新建项目" }
     });
     setIcon(btn, "plus");
@@ -1592,20 +1604,20 @@ export class AttendDashboardView extends ItemView {
   /* ---- 倒计时 ---- */
   /** 「倒计时」头部：标题 + 副标题（左上），右上角设置图标按钮 */
   private layoutCountdownHeader(surface: HTMLElement): void {
-    const header = surface.querySelector<HTMLElement>(".attend-surface-header");
+    const header = surface.querySelector<HTMLElement>(".astra-surface-header");
     if (!header) return;
     // 标题与副标题居左
-    this.alignHeaderTitlesLeft(surface, "attend-countdown-titles");
-    if (header.querySelector(".attend-countdown-cal-btn")) return;
+    this.alignHeaderTitlesLeft(surface, "astra-countdown-titles");
+    if (header.querySelector(".astra-countdown-cal-btn")) return;
     // 右上角设置图标按钮
-    const actions = header.createDiv("attend-actions");
+    const actions = header.createDiv("astra-actions");
     const btn = actions.createEl("button", {
-      cls: "attend-countdown-cal-btn attend-icon-btn clickable-icon",
+      cls: "astra-countdown-cal-btn astra-icon-btn clickable-icon",
       attr: { type: "button", "aria-label": "设置日期" }
     });
     setIcon(btn, "sliders-horizontal");
     this.listen(btn, "click", () => {
-      const surface = btn.closest<HTMLElement>(".attend-surface");
+      const surface = btn.closest<HTMLElement>(".astra-surface");
       new CountdownModal({
         app: this.app,
         plugin: this.plugin,
@@ -1619,7 +1631,7 @@ export class AttendDashboardView extends ItemView {
   /** 保存后仅重建倒计时卡片正文，保留卡片 header（标题/设置按钮），避免整板重渲染导致的移位 */
   private refreshCountdownCard(surface: HTMLElement): void {
     Array.from(surface.children).forEach((child) => {
-      if (child.classList.contains("attend-surface-header")) return;
+      if (child.classList.contains("astra-surface-header")) return;
       child.remove();
     });
     this.renderCountdownBody(surface);
@@ -1657,7 +1669,7 @@ export class AttendDashboardView extends ItemView {
       // 分隔圆点（内联样式，跟随主题文字色，避免新增 CSS 变量依赖）
       row.createSpan({
         cls: "ad-dot",
-        attr: { style: "display:inline-block;width:3px;height:3px;background:var(--attend-text);opacity:.4;border-radius:50%;" }
+        attr: { style: "display:inline-block;width:3px;height:3px;background:var(--astra-text);opacity:.4;border-radius:50%;" }
       });
       row.createSpan({ text: "已完成 " }).createEl("strong", {
         text: pct.toFixed(1) + "%"
@@ -1669,14 +1681,12 @@ export class AttendDashboardView extends ItemView {
       cd.createDiv({ cls: "ad-cd__arrived", text: "🎉 此时此刻" });
       const bottom = cd.createDiv("ad-cd__bottom");
       const barWrap = bottom.createDiv("ad-cd__bar");
-      const fill = barWrap.createDiv("ad-fill");
-      fill.style.width = "100%";
+      barWrap.createDiv("ad-fill");
     } else {
       cd.createDiv({ cls: "ad-cd__arrived", text: "🏁 旅程已然到达" });
       const bottom = cd.createDiv("ad-cd__bottom");
       const barWrap = bottom.createDiv("ad-cd__bar");
-      const fill = barWrap.createDiv("ad-fill");
-      fill.style.width = "100%";
+      barWrap.createDiv("ad-fill");
     }
   }
 
@@ -1690,7 +1700,7 @@ export class AttendDashboardView extends ItemView {
    */
   private async renderDailyPhrase(surface: HTMLElement): Promise<void> {
     // 将标题与副标题包裹进居左容器，与其他模块使用同一设计语言
-    this.alignHeaderTitlesLeft(surface, "attend-daily-phrase-titles");
+    this.alignHeaderTitlesLeft(surface, "astra-daily-phrase-titles");
     const wrap = surface.createDiv("ad-dp");
     const hint = (msg: string): void => {
       wrap.createDiv({ cls: "ad-dp__hint", text: msg });
@@ -1785,7 +1795,7 @@ export class AttendDashboardView extends ItemView {
   /**
    * 主页模块网格：JS 动态算列 + 固定 4 列上限（对齐 obsidian-dashboard-main）。
    * 与参考一致，列数不用 CSS auto-fit/minmax(320px,…)（会在宽屏压出太多列、把卡片挤窄），
-   * 而是按板面实际宽度按 MIN_CARD_W 可读下限推算列数，写进 --attend-mod-cols。
+   * 而是按板面实际宽度按 MIN_CARD_W 可读下限推算列数，写进 --astra-mod-cols。
    */
   private initModulesCols(container: HTMLElement): void {
     if (this.modulesColsObs) {
@@ -1794,16 +1804,16 @@ export class AttendDashboardView extends ItemView {
     }
     const MIN_CARD_W = 260; // 单卡可读下限，与参考一致
     const MAX_COLS = 4;
-    const GAP = 14; // 与 .attend-modules-grid 的 gap 一致
+    const GAP = 14; // 与 .astra-modules-grid 的 gap 一致
     const apply = () => {
       const width = container.getBoundingClientRect().width;
       if (width <= 0) return; // 未布局时等 ResizeObserver 再来
       const fit = Math.floor((width + GAP) / (MIN_CARD_W + GAP));
       const colCount = Math.max(1, Math.min(MAX_COLS, fit));
-      container.style.setProperty("--attend-mod-cols", String(colCount));
+      container.style.setProperty("--astra-mod-cols", String(colCount));
       // 行高 = 单列宽：与 CSS 的 minmax(0,1fr) 等宽轨道算法一致，1×1 卡正方
       const unit = Math.max(40, (width - GAP * (colCount - 1)) / colCount);
-      container.style.setProperty("--attend-mod-row", `${Math.round(unit)}px`);
+      container.style.setProperty("--astra-mod-row", `${Math.round(unit)}px`);
       // 列数变化时重夹紧全部卡片（防 2 列卡在仅剩 1 列时撑出隐式列被挤压）
       if (colCount !== this.adLastColCount) {
         this.adLastColCount = colCount;
@@ -1828,11 +1838,11 @@ export class AttendDashboardView extends ItemView {
     return surface;
   }
 
-  /** 当前模块网格列数（1~4，由 initModulesCols 写入 --attend-mod-cols） */
+  /** 当前模块网格列数（1~4，由 initModulesCols 写入 --astra-mod-cols） */
   private currentModColCount(): number {
     const grid = this.modulesGridEl;
     if (!grid) return MOD_MAX_SPAN;
-    const v = parseInt(grid.style.getPropertyValue("--attend-mod-cols"), 10);
+    const v = parseInt(grid.style.getPropertyValue("--astra-mod-cols"), 10);
     if (v > 0) return Math.max(1, Math.min(MOD_MAX_SPAN, v));
     const gap = parseFloat(getComputedStyle(grid).columnGap) || 14;
     const width = grid.getBoundingClientRect().width;
@@ -1886,7 +1896,7 @@ export class AttendDashboardView extends ItemView {
     const grid = this.modulesGridEl;
     if (!grid) return;
     const sizes = this.plugin.data.settings.moduleSizes ?? {};
-    grid.querySelectorAll(".attend-surface").forEach((card) => {
+    grid.querySelectorAll(".astra-surface").forEach((card) => {
       const el = card as HTMLElement;
       const modId = el.getAttribute("data-mod") ?? "";
       // 最近笔记无 data-mod，单独处理
@@ -1900,16 +1910,15 @@ export class AttendDashboardView extends ItemView {
     // 最近笔记：重算剩余列数
     const colCount = this.currentModColCount();
     let occupied = 0;
-    grid.querySelectorAll(":scope > .attend-surface:not(.attend-recent-surface)").forEach((el) => {
+    grid.querySelectorAll(":scope > .astra-surface:not(.astra-recent-surface)").forEach((el) => {
       const cols = parseInt((el as HTMLElement).style.getPropertyValue("--cols") || "1", 10);
       occupied += Math.max(1, Math.min(colCount, cols));
     });
     const remainder = occupied % colCount;
     const span = remainder === 0 ? colCount : colCount - remainder;
-    const recent = grid.querySelector(".attend-recent-surface") as HTMLElement | null;
+    const recent = grid.querySelector<HTMLElement>(".astra-recent-surface");
     if (recent) {
-      recent.style.setProperty("grid-column", `span ${span}`);
-      recent.style.setProperty("--rows", "1");
+      recent.setCssProps({ "--recent-span": String(span), "--rows": "1" });
     }
   }
 
@@ -1921,10 +1930,10 @@ export class AttendDashboardView extends ItemView {
   private onModulePointerDown(e: PointerEvent): void {
     if (e.button !== 0) return;
     // 比例手柄的按下：交给缩放逻辑，绝不触发长按进入编辑态
-    if ((e.target as HTMLElement).closest(".attend-card__resize")) return;
+    if ((e.target as HTMLElement).closest(".astra-card__resize")) return;
     const grid = this.modulesGridEl;
     if (!grid) return;
-    const target = (e.target as HTMLElement).closest(".attend-surface") as HTMLElement | null;
+    const target = (e.target as HTMLElement).closest<HTMLElement>(".astra-surface");
     // 表单控件内的按下不进入编辑态（如快速捕捉文本框）
     if ((e.target as HTMLElement).closest("input, textarea, button, select")) {
       if (!this.adEditMode) return;
@@ -1987,15 +1996,15 @@ export class AttendDashboardView extends ItemView {
   private enterModuleEdit(): void {
     const wasEdit = this.adEditMode;
     this.adEditMode = true;
-    this.modulesGridEl?.classList.add("attend-mod-edit");
+    this.modulesGridEl?.classList.add("astra-mod-edit");
     this.showModuleEditBar();
     this.injectModuleResizeButtons();
     if (wasEdit) return; // 已编辑态（重渲染后补挂）只重挂手柄，不重复挂点击守卫
     // 编辑态下拦截卡片内容的点击，避免误触发模块自身的点击行为
     this.adClickGuard = (e: Event): void => {
       const t = e.target as HTMLElement;
-      if (t.closest(".attend-card__resize")) return;
-      if (t.closest(".attend-addmenu-backdrop")) return; // 放行添加卡片菜单，避免误拦截卡项点击
+      if (t.closest(".astra-card__resize")) return;
+      if (t.closest(".astra-addmenu-backdrop")) return; // 放行添加卡片菜单，避免误拦截卡项点击
       e.stopPropagation();
       e.preventDefault();
     };
@@ -2005,8 +2014,8 @@ export class AttendDashboardView extends ItemView {
   private exitModuleEdit(): void {
     if (!this.adEditMode) return;
     this.adEditMode = false;
-    this.modulesGridEl?.classList.remove("attend-mod-edit");
-    this.modulesGridEl?.querySelectorAll(".attend-card__resize, .attend-card__ratio, .attend-ph").forEach((b) => b.remove());
+    this.modulesGridEl?.classList.remove("astra-mod-edit");
+    this.modulesGridEl?.querySelectorAll(".astra-card__resize, .astra-card__ratio, .astra-ph").forEach((b) => b.remove());
     if (this.adClickGuard) {
       this.modulesGridEl?.removeEventListener("click", this.adClickGuard, true);
       this.adClickGuard = null;
@@ -2016,12 +2025,12 @@ export class AttendDashboardView extends ItemView {
 
   private showModuleEditBar(): void {
     if (this.adEditBar || !this.modulesGridEl) return;
-    const bar = this.contentEl.createDiv({ cls: "attend-mod-editbar" });
+    const bar = this.contentEl.createDiv({ cls: "astra-mod-editbar" });
     this.modulesGridEl.after(bar);
-    const trash = bar.createEl("button", { cls: "attend-mod-editbar__trash", text: "🗑 拖到此处删除" });
+    const trash = bar.createEl("button", { cls: "astra-mod-editbar__trash", text: "🗑 拖到此处删除" });
     trash.setAttribute("aria-label", "把卡片拖到这里删除（仅从首页隐藏，数据保留）");
-    bar.createDiv({ cls: "attend-mod-editbar__spacer" });
-    const add = bar.createEl("button", { cls: "attend-mod-editbar__add", text: "＋ 添加卡片" });
+    bar.createDiv({ cls: "astra-mod-editbar__spacer" });
+    const add = bar.createEl("button", { cls: "astra-mod-editbar__add", text: "＋ 添加卡片" });
     add.addEventListener("click", () => this.openModuleAddMenu());
     const done = bar.createEl("button", { cls: "mod-cta", text: "完成" });
     done.addEventListener("click", () => this.exitModuleEdit());
@@ -2037,12 +2046,12 @@ export class AttendDashboardView extends ItemView {
   private injectModuleResizeButtons(): void {
     const grid = this.modulesGridEl;
     if (!grid) return;
-    grid.querySelectorAll(".attend-card__resize").forEach((b) => b.remove());
-    grid.querySelectorAll(".attend-surface").forEach((card) => {
+    grid.querySelectorAll(".astra-card__resize").forEach((b) => b.remove());
+    grid.querySelectorAll(".astra-surface").forEach((card) => {
       const c = card as HTMLElement;
       const modId = c.getAttribute("data-mod") ?? "";
       if (!modId) return;
-      const btn = c.createDiv({ cls: "attend-card__resize", text: "⤢" });
+      const btn = c.createDiv({ cls: "astra-card__resize", text: "⤢" });
       btn.setAttribute("aria-label", "调整卡片比例（拖动缩放）");
       btn.addEventListener("pointerdown", (ev) => {
         ev.stopPropagation();
@@ -2060,7 +2069,7 @@ export class AttendDashboardView extends ItemView {
     const startCols = clampModSpan(cfg?.cols);
     const startRows = clampModSpan(cfg?.rows);
     this.adResize = { card, modId, startCols, startRows, x0: e.clientX, y0: e.clientY, moved: false };
-    card.classList.add("attend-card--resizing");
+    card.classList.add("astra-card--resizing");
     const move = (ev: PointerEvent): void => this.onModuleResizeMove(ev);
     const up = (ev: PointerEvent): void => {
       this.onModuleResizeEnd(ev);
@@ -2103,9 +2112,9 @@ export class AttendDashboardView extends ItemView {
     const st = this.adResize;
     if (!st) return;
     this.adResize = null;
-    st.card.classList.remove("attend-card--resizing");
+    st.card.classList.remove("astra-card--resizing");
     st.card.classList.remove("is-limit");
-    st.card.querySelector(".attend-card__ratio")?.remove();
+    st.card.querySelector(".astra-card__ratio")?.remove();
     if (!st.moved) return; // 几乎没拖动：视为误触，不改
     const cols = clampModSpan(st.card.style.getPropertyValue("--cols"));
     const rows = clampModSpan(st.card.style.getPropertyValue("--rows"));
@@ -2116,8 +2125,8 @@ export class AttendDashboardView extends ItemView {
 
   /** 缩放过程中在卡片中央显示当前比例，如「2 × 1」 */
   private showModuleResizeBadge(card: HTMLElement, cols: number, rows: number): void {
-    let badge = card.querySelector(".attend-card__ratio");
-    if (!badge) badge = card.createDiv({ cls: "attend-card__ratio" });
+    let badge = card.querySelector(".astra-card__ratio");
+    if (!badge) badge = card.createDiv({ cls: "astra-card__ratio" });
     badge.setText(`${cols} × ${rows}`);
   }
 
@@ -2126,12 +2135,12 @@ export class AttendDashboardView extends ItemView {
   /** 全部可用的主页模块模板（渲染 + 「添加卡片」菜单共用） */
   private getModuleTemplates(): ModuleTemplate[] {
     return [
-      { id: "qc", title: "快速捕获", subtitle: "闪念胶囊", cls: "attend-qc-surface", build: (s) => this.renderQuickCapture(s) },
-      { id: "todo", title: "TODO", subtitle: "", cls: "attend-todo-surface", build: (s) => void this.renderTodo(s) },
-      { id: "weekly", title: "待办进展", subtitle: "", cls: "attend-weekly-surface", build: (s) => void this.renderWeekly(s) },
-      { id: "projects", title: "项目情况", subtitle: "", cls: "attend-projects-surface", build: (s) => void this.renderProjects(s) },
-      { id: "countdown", title: "倒计时", subtitle: "Days Left", cls: "attend-countdown-surface", build: (s) => this.renderCountdown(s) },
-      { id: "dailyPhrase", title: "每日口语", subtitle: "Daily Phrase", cls: "attend-daily-phrase-surface", build: (s) => void this.renderDailyPhrase(s) }
+      { id: "qc", title: "快速捕获", subtitle: "闪念胶囊", cls: "astra-qc-surface", build: (s) => this.renderQuickCapture(s) },
+      { id: "todo", title: "TODO", subtitle: "", cls: "astra-todo-surface", build: (s) => void this.renderTodo(s) },
+      { id: "weekly", title: "任务进展", subtitle: "", cls: "astra-weekly-surface", build: (s) => void this.renderWeekly(s) },
+      { id: "projects", title: "项目情况", subtitle: "", cls: "astra-projects-surface", build: (s) => void this.renderProjects(s) },
+      { id: "countdown", title: "倒计时", subtitle: "Days Left", cls: "astra-countdown-surface", build: (s) => this.renderCountdown(s) },
+      { id: "dailyPhrase", title: "每日口语", subtitle: "Daily Phrase", cls: "astra-daily-phrase-surface", build: (s) => void this.renderDailyPhrase(s) }
     ];
   }
 
@@ -2148,12 +2157,12 @@ export class AttendDashboardView extends ItemView {
   /** 在容器内重建模块网格（每次重建都重跑列数/交互；进入编辑态则重挂手柄，保证「添加/删除」后不丢编辑态） */
   private buildModuleCards(root: HTMLElement): void {
     root.empty();
-    const grid = root.createDiv("attend-dashboard-grid attend-modules-grid");
+    const grid = root.createDiv("astra-dashboard-grid astra-modules-grid");
     this.modulesGridEl = grid;
     const templates = new Map(this.getModuleTemplates().map((t) => [t.id, t]));
     const ids = this.visibleModuleIds();
     if (ids.length === 0) {
-      grid.createDiv({ cls: "attend-modules-empty", text: "还没有任何卡片，点下方「＋ 添加卡片」试试" });
+      grid.createDiv({ cls: "astra-modules-empty", text: "还没有任何卡片，点下方「＋ 添加卡片」试试" });
     }
     for (const id of ids) {
       const t = templates.get(id);
@@ -2182,19 +2191,18 @@ export class AttendDashboardView extends ItemView {
       "最近笔记",
       snap ? `${snap.modifiedToday} 篇今日修改` : ""
     );
-    surface.addClass("attend-recent-surface");
+    surface.addClass("astra-recent-surface");
 
     // 精确计算最近笔记应占的列数：累加前面模块的 --cols，取模得到最后一行已用列数，剩余列数即为最近笔记跨度
     const colCount = this.currentModColCount();
     let occupied = 0;
-    grid.querySelectorAll(":scope > .attend-surface:not(.attend-recent-surface)").forEach((el) => {
+    grid.querySelectorAll(":scope > .astra-surface:not(.astra-recent-surface)").forEach((el) => {
       const cols = parseInt((el as HTMLElement).style.getPropertyValue("--cols") || "1", 10);
       occupied += Math.max(1, Math.min(colCount, cols));
     });
     const remainder = occupied % colCount;
     const span = remainder === 0 ? colCount : colCount - remainder;
-    surface.style.setProperty("grid-column", `span ${span}`);
-    surface.style.setProperty("--rows", "1");
+    surface.setCssProps({ "--recent-span": String(span), "--rows": "1" });
 
     if (snap) this.renderRecentNotes(surface, snap);
   }
@@ -2226,7 +2234,7 @@ export class AttendDashboardView extends ItemView {
     if (!grid) return;
     const domain = new Set(this.visibleModuleIds());
     const order: string[] = [];
-    grid.querySelectorAll(".attend-surface").forEach((el) => {
+    grid.querySelectorAll(".astra-surface").forEach((el) => {
       const id = el.getAttribute("data-mod");
       if (id && domain.has(id)) order.push(id);
     });
@@ -2255,7 +2263,7 @@ export class AttendDashboardView extends ItemView {
     const rows = card.style.getPropertyValue("--rows") || "1";
     // 占位符：保留当前卡片在网格中的尺寸与槽位，其余卡片据此让位
     const ph = createDiv();
-    ph.className = "attend-ph";
+    ph.className = "astra-ph";
     ph.style.setProperty("--cols", cols);
     ph.style.setProperty("--rows", rows);
     ph.style.gridColumn = `span ${cols}`;
@@ -2266,15 +2274,12 @@ export class AttendDashboardView extends ItemView {
     // 全程用「grid 相对坐标」(rect里 gridRect) 计算，避免 viewport clientX 与 fixed 基准不一致而错位。
     const gridRect = board.getBoundingClientRect();
     const prevGridPos = board.style.position || "";
-    board.style.position = "relative"; // 确保 absolute 以 grid 为定位基准
-    card.classList.add("attend-card--dragging");
+    board.setCssProps({ position: "relative" }); // 确保 absolute 以 grid 为定位基准
+    card.classList.add("astra-card--dragging"); // 提供 position:absolute / z-index / pointer-events
     card.style.width = rect.width + "px";
     card.style.height = rect.height + "px";
     card.style.left = rect.left - gridRect.left + "px";
     card.style.top = rect.top - gridRect.top + "px";
-    card.style.position = "absolute";
-    card.style.zIndex = "9999";
-    card.style.pointerEvents = "none";
 
     this.moduleDrag = {
       card,
@@ -2304,7 +2309,7 @@ export class AttendDashboardView extends ItemView {
 
   /** 指针是否落在编辑条的「删除区」上（矩形命中，外扩热区更易命中） */
   private isOverModuleTrash(x: number, y: number): boolean {
-    const trash = this.adEditBar?.querySelector(".attend-mod-editbar__trash") as HTMLElement | null;
+    const trash = this.adEditBar?.querySelector(".astra-mod-editbar__trash") as HTMLElement | null;
     if (!trash) return false;
     const r = trash.getBoundingClientRect();
     if (r.width === 0 && r.height === 0) return false;
@@ -2326,8 +2331,8 @@ export class AttendDashboardView extends ItemView {
     // 悬停垃圾桶：高亮并暂停重排，避免边删边抖
     const overTrash = this.isOverModuleTrash(ev.clientX, ev.clientY);
     ds.overTrash = overTrash;
-    this.adEditBar?.querySelector(".attend-mod-editbar__trash")?.classList.toggle("is-over", overTrash);
-    ds.card.classList.toggle("attend-card--doomed", overTrash);
+    this.adEditBar?.querySelector(".astra-mod-editbar__trash")?.classList.toggle("is-over", overTrash);
+    ds.card.classList.toggle("astra-card--doomed", overTrash);
     if (overTrash) return;
 
     // 每帧最多重排一次（pointermove 频率远比刷新率高，不节流会白跑多次布局计算）
@@ -2345,7 +2350,7 @@ export class AttendDashboardView extends ItemView {
     const x = ds.lastX;
     const y = ds.lastY;
     const cards = Array.from(
-      board.querySelectorAll<HTMLElement>(".attend-surface:not(.attend-card--dragging)")
+      board.querySelectorAll<HTMLElement>(".astra-surface:not(.astra-card--dragging)")
     );
 
     let ref: HTMLElement | null = null;
@@ -2368,7 +2373,7 @@ export class AttendDashboardView extends ItemView {
   /** FLIP 第一步：记录移动前所有卡片的位置 */
   private captureModuleCardRects(board: HTMLElement): Map<HTMLElement, DOMRect> {
     const map = new Map<HTMLElement, DOMRect>();
-    board.querySelectorAll(".attend-surface:not(.attend-card--dragging)").forEach((el) => {
+    board.querySelectorAll(".astra-surface:not(.astra-card--dragging)").forEach((el) => {
       map.set(el as HTMLElement, el.getBoundingClientRect());
     });
     return map;
@@ -2382,11 +2387,9 @@ export class AttendDashboardView extends ItemView {
       const dx = r0.left - r1.left;
       const dy = r0.top - r1.top;
       if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
-      el.style.transition = "none";
-      el.style.transform = `translate(${dx}px, ${dy}px)`;
+      el.setCssProps({ transition: "none", transform: `translate(${dx}px, ${dy}px)` });
       void el.offsetWidth; // 强制回流，让上面的「倒带」立即生效
-      el.style.transition = "transform 220ms cubic-bezier(0.2, 0, 0, 1)";
-      el.style.transform = "";
+      el.setCssProps({ transition: "transform 220ms cubic-bezier(0.2, 0, 0, 1)", transform: "" });
       window.setTimeout(() => {
         el.style.removeProperty("transition");
         el.style.removeProperty("transform");
@@ -2402,8 +2405,8 @@ export class AttendDashboardView extends ItemView {
     const card = ds.card;
     const id = card.getAttribute("data-mod") || "";
     // 还原卡片样式，使其回到网格流
-    card.classList.remove("attend-card--dragging");
-    card.classList.remove("attend-card--doomed");
+    card.classList.remove("astra-card--dragging");
+    card.classList.remove("astra-card--doomed");
     card.style.removeProperty("position");
     card.style.removeProperty("left");
     card.style.removeProperty("top");
@@ -2413,7 +2416,7 @@ export class AttendDashboardView extends ItemView {
     card.style.removeProperty("pointer-events");
     // 恢复 grid 的 position（拖拽时临时设为 relative）
     ds.grid.style.position = ds.prevGridPos;
-    this.adEditBar?.querySelector(".attend-mod-editbar__trash")?.classList.remove("is-over");
+    this.adEditBar?.querySelector(".astra-mod-editbar__trash")?.classList.remove("is-over");
 
     // 落点复检垃圾桶（最后一次 move 可能未触发，漏判会导致「拖过去了却没删」）
     const overTrash = ds.overTrash || this.isOverModuleTrash(ds.lastX, ds.lastY);
@@ -2435,14 +2438,14 @@ export class AttendDashboardView extends ItemView {
     // 以 homeModuleOrder 判定已显示（而非 visibleModuleIds），避免移动端隐藏的模块误出现在添加菜单
     const visible = new Set(this.plugin.data.settings.homeModuleOrder ?? []);
     const disabled = this.getModuleTemplates().filter((t) => !visible.has(t.id));
-    const backdrop = grid.createDiv({ cls: "attend-addmenu-backdrop" });
-    const menu = backdrop.createDiv({ cls: "attend-addmenu" });
-    menu.createDiv({ cls: "attend-addmenu__title", text: "添加卡片" });
+    const backdrop = grid.createDiv({ cls: "astra-addmenu-backdrop" });
+    const menu = backdrop.createDiv({ cls: "astra-addmenu" });
+    menu.createDiv({ cls: "astra-addmenu__title", text: "添加卡片" });
     if (disabled.length === 0) {
-      menu.createDiv({ cls: "attend-addmenu__empty", text: "所有卡片都已显示" });
+      menu.createDiv({ cls: "astra-addmenu__empty", text: "所有卡片都已显示" });
     }
     for (const t of disabled) {
-      const item = menu.createDiv({ cls: "attend-addmenu__item" });
+      const item = menu.createDiv({ cls: "astra-addmenu__item" });
       item.createSpan({ text: t.title });
       // 使用 pointerup 替代 click，避免 Obsidian 事件拦截导致 click 不触发
       item.addEventListener("pointerup", () => {
@@ -2460,8 +2463,8 @@ export class AttendDashboardView extends ItemView {
     title: string,
     subtitle: string
   ): HTMLElement {
-    const surface = parent.createDiv("attend-surface");
-    const header = surface.createDiv("attend-surface-header");
+    const surface = parent.createDiv("astra-surface");
+    const header = surface.createDiv("astra-surface-header");
     header.createEl("h2", { text: title });
     header.createSpan({ text: subtitle });
     return surface;
@@ -2476,15 +2479,15 @@ export class AttendDashboardView extends ItemView {
     onClick: () => void
   ): void {
     const button = parent.createEl("button", {
-      cls: `attend-metric ${colorClass}`,
+      cls: `astra-metric ${colorClass}`,
       attr: { type: "button", "aria-label": `${label}：${value}` }
     });
-    const icon = button.createSpan("attend-metric-icon");
+    const icon = button.createSpan("astra-metric-icon");
     setIcon(icon, iconName);
-    const copy = button.createSpan("attend-metric-copy");
-    copy.createSpan({ cls: "attend-metric-value", text: value });
-    copy.createSpan({ cls: "attend-metric-label", text: label });
-    const arrow = button.createSpan("attend-row-arrow");
+    const copy = button.createSpan("astra-metric-copy");
+    copy.createSpan({ cls: "astra-metric-value", text: value });
+    copy.createSpan({ cls: "astra-metric-label", text: label });
+    const arrow = button.createSpan("astra-row-arrow");
     setIcon(arrow, "chevron-right");
     this.listen(button, "click", onClick);
   }
@@ -2495,7 +2498,7 @@ export class AttendDashboardView extends ItemView {
     label: string
   ): HTMLButtonElement {
     const button = parent.createEl("button", {
-      cls: "attend-icon-btn clickable-icon",
+      cls: "astra-icon-btn clickable-icon",
       attr: { type: "button", "aria-label": label }
     });
     setIcon(button, iconName);

@@ -84,7 +84,6 @@ export class TaskStore {
 			if (!this.warnedProjectsFallback) {
 				this.warnedProjectsFallback = true;
 				this.onWarn?.('未找到项目文件夹「' + rootPath + '」，请在设置中配置以缩小扫描范围');
-				console.warn('[Dashboard] projectsFolder "' + rootPath + '" not found; fell back to scanning the whole vault root.');
 			}
 			root = this.app.vault.getRoot();
 		}

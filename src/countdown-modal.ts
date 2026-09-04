@@ -1,10 +1,10 @@
 import type { App} from "obsidian";
 import { Modal } from "obsidian";
-import type AttendDashboardPlugin from "./main";
+import type AstraDashboardPlugin from "./main";
 
 interface CountdownModalOptions {
   app: App;
-  plugin: AttendDashboardPlugin;
+  plugin: AstraDashboardPlugin;
   /** 保存成功后由调用方触发局部刷新（避免整板重渲染）。 */
   onApply?: () => void;
 }

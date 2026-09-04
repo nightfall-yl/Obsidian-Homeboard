@@ -1,11 +1,26 @@
 import type { WorkspaceLeaf} from "obsidian";
 import { ItemView, Menu, Notice } from "obsidian";
+import type { Moment } from "moment";
 import { createDailyNote, getDailyNote } from "obsidian-daily-notes-interface";
 import Calendar from "./ui/Calendar.svelte";
 import { activeFile, calendarSettings, dailyNotes } from "./ui/stores";
 import { VIEW_TYPE_CALENDAR } from "./constants";
 import { get } from "svelte/store";
 import { ConfirmCreateModal } from "./ConfirmCreateModal";
+
+/**
+ * 用被悬停单元格的位置合成一个 mouseover 事件，供 hover 预览浮层定位。
+ * 取代已废弃、且在部分场景下为 null 的 `window.event`。
+ */
+function hoverEventFor(targetEl: unknown): MouseEvent {
+  const rect =
+    targetEl instanceof HTMLElement ? targetEl.getBoundingClientRect() : null;
+  return new MouseEvent("mouseover", {
+    bubbles: true,
+    clientX: rect ? rect.left + rect.width / 2 : 0,
+    clientY: rect ? rect.top + rect.height / 2 : 0
+  });
+}
 
 export class CalendarView extends ItemView {
   private calendar: Calendar;
@@ -40,7 +55,7 @@ export class CalendarView extends ItemView {
 
     // 让日历视图内容区为滚动条预留固定槽位，避免「滚动条出现/消失 → 可用宽度变化 → 重新缩放 → 高度变化」的反馈循环（部分系统滚动条会占用宽度）
     const contentEl = this.containerEl.children[1] as HTMLElement;
-    contentEl.style.scrollbarGutter = "stable";
+    contentEl.addClass("astra-calendar-scroll-gutter");
 
     this.registerEvent(
       this.app.vault.on("create", () => {
@@ -92,7 +107,7 @@ export class CalendarView extends ItemView {
     }
   }
 
-  private tryCreateDailyNote(date: moment.Moment, isMetaPressed: boolean): Promise<void> {
+  private tryCreateDailyNote(date: Moment, isMetaPressed: boolean): Promise<void> {
     const formattedDate = date.format("YYYY-MM-DD");
 
     return new Promise<void>((resolve) => {
@@ -114,18 +129,17 @@ export class CalendarView extends ItemView {
     });
   }
 
-  private async createAndOpenDailyNote(date: moment.Moment, isMetaPressed: boolean): Promise<void> {
+  private async createAndOpenDailyNote(date: Moment, isMetaPressed: boolean): Promise<void> {
     try {
       const file = await createDailyNote(date);
       await this.app.workspace.getLeaf(isMetaPressed).openFile(file!);
       dailyNotes.reindex();
-    } catch (err) {
-      console.error("[Calendar] Failed to create daily note", err);
+    } catch {
       new Notice("创建日记失败");
     }
   }
 
-  private onHoverDay(date: string, isMetaPressed: boolean) {
+  private onHoverDay(date: string, isMetaPressed: boolean, targetEl?: unknown) {
     if (!isMetaPressed) return;
 
     const momentDate = window.moment(date);
@@ -134,10 +148,10 @@ export class CalendarView extends ItemView {
 
     if (file) {
       this.app.workspace.trigger("hover-link", {
-        event: window.event as MouseEvent,
+        event: hoverEventFor(targetEl),
         source: VIEW_TYPE_CALENDAR,
         hoverParent: this.containerEl,
-        targetEl: null,
+        targetEl: targetEl instanceof HTMLElement ? targetEl : null,
         linktext: file.path,
       });
     }
@@ -172,7 +186,7 @@ export class CalendarView extends ItemView {
         item.setIcon("trash");
         item.onClick(() => {
           void (async () => {
-            await this.app.vault.trash(file, true);
+            await this.app.fileManager.trashFile(file);
             dailyNotes.reindex();
           })();
         });

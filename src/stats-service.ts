@@ -8,7 +8,7 @@ import {
 } from "./core";
 import type {
   ActivityEntry,
-  AttendDataStore,
+  AstraDataStore,
   DailyActivity,
   DashboardSnapshot,
   DailyLinkCount,
@@ -29,7 +29,7 @@ export class StatsService {
 
   constructor(
     private readonly app: App,
-    private readonly store: AttendDataStore
+    private readonly store: AstraDataStore
   ) {}
 
   scan(force = false): Promise<DashboardSnapshot> {

@@ -1,6 +1,20 @@
-import type { Plugin, TAbstractFile, Editor, TFile} from "obsidian";
+import type { Plugin, TAbstractFile, Editor, TFile, WorkspaceLeaf } from "obsidian";
 import { MarkdownView } from "obsidian";
 import type { CursorPositionSettings } from "./models";
+
+/**
+ * `leaf.id` 与 `viewState.state.file` 都不是官方 API。
+ * 这里集中声明内部形状并统一转成字符串再拼接，避免在调用点对 unknown 做 `+` 运算。
+ */
+function leafKey(leaf: WorkspaceLeaf): string {
+  const internal = leaf as unknown as {
+    id?: string;
+    getViewState: () => { state?: { file?: string } };
+  };
+  const id = internal.id ?? "";
+  const file = internal.getViewState().state?.file ?? "";
+  return `${id}:${file}`;
+}
 
 interface EphemeralState {
   cursor?: {
@@ -35,8 +49,7 @@ export class CursorPositionManager {
     try {
       this.db = await this.readDb();
       this.lastSavedDb = await this.readDb();
-    } catch (e) {
-      console.error("Remember Cursor Position plugin can't read database: " + e);
+    } catch {
       this.db = {};
       this.lastSavedDb = {};
     }
@@ -140,14 +153,13 @@ export class CursorPositionManager {
 
     const activeLeaf = this.plugin.app.workspace.getMostRecentLeaf();
     // @ts-ignore no-official-API
-    if (activeLeaf && this.loadedLeafIdList.includes(activeLeaf.id + ":" + activeLeaf.getViewState().state.file))
+    if (activeLeaf && this.loadedLeafIdList.includes(leafKey(activeLeaf)))
       return;
 
     this.loadedLeafIdList = [];
     this.plugin.app.workspace.iterateAllLeaves((leaf) => {
       if (leaf.getViewState().type === "markdown") {
-        // @ts-ignore no-official-API
-        this.loadedLeafIdList.push(leaf.id + ":" + leaf.getViewState().state.file);
+        this.loadedLeafIdList.push(leafKey(leaf));
       }
     });
 

@@ -23,7 +23,7 @@ export class DetailModal extends Modal {
   }
 
   onOpen(): void {
-    this.modalEl.addClass("attend-detail-modal");
+    this.modalEl.addClass("astra-detail-modal");
     this.render();
   }
 
@@ -41,17 +41,17 @@ export class DetailModal extends Modal {
 
   private render(): void {
     this.contentEl.empty();
-    const header = this.contentEl.createDiv("attend-modal-header");
+    const header = this.contentEl.createDiv("astra-modal-header");
     header.createEl("h2", { text: this.heading });
     header.createEl("p", { text: this.description });
 
-    const summary = this.contentEl.createDiv("attend-modal-summary");
+    const summary = this.contentEl.createDiv("astra-modal-summary");
     summary.setText(`共 ${this.items.length} 条`);
-    const list = this.contentEl.createDiv("attend-modal-list");
+    const list = this.contentEl.createDiv("astra-modal-list");
 
     if (this.showSearch) {
-      const searchWrap = this.contentEl.createDiv("attend-modal-search");
-      const searchIcon = searchWrap.createSpan("attend-modal-search-icon");
+      const searchWrap = this.contentEl.createDiv("astra-modal-search");
+      const searchIcon = searchWrap.createSpan("astra-modal-search-icon");
       setIcon(searchIcon, "search");
       const search = searchWrap.createEl("input", {
         attr: {
@@ -84,7 +84,7 @@ export class DetailModal extends Modal {
   private renderList(list: HTMLElement): void {
     list.empty();
     if (this.filteredItems.length === 0) {
-      const empty = list.createDiv("attend-modal-empty");
+      const empty = list.createDiv("astra-modal-empty");
       const icon = empty.createSpan();
       setIcon(icon, "search-x");
       empty.createEl("p", { text: "没有匹配结果" });
@@ -93,24 +93,24 @@ export class DetailModal extends Modal {
 
     this.filteredItems.forEach((item) => {
       const row = list.createEl("button", {
-        cls: "attend-modal-row",
+        cls: "astra-modal-row",
         attr: { type: "button" }
       });
-      const icon = row.createSpan("attend-modal-row-icon");
+      const icon = row.createSpan("astra-modal-row-icon");
       setIcon(icon, "file-text");
-      const copy = row.createSpan("attend-modal-row-copy");
+      const copy = row.createSpan("astra-modal-row-copy");
       copy.createSpan({
-        cls: "attend-modal-row-title",
+        cls: "astra-modal-row-title",
         text: item.title ?? item.file.basename
       });
       copy.createSpan({
-        cls: "attend-modal-row-path",
+        cls: "astra-modal-row-path",
         text: item.subtitle ?? item.file.path
       });
       if (item.badge) {
-        row.createSpan({ cls: "attend-modal-row-badge", text: item.badge });
+        row.createSpan({ cls: "astra-modal-row-badge", text: item.badge });
       }
-      const arrow = row.createSpan("attend-modal-row-arrow");
+      const arrow = row.createSpan("astra-modal-row-arrow");
       setIcon(arrow, "chevron-right");
       row.addEventListener("click", () => {
         void this.app.workspace.getLeaf(false).openFile(item.file);

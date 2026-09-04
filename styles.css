@@ -1,5 +1,5 @@
-.workspace-leaf-content[data-type="attend-dashboard-view"] .view-content,
-.attend-dashboard-view-content {
+.workspace-leaf-content[data-type="astra-dashboard-view"] .view-content,
+.astra-dashboard-view-content {
   padding: 0;
   overflow-y: auto;
   background: var(--background-primary);
@@ -9,13 +9,13 @@
    不在此处设 flex:1 / min-height:0 —— 否则 body 会被压成可压缩到 0 的 flex 子项，
    导致热图等高内容模块在高度基准不稳时整块消失（历史回归 bug）。
    仅在嵌入态（body 含 .po-board-host）才切换为 flex 铺满，见下方 :has 规则。 */
-.attend-dashboard-root {
+.astra-dashboard-root {
   display: flex;
   flex-direction: column;
   min-height: 100%;
 }
 
-.attend-dashboard-body {
+.astra-dashboard-body {
   display: flex;
   flex-direction: column;
   min-height: auto;
@@ -24,62 +24,62 @@
 /* 嵌入态（body 含 .po-board-host）：仅在跳转面板出现时，从 view-content 起建立
    确定高度 flex 链，使面板内部(.po-board-host/.po-container)能按视口高度铺满、不塌缩。
    主页无 .po-board-host，这些规则不命中，root/body 走上方自然流，热图安全。
-   根容器(.attend-dashboard)的 padding/限宽常驻保留，故嵌入态外面仍有间距、不贴边。 */
-.workspace-leaf-content[data-type="attend-dashboard-view"]:has(.po-board-host) > .view-content,
-.attend-dashboard-view-content:has(.po-board-host) {
+   根容器(.astra-dashboard)的 padding/限宽常驻保留，故嵌入态外面仍有间距、不贴边。 */
+.workspace-leaf-content[data-type="astra-dashboard-view"]:has(.po-board-host) > .view-content,
+.astra-dashboard-view-content:has(.po-board-host) {
   display: flex;
   flex-direction: column;
   height: 100%;
   overflow: hidden;
 }
-.attend-dashboard-root:has(.po-board-host) {
+.astra-dashboard-root:has(.po-board-host) {
   flex: 1;
   min-height: 0;
   overflow: hidden;
 }
-.attend-dashboard-body:has(.po-board-host) {
+.astra-dashboard-body:has(.po-board-host) {
   flex: 1;
   min-height: 0;
   overflow: hidden;
 }
 
-/* 全局提供 --attend-surface 别名（等同 --background-secondary），
+/* 全局提供 --astra-surface 别名（等同 --background-secondary），
    使 body 顶层容器（如 Cell 弹窗 Modal）也能读取该色变量 */
 :root {
-  --attend-surface: var(--background-secondary);
+  --astra-surface: var(--background-secondary);
 }
 
-.attend-dashboard {
-  --attend-bg: var(--background-primary);
-  --attend-surface: var(--background-secondary);
-  --attend-surface-hover: var(--background-modifier-hover);
-  --attend-border: var(--background-modifier-border);
-  --attend-border-strong: var(--background-modifier-border-hover);
-  --attend-text: var(--text-normal);
-  --attend-text-muted: var(--text-muted);
-  --attend-text-faint: var(--text-faint);
-  --attend-accent-blue: #3b82f6;
-  --attend-accent-green: #16a34a;
-  --attend-accent-yellow: #f59e0b;
-  --attend-accent-purple: #a855f7;
-  --attend-accent-red: #ef4444;
-  --attend-accent-rose: #ec4899;
-  --attend-chart-grid: color-mix(in srgb, var(--text-muted) 20%, transparent);
+.astra-dashboard {
+  --astra-bg: var(--background-primary);
+  --astra-surface: var(--background-secondary);
+  --astra-surface-hover: var(--background-modifier-hover);
+  --astra-border: var(--background-modifier-border);
+  --astra-border-strong: var(--background-modifier-border-hover);
+  --astra-text: var(--text-normal);
+  --astra-text-muted: var(--text-muted);
+  --astra-text-faint: var(--text-faint);
+  --astra-accent-blue: #3b82f6;
+  --astra-accent-green: #16a34a;
+  --astra-accent-yellow: #f59e0b;
+  --astra-accent-purple: #a855f7;
+  --astra-accent-red: #ef4444;
+  --astra-accent-rose: #ec4899;
+  --astra-chart-grid: color-mix(in srgb, var(--text-muted) 20%, transparent);
   box-sizing: border-box;
   width: min(100%, 1480px);
   min-height: 100%;
   margin: 0 auto;
   padding: 34px 38px 42px;
   container-type: inline-size;
-  color: var(--attend-text);
+  color: var(--astra-text);
   font-family: var(--font-interface);
 }
 
-.attend-dashboard button {
+.astra-dashboard button {
   font-family: inherit;
 }
 
-.attend-dashboard-header {
+.astra-dashboard-header {
   display: flex;
   align-items: stretch;
   justify-content: space-between;
@@ -87,22 +87,22 @@
   margin-bottom: 24px;
 }
 
-.attend-dashboard-heading h1 {
+.astra-dashboard-heading h1 {
   margin: 0;
-  color: var(--attend-text);
+  color: var(--astra-text);
   font-size: clamp(26px, 2.7vw, 38px);
   font-weight: 720;
   letter-spacing: -0.03em;
   line-height: 1.15;
 }
 
-.attend-dashboard-heading p {
+.astra-dashboard-heading p {
   margin: 9px 0 0;
-  color: var(--attend-text-muted);
+  color: var(--astra-text-muted);
   font-size: 13px;
 }
 
-.attend-dashboard-actions {
+.astra-dashboard-actions {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -112,41 +112,41 @@
 }
 
 /* 右上角信息区（竖排三等分）：第 1 行 日期时间 / 第 2 行 星期·农历 / 第 3 行 按钮 */
-.attend-dashboard-date {
-  color: var(--attend-text);
+.astra-dashboard-date {
+  color: var(--astra-text);
   font-size: 14px;
   letter-spacing: 0.04em;
   line-height: 1.2;
   white-space: nowrap;
 }
 
-.attend-dashboard-lunar {
-  color: var(--attend-text-muted);
+.astra-dashboard-lunar {
+  color: var(--astra-text-muted);
   font-size: 12px;
   letter-spacing: 0.05em;
   line-height: 1.2;
   white-space: nowrap;
 }
 
-.attend-dashboard-tools {
+.astra-dashboard-tools {
   display: flex;
   justify-content: flex-end;
   gap: 6px;
 }
 
 /* ============================================================
-   Attend 共用方形图标按钮（createIconButton 生成）
+   Astra 共用方形图标按钮（createIconButton 生成）
    统一替代：header 工具 / 热图设置 / 快捷链接管理 / TODO 刷新设置
    ============================================================ */
-.attend-icon-btn {
+.astra-icon-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 26px;
   height: 26px;
   padding: 0;
-  color: var(--attend-text-muted);
-  border: 1px solid var(--attend-border);
+  color: var(--astra-text-muted);
+  border: 1px solid var(--astra-border);
   border-radius: 6px;
   background: transparent;
   box-shadow: none;
@@ -154,17 +154,17 @@
   flex-shrink: 0;
   transition: none;
 }
-.attend-icon-btn:hover {
-  color: var(--attend-text);
-  border-color: var(--attend-border-strong);
-  background: var(--attend-surface-hover);
+.astra-icon-btn:hover {
+  color: var(--astra-text);
+  border-color: var(--astra-border-strong);
+  background: var(--astra-surface-hover);
 }
-.attend-icon-btn svg {
+.astra-icon-btn svg {
   width: 14px;
   height: 14px;
 }
 
-.attend-quick-plugins {
+.astra-quick-plugins {
   display: grid;
   min-height: 58px;
   margin-bottom: 14px;
@@ -172,12 +172,12 @@
   grid-template-columns: minmax(0, 1fr) 26px;
   gap: 12px;
   align-items: center;
-  border: 1px solid var(--attend-border);
+  border: 1px solid var(--astra-border);
   border-radius: 9px;
-  background: color-mix(in srgb, var(--attend-surface) 72%, transparent);
+  background: color-mix(in srgb, var(--astra-surface) 72%, transparent);
 }
 
-.attend-quick-plugins-scroll {
+.astra-quick-plugins-scroll {
   display: flex;
   min-width: 0;
   padding: 2px 1px;
@@ -187,95 +187,95 @@
   scrollbar-width: thin;
 }
 
-.attend-plugin-shortcut {
+.astra-plugin-shortcut {
   display: flex;
   min-width: max-content;
   height: 36px;
   padding: 0 11px 0 7px;
   align-items: center;
   gap: 8px;
-  color: var(--attend-text-muted);
-  border: 1px solid var(--attend-border);
+  color: var(--astra-text-muted);
+  border: 1px solid var(--astra-border);
   border-radius: 7px;
-  background: color-mix(in srgb, var(--attend-bg) 35%, transparent);
+  background: color-mix(in srgb, var(--astra-bg) 35%, transparent);
   font-size: 11px;
   text-decoration: none;
 }
 
-.attend-plugin-shortcut:hover {
-  color: var(--attend-text);
-  border-color: var(--attend-border-strong);
-  background: var(--attend-surface-hover);
+.astra-plugin-shortcut:hover {
+  color: var(--astra-text);
+  border-color: var(--astra-border-strong);
+  background: var(--astra-surface-hover);
 }
 
-.attend-plugin-shortcut-mark {
+.astra-plugin-shortcut-mark {
   display: grid;
   width: 23px;
   height: 23px;
   place-items: center;
   color: #fff;
   border-radius: 6px;
-  background: var(--attend-accent-blue);
+  background: var(--astra-accent-blue);
   font-size: 10px;
   font-weight: 750;
 }
 
-.attend-plugin-shortcut-mark svg {
+.astra-plugin-shortcut-mark svg {
   width: 13px;
   height: 13px;
   stroke-width: 2.5px;
 }
 
-.attend-plugin-shortcut:nth-child(5n + 2) .attend-plugin-shortcut-mark {
-  background: var(--attend-accent-green);
+.astra-plugin-shortcut:nth-child(5n + 2) .astra-plugin-shortcut-mark {
+  background: var(--astra-accent-green);
 }
 
-.attend-plugin-shortcut:nth-child(5n + 3) .attend-plugin-shortcut-mark {
-  background: var(--attend-accent-yellow);
+.astra-plugin-shortcut:nth-child(5n + 3) .astra-plugin-shortcut-mark {
+  background: var(--astra-accent-yellow);
 }
 
-.attend-plugin-shortcut:nth-child(5n + 4) .attend-plugin-shortcut-mark {
-  background: var(--attend-accent-purple);
+.astra-plugin-shortcut:nth-child(5n + 4) .astra-plugin-shortcut-mark {
+  background: var(--astra-accent-purple);
 }
 
-.attend-plugin-shortcut:nth-child(5n + 5) .attend-plugin-shortcut-mark {
-  background: var(--attend-accent-red);
+.astra-plugin-shortcut:nth-child(5n + 5) .astra-plugin-shortcut-mark {
+  background: var(--astra-accent-red);
 }
 
-.attend-plugin-shortcut-name {
+.astra-plugin-shortcut-name {
   max-width: 150px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.attend-quick-plugins-empty {
+.astra-quick-plugins-empty {
   align-self: center;
-  color: var(--attend-text-faint);
+  color: var(--astra-text-faint);
   font-size: 11px;
 }
 
-.attend-quick-plugins-manage {
+.astra-quick-plugins-manage {
   flex-shrink: 0;
 }
 
-@keyframes attend-spin {
+@keyframes astra-spin {
   to {
     transform: rotate(360deg);
   }
 }
 
-.attend-metrics {
+.astra-metrics {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   overflow: hidden;
   margin-bottom: 22px;
-  border: 1px solid var(--attend-border);
+  border: 1px solid var(--astra-border);
   border-radius: 9px;
-  background: color-mix(in srgb, var(--attend-surface) 72%, transparent);
+  background: color-mix(in srgb, var(--astra-surface) 72%, transparent);
 }
 
-.attend-metric {
+.astra-metric {
   display: grid;
   min-width: 0;
   min-height: 92px;
@@ -283,9 +283,9 @@
   grid-template-columns: 34px minmax(0, 1fr) 18px;
   gap: 13px;
   align-items: center;
-  color: var(--attend-text);
+  color: var(--astra-text);
   border: 0;
-  border-right: 1px solid var(--attend-border);
+  border-right: 1px solid var(--astra-border);
   border-radius: 0;
   background: transparent;
   box-shadow: none;
@@ -293,58 +293,58 @@
   cursor: pointer;
 }
 
-.attend-metric:last-child {
+.astra-metric:last-child {
   border-right: 0;
 }
 
-.attend-metric:hover {
-  background: var(--attend-surface-hover);
+.astra-metric:hover {
+  background: var(--astra-surface-hover);
 }
 
-.attend-metric:focus-visible,
-.attend-recent-row:focus-visible,
-.attend-modal-row:focus-visible {
+.astra-metric:focus-visible,
+.astra-recent-row:focus-visible,
+.astra-modal-row:focus-visible {
   outline: 2px solid var(--interactive-accent);
   outline-offset: -2px;
 }
 
-.attend-metric-icon {
+.astra-metric-icon {
   display: grid;
   width: 34px;
   height: 34px;
   place-items: center;
 }
 
-.attend-metric-icon svg {
+.astra-metric-icon svg {
   width: 27px;
   height: 27px;
   stroke-width: 1.7;
 }
 
-.attend-metric.accent-blue .attend-metric-icon {
-  color: var(--attend-accent-blue);
+.astra-metric.accent-blue .astra-metric-icon {
+  color: var(--astra-accent-blue);
 }
 
-.attend-metric.accent-green .attend-metric-icon {
-  color: var(--attend-accent-green);
+.astra-metric.accent-green .astra-metric-icon {
+  color: var(--astra-accent-green);
 }
 
-.attend-metric.accent-yellow .attend-metric-icon {
-  color: var(--attend-accent-yellow);
+.astra-metric.accent-yellow .astra-metric-icon {
+  color: var(--astra-accent-yellow);
 }
 
-.attend-metric.accent-purple .attend-metric-icon {
-  color: var(--attend-accent-purple);
+.astra-metric.accent-purple .astra-metric-icon {
+  color: var(--astra-accent-purple);
 }
 
-.attend-metric-copy {
+.astra-metric-copy {
   display: flex;
   min-width: 0;
   flex-direction: column;
   gap: 4px;
 }
 
-.attend-metric-value {
+.astra-metric-value {
   overflow: hidden;
   font-size: 23px;
   font-weight: 700;
@@ -353,62 +353,62 @@
   white-space: nowrap;
 }
 
-.attend-metric-label {
-  color: var(--attend-text-muted);
+.astra-metric-label {
+  color: var(--astra-text-muted);
   font-size: 12px;
   font-weight: 500;
 }
 
-.attend-row-arrow {
+.astra-row-arrow {
   display: grid;
-  color: var(--attend-text-faint);
+  color: var(--astra-text-faint);
   place-items: center;
 }
 
-.attend-row-arrow svg {
+.astra-row-arrow svg {
   width: 16px;
   height: 16px;
 }
 
-.attend-dashboard-grid {
+.astra-dashboard-grid {
   display: grid;
   gap: 14px;
 }
 
-.attend-todo-surface,
-.attend-activity-surface {
+.astra-todo-surface,
+.astra-activity-surface {
   width: 100%;
   max-width: none;
 }
 
-.attend-todo-surface,
-.attend-activity-surface {
+.astra-todo-surface,
+.astra-activity-surface {
   display: flex;
   height: 100%;
   min-height: 0;
   flex-direction: column;
 }
 
-.attend-activity-surface {
+.astra-activity-surface {
   overflow: hidden;
 }
 
-.attend-surface-fullrow {
+.astra-surface-fullrow {
   grid-column: 1 / -1;
   width: 100%;
   max-width: none;
   margin-bottom: 14px;
 }
 
-.attend-surface {
+.astra-surface {
   min-width: 0;
   overflow: hidden;
-  border: 1px solid var(--attend-border);
+  border: 1px solid var(--astra-border);
   border-radius: 9px;
-  background: color-mix(in srgb, var(--attend-surface) 78%, transparent);
+  background: color-mix(in srgb, var(--astra-surface) 78%, transparent);
 }
 
-.attend-surface-header {
+.astra-surface-header {
   display: flex;
   min-height: 56px;
   padding: 16px 18px 12px;
@@ -417,47 +417,47 @@
   gap: 16px;
 }
 
-.attend-surface-header h2 {
+.astra-surface-header h2 {
   margin: 0;
-  color: var(--attend-text);
+  color: var(--astra-text);
   font-size: 15px;
   font-weight: 680;
   letter-spacing: -0.01em;
 }
 
-.attend-surface-header > span:not(.ad-badge) {
-  color: var(--attend-text-faint);
+.astra-surface-header > span:not(.ad-badge) {
+  color: var(--astra-text-faint);
   font-size: 11px;
   white-space: nowrap;
 }
 
-.attend-projects-titles,
-.attend-qc-titles,
-.attend-todo-titles,
-.attend-weekly-titles,
-.attend-countdown-titles,
-.attend-activity-titles,
-.attend-daily-phrase-titles {
+.astra-projects-titles,
+.astra-qc-titles,
+.astra-todo-titles,
+.astra-weekly-titles,
+.astra-countdown-titles,
+.astra-activity-titles,
+.astra-daily-phrase-titles {
   display: flex;
   align-items: baseline;
   gap: 8px;
   min-width: 0;
 }
 
-.attend-projects-titles > span,
-.attend-qc-titles > span,
-.attend-todo-titles > span,
-.attend-weekly-titles > span,
-.attend-countdown-titles > span,
-.attend-activity-titles > span,
-.attend-daily-phrase-titles > span {
-  color: var(--attend-text-faint);
+.astra-projects-titles > span,
+.astra-qc-titles > span,
+.astra-todo-titles > span,
+.astra-weekly-titles > span,
+.astra-countdown-titles > span,
+.astra-activity-titles > span,
+.astra-daily-phrase-titles > span {
+  color: var(--astra-text-faint);
   font-size: 11px;
   white-space: nowrap;
 }
 
 /* 按钮组容器 */
-.attend-actions {
+.astra-actions {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -480,20 +480,20 @@
   line-height: 1;
 }
 .ad-badge--danger {
-  background: var(--attend-accent-red) !important;
+  background: var(--astra-accent-red) !important;
   color: #fff !important;
   animation: ad-badge-blink 2.2s ease-in-out infinite;
 }
 @keyframes ad-badge-blink {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 color-mix(in srgb, var(--attend-accent-red) 55%, transparent); }
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 color-mix(in srgb, var(--astra-accent-red) 55%, transparent); }
   50% { opacity: 0.35; box-shadow: 0 0 0 5px transparent; }
 }
 
-.attend-heatmap-wrapper {
+.astra-heatmap-wrapper {
   padding: 4px 0;
 }
 
-.attend-heatmap-settings-btn {
+.astra-heatmap-settings-btn {
   flex-shrink: 0;
   margin-left: auto;
   align-self: center;
@@ -502,7 +502,7 @@
 /* ============================================================
    Heatmap（obsidian-dashboard-main 的 ad-ns 实现 + GitHub 绿主题）
    ============================================================ */
-.attend-heatmap-wrapper {
+.astra-heatmap-wrapper {
   --hm-cell: 15px; /* Cell 与网格行轨道统一尺寸，移动端媒体查询覆盖为 12px */
   --ad-hm-0: #dbe3dd;
   --ad-hm-1: #9be9a8;
@@ -514,15 +514,15 @@
   --ad-text-dim: var(--text-muted);
   --ad-text-mute: var(--text-faint);
 }
-.theme-dark .attend-heatmap-wrapper {
-  --ad-hm-0: color-mix(in srgb, var(--attend-surface) 88%, #ffffff);
+.theme-dark .astra-heatmap-wrapper {
+  --ad-hm-0: color-mix(in srgb, var(--astra-surface) 88%, #ffffff);
   --ad-hm-1: #9be9a8;
   --ad-hm-2: #40c463;
   --ad-hm-3: #30a14e;
   --ad-hm-4: #216e39;
 }
 
-.attend-heatmap-wrapper.ad-ns {
+.astra-heatmap-wrapper.ad-ns {
   width: 100%;
   min-width: 0;
   display: flex;
@@ -530,7 +530,7 @@
   gap: 8px;
 }
 
-.attend-heatmap-wrapper .ad-ns__heat {
+.astra-heatmap-wrapper .ad-ns__heat {
   flex: 1;
   min-height: 0;
   min-width: 0;
@@ -543,7 +543,7 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-.attend-heatmap-wrapper .ad-ns__months {
+.astra-heatmap-wrapper .ad-ns__months {
   display: flex;
   gap: 0;
   padding-left: 32px;
@@ -553,18 +553,18 @@
   letter-spacing: 0.04em;
   line-height: 12px;
 }
-.attend-heatmap-wrapper .ad-ns__months span {
+.astra-heatmap-wrapper .ad-ns__months span {
   white-space: nowrap;
 }
 
-.attend-heatmap-wrapper .ad-ns__grid {
+.astra-heatmap-wrapper .ad-ns__grid {
   display: grid;
   grid-template-columns: 22px 1fr;
   gap: 10px;
   width: max-content;
 }
 /* Cell 与网格行轨道统一 --hm-cell：桌面 15px / 移动端 12px；列/行间距由 JS（layoutHeatmap）写 --hm-cgap / --hm-rgap */
-.attend-heatmap-wrapper .ad-ns__dow {
+.astra-heatmap-wrapper .ad-ns__dow {
   display: grid;
   grid-template-rows: repeat(7, var(--hm-cell, 15px));
   row-gap: var(--hm-rgap, 5px);
@@ -574,12 +574,12 @@
   color: var(--ad-text-dim);
   text-align: right;
 }
-.attend-heatmap-wrapper .ad-ns__dow span {
+.astra-heatmap-wrapper .ad-ns__dow span {
   height: var(--hm-cell, 15px);
   line-height: var(--hm-cell, 15px);
 }
 
-.attend-heatmap-wrapper .ad-ns__cells {
+.astra-heatmap-wrapper .ad-ns__cells {
   display: grid;
   grid-auto-flow: column;
   grid-template-rows: repeat(7, var(--hm-cell, 15px));
@@ -587,7 +587,7 @@
   row-gap: var(--hm-rgap, 5px);
   width: max-content;
 }
-.attend-heatmap-wrapper .ad-ns__cell {
+.astra-heatmap-wrapper .ad-ns__cell {
   width: var(--hm-cell, 15px);
   height: var(--hm-cell, 15px);
   border-radius: 2px;
@@ -596,7 +596,7 @@
   transition: transform 0.08s, outline-color 0.12s, box-shadow 0.14s ease;
   cursor: crosshair;
 }
-.attend-heatmap-wrapper .ad-ns__cell:hover {
+.astra-heatmap-wrapper .ad-ns__cell:hover {
   outline: 1px solid var(--ad-accent);
   transform: scale(1.28);
   z-index: 2;
@@ -604,12 +604,12 @@
     0 0 0 3px color-mix(in srgb, var(--ad-accent) 28%, transparent),
     0 0 12px 3px color-mix(in srgb, var(--ad-accent) 45%, transparent);
 }
-.attend-heatmap-wrapper .ad-ns__cell.l1 { background: var(--ad-hm-1); }
-.attend-heatmap-wrapper .ad-ns__cell.l2 { background: var(--ad-hm-2); }
-.attend-heatmap-wrapper .ad-ns__cell.l3 { background: var(--ad-hm-3); }
-.attend-heatmap-wrapper .ad-ns__cell.l4 { background: var(--ad-hm-4); }
-.attend-heatmap-wrapper .ad-ns__cell.is-future { background: var(--ad-hm-0); opacity: 0.35; }
-.attend-heatmap-wrapper .ad-ns__cell.is-today {
+.astra-heatmap-wrapper .ad-ns__cell.l1 { background: var(--ad-hm-1); }
+.astra-heatmap-wrapper .ad-ns__cell.l2 { background: var(--ad-hm-2); }
+.astra-heatmap-wrapper .ad-ns__cell.l3 { background: var(--ad-hm-3); }
+.astra-heatmap-wrapper .ad-ns__cell.l4 { background: var(--ad-hm-4); }
+.astra-heatmap-wrapper .ad-ns__cell.is-future { background: var(--ad-hm-0); opacity: 0.35; }
+.astra-heatmap-wrapper .ad-ns__cell.is-today {
   outline: 1.5px solid var(--ad-accent);
   z-index: 2;
   box-shadow:
@@ -617,7 +617,7 @@
     0 0 12px 3px color-mix(in srgb, var(--ad-accent) 50%, transparent);
 }
 
-.attend-heatmap-wrapper .ad-ns__foot {
+.astra-heatmap-wrapper .ad-ns__foot {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -628,41 +628,41 @@
   font-size: clamp(10px, 3.6cqi, 11px);
   color: var(--ad-text-mute);
 }
-.attend-heatmap-wrapper .ad-ns__legend { display: inline-flex; align-items: center; gap: 6px; }
-.attend-heatmap-wrapper .ad-ns__legend .ad-ns__lbl {
+.astra-heatmap-wrapper .ad-ns__legend { display: inline-flex; align-items: center; gap: 6px; }
+.astra-heatmap-wrapper .ad-ns__legend .ad-ns__lbl {
   color: var(--ad-text-dim);
   font-size: clamp(10px, 3.6cqi, 11px);
 }
-.attend-heatmap-wrapper .ad-ns__sw {
+.astra-heatmap-wrapper .ad-ns__sw {
   width: 11px;
   height: 11px;
   border-radius: 2px;
   background: var(--ad-hm-0);
   outline: 1px solid rgba(255, 255, 255, 0.04);
 }
-.attend-heatmap-wrapper .ad-ns__sw.l1 { background: var(--ad-hm-1); }
-.attend-heatmap-wrapper .ad-ns__sw.l2 { background: var(--ad-hm-2); }
-.attend-heatmap-wrapper .ad-ns__sw.l3 { background: var(--ad-hm-3); }
-.attend-heatmap-wrapper .ad-ns__sw.l4 { background: var(--ad-hm-4); }
+.astra-heatmap-wrapper .ad-ns__sw.l1 { background: var(--ad-hm-1); }
+.astra-heatmap-wrapper .ad-ns__sw.l2 { background: var(--ad-hm-2); }
+.astra-heatmap-wrapper .ad-ns__sw.l3 { background: var(--ad-hm-3); }
+.astra-heatmap-wrapper .ad-ns__sw.l4 { background: var(--ad-hm-4); }
 
-.attend-heatmap-wrapper .ad-ns__heat::-webkit-scrollbar { display: none; }
-.attend-heatmap-wrapper .ad-ns__heat::-webkit-scrollbar-track { background: transparent; }
-.attend-heatmap-wrapper .ad-ns__heat::-webkit-scrollbar-thumb {
+.astra-heatmap-wrapper .ad-ns__heat::-webkit-scrollbar { display: none; }
+.astra-heatmap-wrapper .ad-ns__heat::-webkit-scrollbar-track { background: transparent; }
+.astra-heatmap-wrapper .ad-ns__heat::-webkit-scrollbar-thumb {
   background: var(--background-modifier-border);
   border-radius: 3px;
 }
 
-.attend-heatmap-settings-modal .attend-heatmap-section-heading {
+.astra-heatmap-settings-modal .astra-heatmap-section-heading {
   margin: 18px 0 8px;
   font-size: 14px;
   font-weight: 650;
 }
 
-.attend-heatmap-settings-modal .attend-heatmap-section-heading:first-child {
+.astra-heatmap-settings-modal .astra-heatmap-section-heading:first-child {
   margin-top: 0;
 }
 
-.attend-recent-list {
+.astra-recent-list {
   display: flex;
   min-height: 0;
   padding: 0 14px 14px;
@@ -672,7 +672,7 @@
   overflow-y: auto;
 }
 
-.attend-modules-grid .attend-recent-row {
+.astra-modules-grid .astra-recent-row {
   display: grid;
   width: 100%;
   min-height: 0;
@@ -681,109 +681,110 @@
   grid-template-columns: 24px minmax(0, 1fr) auto 16px;
   gap: 9px;
   align-items: center;
-  color: var(--attend-text);
-  border: 0;
-  border-radius: 7px;
-  background: color-mix(in srgb, var(--attend-surface) 55%, transparent);
+  color: var(--astra-text);
+  /* 加 1px 框线，避免淡背景导致列表与底色融为一体（与「项目情况」行一致） */
+  border: 1px solid var(--astra-border);
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--astra-surface) 55%, transparent);
   box-shadow: none;
   text-align: left;
   cursor: pointer;
 }
 
-.attend-modules-grid .attend-recent-row:last-child {
-  /* 与 last-child 无特殊处理，间隔由 .attend-recent-list 的 gap 统一控制 */
+.astra-modules-grid .astra-recent-row:last-child {
+  /* 与 last-child 无特殊处理，间隔由 .astra-recent-list 的 gap 统一控制 */
 }
 
-.attend-modules-grid .attend-recent-row:hover {
-  background: var(--attend-surface-hover);
+.astra-modules-grid .astra-recent-row:hover {
+  background: var(--astra-surface-hover);
 }
 
-.attend-recent-icon {
+.astra-recent-icon {
   display: grid;
-  color: var(--attend-text-faint);
+  color: var(--astra-text-faint);
   place-items: center;
 }
 
-.attend-recent-icon svg {
+.astra-recent-icon svg {
   width: 16px;
   height: 16px;
 }
 
-.attend-recent-copy {
+.astra-recent-copy {
   display: flex;
   min-width: 0;
   flex-direction: column;
   gap: 2px;
 }
 
-.attend-recent-title,
-.attend-recent-path {
+.astra-recent-title,
+.astra-recent-path {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.attend-recent-title {
-  color: var(--attend-text);
+.astra-recent-title {
+  color: var(--astra-text);
   font-size: 11px;
   font-weight: 550;
 }
 
-.attend-recent-path,
-.attend-recent-time {
-  color: var(--attend-text-faint);
+.astra-recent-path,
+.astra-recent-time {
+  color: var(--astra-text-faint);
   font-size: 9px;
 }
 
-.attend-recent-time {
+.astra-recent-time {
   white-space: nowrap;
 }
 
-.attend-loading-mark,
-.attend-error-mark {
+.astra-loading-mark,
+.astra-error-mark {
   display: grid;
   width: 42px;
   height: 42px;
   place-items: center;
-  color: var(--attend-accent-blue);
+  color: var(--astra-accent-blue);
 }
 
-.attend-loading-mark svg {
-  animation: attend-spin 1s linear infinite;
+.astra-loading-mark svg {
+  animation: astra-spin 1s linear infinite;
 }
 
-.attend-error-mark {
-  color: var(--attend-accent-red);
+.astra-error-mark {
+  color: var(--astra-accent-red);
 }
 
-.attend-empty-state {
+.astra-empty-state {
   padding: 32px 18px;
-  color: var(--attend-text-faint);
+  color: var(--astra-text-faint);
   text-align: center;
 }
 
-.attend-detail-modal {
+.astra-detail-modal {
   width: min(680px, 90vw);
   background: var(--modal-background);
 }
 
-.attend-modal-header h2 {
+.astra-modal-header h2 {
   margin: 0 0 6px;
   font-size: 20px;
 }
 
-.attend-modal-header p {
+.astra-modal-header p {
   margin: 0 0 16px;
   color: var(--text-muted);
   font-size: 12px;
 }
 
-.attend-modal-search {
+.astra-modal-search {
   position: relative;
   margin-bottom: 8px;
 }
 
-.attend-modal-search-icon {
+.astra-modal-search-icon {
   position: absolute;
   top: 50%;
   left: 11px;
@@ -794,31 +795,31 @@
   pointer-events: none;
 }
 
-.attend-modal-search-icon svg {
+.astra-modal-search-icon svg {
   width: 16px;
   height: 16px;
 }
 
-.attend-modal-search input {
+.astra-modal-search input {
   width: 100%;
   height: 38px;
   padding-left: 34px;
 }
 
-.attend-modal-summary {
+.astra-modal-summary {
   padding: 7px 2px;
   color: var(--text-faint);
   font-size: 10px;
 }
 
-.attend-modal-list {
+.astra-modal-list {
   max-height: min(58vh, 620px);
   overflow-y: auto;
   border: 1px solid var(--background-modifier-border);
   border-radius: 8px;
 }
 
-.attend-modal-row {
+.astra-modal-row {
   display: grid;
   width: 100%;
   min-height: 54px;
@@ -836,71 +837,71 @@
   cursor: pointer;
 }
 
-.attend-modal-row:last-child {
+.astra-modal-row:last-child {
   border-bottom: 0;
 }
 
 /* 非聚焦=background-secondary（随主题），聚焦=background-modifier-hover（比之更深）。
    均加 !important 防止 Obsidian .modal button 默认样式覆盖。仅 hover 高亮 */
-.attend-detail-modal .attend-modal-row:hover {
+.astra-detail-modal .astra-modal-row:hover {
   background: var(--background-modifier-hover) !important;
 }
 
 /* 压掉 Obsidian 对 <button> 的 focus/active 焦点视觉（inset 阴影/描边），
    避免首次打开时第一行获得焦点而在其下缘出现粗线 */
-.attend-detail-modal .attend-modal-row:focus,
-.attend-detail-modal .attend-modal-row:focus-visible,
-.attend-detail-modal .attend-modal-row:active {
+.astra-detail-modal .astra-modal-row:focus,
+.astra-detail-modal .astra-modal-row:focus-visible,
+.astra-detail-modal .astra-modal-row:active {
   outline: none;
   box-shadow: none;
 }
 
-.attend-detail-modal .attend-modal-row:last-child,
-.attend-detail-modal .attend-modal-row:last-child:hover,
-.attend-detail-modal .attend-modal-row:last-child:focus,
-.attend-detail-modal .attend-modal-row:last-child:focus-visible,
-.attend-detail-modal .attend-modal-row:last-child:active {
+.astra-detail-modal .astra-modal-row:last-child,
+.astra-detail-modal .astra-modal-row:last-child:hover,
+.astra-detail-modal .astra-modal-row:last-child:focus,
+.astra-detail-modal .astra-modal-row:last-child:focus-visible,
+.astra-detail-modal .astra-modal-row:last-child:active {
   border-bottom: 0;
 }
 
-.attend-modal-row-icon,
-.attend-modal-row-arrow {
+.astra-modal-row-icon,
+.astra-modal-row-arrow {
   display: grid;
   color: var(--text-faint);
   place-items: center;
 }
 
-.attend-modal-row-icon svg,
-.attend-modal-row-arrow svg {
+.astra-modal-row-icon svg,
+.astra-modal-row-arrow svg {
   width: 16px;
   height: 16px;
 }
 
-.attend-modal-row-copy {
+.astra-modal-row-copy {
   display: flex;
   min-width: 0;
   flex-direction: column;
   gap: 3px;
 }
 
-.attend-modal-row-title,
-.attend-modal-row-path {
+.astra-modal-row-title,
+.astra-modal-row-path {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.attend-modal-row-title {
+.astra-modal-row-title {
   font-size: 12px;
   font-weight: 560;
 }
 
-.attend-modal-row-path {
+.astra-modal-row-path {
   color: var(--text-muted);
   font-size: 10px;
 }
 
-.attend-modal-row-badge {
+.astra-modal-row-badge {
   padding: 2px 7px;
   color: var(--text-muted);
   border: 1px solid var(--background-modifier-border);
@@ -909,7 +910,7 @@
   white-space: nowrap;
 }
 
-.attend-modal-empty {
+.astra-modal-empty {
   display: flex;
   min-height: 160px;
   align-items: center;
@@ -920,27 +921,27 @@
 }
 
 /* Settings: root */
-.attend-settings-root {
+.astra-settings-root {
   padding-bottom: var(--size-4-6);
 }
 
 /* Settings: content */
-.attend-settings-content {
+.astra-settings-content {
   padding-top: var(--size-4-6);
 }
 
 /* Settings: section (Section 导航内容区) */
-.attend-settings-section {
+.astra-settings-section {
   display: none;
-  animation: attend-settings-fade-in 140ms ease;
+  animation: astra-settings-fade-in 140ms ease;
 }
 
-.attend-settings-section.is-active {
+.astra-settings-section.is-active {
   display: block;
 }
 
 /* Settings: navigation */
-.attend-settings-nav {
+.astra-settings-nav {
   display: flex;
   flex-wrap: nowrap;
   gap: var(--size-4-2) var(--size-4-4);
@@ -949,7 +950,7 @@
   border-bottom: 1px solid var(--background-modifier-border);
 }
 
-.attend-settings-nav-btn {
+.astra-settings-nav-btn {
   appearance: none;
   -webkit-appearance: none;
   display: inline-flex;
@@ -966,42 +967,42 @@
   transition: background-color 140ms ease, color 140ms ease;
 }
 
-.attend-settings-nav-btn:hover {
+.astra-settings-nav-btn:hover {
   background: var(--background-modifier-hover);
   color: var(--text-normal);
 }
 
-.attend-settings-nav-btn:not(.is-active) {
+.astra-settings-nav-btn:not(.is-active) {
   background: transparent;
   box-shadow: none;
 }
 
-.attend-settings-nav-btn:not(.is-active):focus,
-.attend-settings-nav-btn:not(.is-active):focus-visible {
+.astra-settings-nav-btn:not(.is-active):focus,
+.astra-settings-nav-btn:not(.is-active):focus-visible {
   outline: none;
   box-shadow: none;
 }
 
-.attend-settings-nav-btn.is-active {
+.astra-settings-nav-btn.is-active {
   background: var(--background-modifier-hover);
   box-shadow: none;
   color: var(--text-normal);
 }
 
-.attend-settings-nav-icon {
+.astra-settings-nav-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: currentColor;
 }
 
-.attend-settings-nav-icon .svg-icon {
+.astra-settings-nav-icon .svg-icon {
   width: var(--size-4-5);
   height: var(--size-4-5);
   stroke-width: 1.9px;
 }
 
-@keyframes attend-settings-fade-in {
+@keyframes astra-settings-fade-in {
   from {
     opacity: 0;
     transform: translateY(4px);
@@ -1015,60 +1016,60 @@
 
 /* Settings: mobile — 桌面/移动背景变量相反（页面=primary 卡片=secondary ↔ 移动端反向） */
 @media (max-width: 768px) {
-  .attend-settings-root {
+  .astra-settings-root {
     --setting-items-background: var(--background-primary);
   }
 
-  .attend-settings-nav {
+  .astra-settings-nav {
     gap: var(--size-4-2) var(--size-4-3);
   }
 
-  .attend-settings-nav-btn {
+  .astra-settings-nav-btn {
     border-radius: var(--touch-radius-xs);
   }
 
-  .theme-dark .attend-settings-root {
+  .theme-dark .astra-settings-root {
     --setting-items-background: var(--background-secondary);
   }
 
   /* 主页设置弹窗：底色对齐 Obsidian 原生设置页，分组卡片才能显出 */
-  .attend-settings-modal {
+  .astra-settings-modal {
     --modal-background: var(--settings-background);
   }
 }
 
-.attend-settings-intro {
+.astra-settings-intro {
   margin-top: -8px;
   margin-bottom: 16px;
 }
 
-.attend-settings-actions {
+.astra-settings-actions {
   display: flex;
   padding-top: 18px;
   justify-content: center;
 }
 
-.attend-quick-link-modal {
+.astra-quick-link-modal {
   width: min(720px, 92vw);
 }
 
-.attend-link-editor-header {
+.astra-link-editor-header {
   margin-bottom: 14px;
 }
 
-.attend-link-editor-header h2 {
+.astra-link-editor-header h2 {
   margin: 0 0 6px;
   font-size: 16px;
 }
 
-.attend-link-editor-header p {
+.astra-link-editor-header p {
   margin: 0;
   color: var(--text-faint);
   font-size: 12px;
   line-height: 1.5;
 }
 
-.attend-link-editor-list {
+.astra-link-editor-list {
   max-height: min(48vh, 460px);
   margin-bottom: 12px;
   overflow-y: auto;
@@ -1076,30 +1077,30 @@
   border-radius: 8px;
 }
 
-.attend-link-editor-empty {
+.astra-link-editor-empty {
   padding: 28px 12px;
   color: var(--text-faint);
   font-size: 12px;
   text-align: center;
 }
 
-.attend-link-editor-row {
+.astra-link-editor-row {
   padding: 10px 12px;
   border-bottom: 1px solid var(--background-modifier-border);
 }
 
-.attend-link-editor-row:last-child {
+.astra-link-editor-row:last-child {
   border-bottom: 0;
 }
 
-.attend-link-editor-row-head {
+.astra-link-editor-row-head {
   display: flex;
   margin-bottom: 8px;
   align-items: center;
   gap: 8px;
 }
 
-.attend-link-editor-index {
+.astra-link-editor-index {
   display: grid;
   width: 22px;
   height: 22px;
@@ -1111,32 +1112,32 @@
   font-weight: 700;
 }
 
-.attend-link-editor-controls {
+.astra-link-editor-controls {
   display: flex;
   gap: 3px;
   margin-left: auto;
 }
 
-.attend-link-editor-fields {
+.astra-link-editor-fields {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px 12px;
 }
 
-.attend-link-editor-field {
+.astra-link-editor-field {
   display: flex;
   flex-direction: column;
   gap: 3px;
 }
 
-.attend-link-editor-label {
+.astra-link-editor-label {
   color: var(--text-faint);
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.02em;
 }
 
-.attend-link-editor-field input {
+.astra-link-editor-field input {
   width: 100%;
   padding: 5px 8px;
   color: var(--text-normal);
@@ -1147,23 +1148,23 @@
   font-family: inherit;
 }
 
-.attend-link-editor-field input:focus {
+.astra-link-editor-field input:focus {
   border-color: var(--interactive-accent);
   outline: none;
 }
 
-.attend-cmd-suggest-name {
+.astra-cmd-suggest-name {
   font-size: 13px;
 }
 
-.attend-cmd-suggest-id {
+.astra-cmd-suggest-id {
   color: var(--text-faint);
   font-size: 10px;
   margin-top: 2px;
   word-break: break-all;
 }
 
-.attend-link-editor-button {
+.astra-link-editor-button {
   display: grid;
   width: 28px;
   height: 28px;
@@ -1177,59 +1178,59 @@
   cursor: pointer;
 }
 
-.attend-link-editor-button:hover:not(:disabled) {
+.astra-link-editor-button:hover:not(:disabled) {
   color: var(--text-normal);
   border-color: var(--background-modifier-border-hover);
   background: var(--background-modifier-hover);
 }
 
-.attend-link-editor-button:disabled {
+.astra-link-editor-button:disabled {
   opacity: 0.25;
   cursor: default;
 }
 
-.attend-link-editor-button svg {
+.astra-link-editor-button svg {
   width: 14px;
   height: 14px;
 }
 
-.attend-link-editor-add {
+.astra-link-editor-add {
   margin-bottom: 10px;
 }
 
 @container (max-width: 560px) {
 
-  .attend-todo-surface,
-  .attend-activity-surface {
+  .astra-todo-surface,
+  .astra-activity-surface {
     max-width: none;
     grid-column: auto;
   }
 
-  .attend-todo-surface {
+  .astra-todo-surface {
     height: auto;
   }
 
 }
 
 @media (max-width: 920px) {
-  .attend-dashboard {
+  .astra-dashboard {
     padding: 28px 24px 36px;
   }
 
-  .attend-todo-surface {
+  .astra-todo-surface {
     height: auto;
   }
 
-  .attend-metrics {
+  .astra-metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .attend-metric:nth-child(2) {
+  .astra-metric:nth-child(2) {
     border-right: 0;
   }
 
-  .attend-metric:nth-child(-n + 2) {
-    border-bottom: 1px solid var(--attend-border);
+  .astra-metric:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--astra-border);
   }
 }
 
@@ -1247,72 +1248,81 @@
   display: inline-flex !important;
 }
 
+/* 通用确认弹窗（confirmDialog，替代 window.confirm） */
+.astra-confirm-modal__buttons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
 @media (max-width: 620px) {
-  .attend-dashboard {
+  .astra-dashboard {
     padding: 20px 14px 30px;
   }
 
-  .attend-dashboard-header {
+  .astra-dashboard-header {
     align-items: center;
   }
 
-  .attend-dashboard-heading h1 {
+  .astra-dashboard-heading h1 {
     font-size: 26px;
   }
 
-  .attend-quick-plugins {
+  .astra-quick-plugins {
     padding: 9px 12px 9px 10px;
     grid-template-columns: minmax(0, 1fr) 26px;
   }
 
   /* 移动端热图 Cell 缩小到 12px */
-  .attend-heatmap-wrapper {
+  .astra-heatmap-wrapper {
     --hm-cell: 12px;
   }
 
-  .attend-plugin-shortcut-name {
+  .astra-plugin-shortcut-name {
     max-width: 100px;
   }
 
-  .attend-metrics {
+  .astra-metrics {
     grid-template-columns: 1fr;
   }
 
-  .attend-metric,
-  .attend-metric:nth-child(2) {
+  .astra-metric,
+  .astra-metric:nth-child(2) {
     min-height: 76px;
     border-right: 0;
-    border-bottom: 1px solid var(--attend-border);
+    border-bottom: 1px solid var(--astra-border);
   }
 
-  .attend-metric:last-child {
+  .astra-metric:last-child {
     border-bottom: 0;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .attend-loading-mark svg {
+  .astra-loading-mark svg {
     animation: none;
   }
 }
 
 /* ============================================================
    迁入的 6 个主页模块卡片（快速捕捉 / TODO / 工作进度 / 待办进展 / 项目情况 / 倒计时）
-   视觉遵循 attend 浅色卡片风格：复用 --attend-* 变量，柔和边框 + 圆角 + 浅色填充。
+   视觉遵循 astra 浅色卡片风格：复用 --astra-* 变量，柔和边框 + 圆角 + 浅色填充。
    ============================================================ */
 
-.attend-modules-grid {
+.astra-modules-grid {
   display: grid;
-  grid-template-columns: repeat(var(--attend-mod-cols, 4), minmax(0, 1fr));
-  /* 行高锁定为单列宽（由 JS 写入 --attend-mod-row），卡片 1×1 正方、比例随窗格等比缩放 */
-  grid-auto-rows: var(--attend-mod-row, 200px);
+  grid-template-columns: repeat(var(--astra-mod-cols, 4), minmax(0, 1fr));
+  /* 行高锁定为单列宽（由 JS 写入 --astra-mod-row），卡片 1×1 正方、比例随窗格等比缩放 */
+  grid-auto-rows: var(--astra-mod-row, 200px);
   grid-auto-flow: row dense;
   gap: 14px;
   margin-bottom: 14px;
   align-items: stretch;
 }
 
-.attend-modules-grid .attend-surface {
+.astra-modules-grid .astra-surface {
   position: relative;
   display: flex;
   height: 100%;
@@ -1325,18 +1335,18 @@
 
 /* 最近笔记作为最后一个常驻模块：从当前流位置延伸到本行末尾，
    自动填满最后一行剩余列（前有 1×1 则剩 3×1，剩 2 列→2×1，剩 1 列→1×1），不强制独占整行 */
-.attend-modules-grid .attend-recent-surface {
-  grid-column: auto / -1;
+.astra-modules-grid .astra-recent-surface {
+  grid-column: span var(--recent-span, 1);
 }
 
 /* ---- 编辑态 / 拖拽调宽（对齐 obsidian-dashboard-main） ---- */
-.attend-modules-grid.attend-mod-edit .attend-surface {
+.astra-modules-grid.astra-mod-edit .astra-surface {
   cursor: pointer;
-  outline: 1px dashed var(--attend-border-strong);
+  outline: 1px dashed var(--astra-border-strong);
   outline-offset: 2px;
 }
 
-.attend-card__resize {
+.astra-card__resize {
   position: absolute;
   right: 3px;
   bottom: 3px;
@@ -1345,101 +1355,103 @@
   width: 20px;
   height: 20px;
   place-items: center;
-  color: var(--attend-text-muted);
-  border: 1px solid var(--attend-border-strong);
+  color: var(--astra-text-muted);
+  border: 1px solid var(--astra-border-strong);
   border-radius: 5px;
-  background: var(--attend-bg);
+  background: var(--astra-bg);
   font-size: 11px;
   line-height: 1;
   cursor: nwse-resize;
   opacity: 0;
   transition: opacity 0.12s;
 }
-.attend-modules-grid.attend-mod-edit .attend-surface:hover .attend-card__resize {
+.astra-modules-grid.astra-mod-edit .astra-surface:hover .astra-card__resize {
   opacity: 1;
 }
-.attend-card__resize:hover {
-  color: var(--attend-accent);
+.astra-card__resize:hover {
+  color: var(--astra-accent);
 }
 
-.attend-card--resizing {
+.astra-card--resizing {
   user-select: none;
   outline: 2px solid var(--interactive-accent) !important;
 }
-.attend-modules-grid.attend-mod-edit .attend-surface.is-limit {
-  outline: 2px solid var(--attend-accent-red) !important;
-  animation: attend-limit-shake 0.18s ease-in-out 2;
+.astra-modules-grid.astra-mod-edit .astra-surface.is-limit {
+  outline: 2px solid var(--astra-accent-red) !important;
+  animation: astra-limit-shake 0.18s ease-in-out 2;
 }
-@keyframes attend-limit-shake {
+@keyframes astra-limit-shake {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(2px); }
   75% { transform: translateX(-2px); }
 }
 
-.attend-card__ratio {
+.astra-card__ratio {
   position: absolute;
   top: 50%;
   left: 50%;
   z-index: 4;
   padding: 4px 9px;
-  color: var(--attend-text);
-  border: 1px solid var(--attend-border-strong);
+  color: var(--astra-text);
+  border: 1px solid var(--astra-border-strong);
   border-radius: 6px;
-  background: var(--attend-bg);
+  background: var(--astra-bg);
   box-shadow: var(--shadow-s);
   font-size: 12px;
   transform: translate(-50%, -50%);
   pointer-events: none;
 }
 
-.attend-mod-editbar {
+.astra-mod-editbar {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 8px 0 2px;
 }
-.attend-mod-editbar button {
-  border: 1px solid var(--attend-border);
+.astra-mod-editbar button {
+  border: 1px solid var(--astra-border);
   border-radius: 6px;
-  background: var(--attend-bg);
-  color: var(--attend-text);
+  background: var(--astra-bg);
+  color: var(--astra-text);
   font-size: 12px;
   line-height: 1;
   padding: 6px 10px;
   cursor: pointer;
 }
-.attend-mod-editbar button:hover {
-  color: var(--attend-accent);
-  border-color: var(--attend-border-strong);
+.astra-mod-editbar button:hover {
+  color: var(--astra-accent);
+  border-color: var(--astra-border-strong);
 }
-.attend-mod-editbar__spacer {
+.astra-mod-editbar__spacer {
   flex: 1;
 }
-.attend-mod-editbar__trash.is-over {
-  color: var(--attend-accent-red, #e5534b);
+.astra-mod-editbar__trash.is-over {
+  color: var(--astra-accent-red, #e5534b);
   border-color: currentColor;
-  background: color-mix(in srgb, var(--attend-accent-red, #e5534b) 14%, transparent);
+  background: color-mix(in srgb, var(--astra-accent-red, #e5534b) 14%, transparent);
 }
 
 /* 拖拽重排占位符与提起的卡片 */
-.attend-ph {
+.astra-ph {
   /* 保留原卡片在网格中的尺寸与槽位，供其余卡片让位 */
   grid-column: span var(--cols, 1);
   grid-row: span var(--rows, 1);
 }
-.attend-card--dragging {
+.astra-card--dragging {
+  position: absolute;
+  z-index: 9999;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
   outline: 2px solid var(--interactive-accent);
   cursor: grabbing;
   pointer-events: none;
 }
-.attend-card--doomed {
+.astra-card--doomed {
   opacity: 0.45;
-  outline: 2px dashed var(--attend-accent-red, #e5534b) !important;
+  outline: 2px dashed var(--astra-accent-red, #e5534b) !important;
 }
 
 /* 添加卡片菜单 */
-.attend-addmenu-backdrop {
+.astra-addmenu-backdrop {
   position: fixed;
   inset: 0;
   z-index: 40;
@@ -1448,50 +1460,50 @@
   background: rgba(0, 0, 0, 0.32);
   backdrop-filter: blur(2px);
 }
-.attend-addmenu {
+.astra-addmenu {
   min-width: 200px;
   max-height: 70vh;
   overflow-y: auto;
   padding: 10px;
-  border: 1px solid var(--attend-border-strong);
+  border: 1px solid var(--astra-border-strong);
   border-radius: 10px;
-  background: var(--attend-bg);
+  background: var(--astra-bg);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
 }
-.attend-addmenu__title {
+.astra-addmenu__title {
   font-size: 13px;
   font-weight: 600;
-  color: var(--attend-text);
+  color: var(--astra-text);
   padding: 2px 4px 8px;
 }
-.attend-addmenu__item {
+.astra-addmenu__item {
   padding: 8px 10px;
   border-radius: 6px;
   font-size: 13px;
-  color: var(--attend-text);
+  color: var(--astra-text);
   cursor: pointer;
 }
-.attend-addmenu__item:hover {
+.astra-addmenu__item:hover {
   background: var(--background-modifier-hover);
-  color: var(--attend-accent);
+  color: var(--astra-accent);
 }
-.attend-addmenu__empty {
+.astra-addmenu__empty {
   padding: 8px 10px;
   font-size: 13px;
-  color: var(--attend-text-muted);
+  color: var(--astra-text-muted);
 }
-.attend-modules-empty {
+.astra-modules-empty {
   grid-column: 1 / -1;
   padding: 22px;
   text-align: center;
-  color: var(--attend-text-muted);
-  border: 1px dashed var(--attend-border-strong);
+  color: var(--astra-text-muted);
+  border: 1px dashed var(--astra-border-strong);
   border-radius: 9px;
   font-size: 13px;
 }
 
 /* ---- 通用空态 ---- */
-.attend-modules-grid .ad-empty {
+.astra-modules-grid .ad-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1500,19 +1512,19 @@
   padding: 30px 16px;
   text-align: center;
 }
-.attend-modules-grid .ad-empty__title {
+.astra-modules-grid .ad-empty__title {
   font-size: 13px;
   font-weight: 600;
-  color: var(--attend-text);
+  color: var(--astra-text);
 }
-.attend-modules-grid .ad-empty__hint {
+.astra-modules-grid .ad-empty__hint {
   font-size: 11px;
   line-height: 1.6;
-  color: var(--attend-text-faint);
+  color: var(--astra-text-faint);
 }
 
 /* ---- 快速捕捉 ---- */
-.attend-modules-grid .ad-qc {
+.astra-modules-grid .ad-qc {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -1520,15 +1532,15 @@
   flex: 1;
 }
 /* ---- 快速捕获：复用「全部便签」面板主区输入卡样式（不渲染左侧 6 图标工具栏） ---- */
-.attend-modules-grid .ad-qc {
+.astra-modules-grid .ad-qc {
   padding: 8px 18px 14px;
   overflow: visible; /* 允许输入卡 focus-shadow 不被裁剪，避免左右视觉不对称 */
 }
 /* 快速捕获模块卡片本身也需要 overflow: visible，否则输入卡的 focus box-shadow 会被裁剪 */
-.attend-modules-grid .attend-qc-surface {
+.astra-modules-grid .astra-qc-surface {
   overflow: visible !important;
 }
-.attend-modules-grid .qc-input-card {
+.astra-modules-grid .qc-input-card {
   margin: 0 !important;
   padding: 14px 16px 10px;
   flex: 1 1 auto !important;
@@ -1538,21 +1550,21 @@
   box-sizing: border-box;
   width: 100%;
 }
-.attend-modules-grid .qc-input-card .flomo-input {
+.astra-modules-grid .qc-input-card .flomo-input {
   flex: 1;
   min-height: 64px;
   padding: 4px 0;
 }
-.attend-modules-grid .qc-input-card .qc-toolbar {
+.astra-modules-grid .qc-input-card .qc-toolbar {
   justify-content: flex-end;
 }
-.attend-modules-grid .qc-input-card .flomo-submit-btn.is-flashing {
+.astra-modules-grid .qc-input-card .flomo-submit-btn.is-flashing {
   opacity: 0.4;
   filter: saturate(0.6);
 }
 
 /* ---- TODO ---- */
-.attend-modules-grid .ad-todo {
+.astra-modules-grid .ad-todo {
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -1560,50 +1572,50 @@
   flex: 1;
   overflow-y: auto;
 }
-.attend-modules-grid .ad-todo__item {
+.astra-modules-grid .ad-todo__item {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 8px 10px;
   border-radius: 8px;
 }
-.attend-modules-grid .ad-todo__item:hover {
-  background: var(--attend-surface-hover);
+.astra-modules-grid .ad-todo__item:hover {
+  background: var(--astra-surface-hover);
 }
-.attend-modules-grid .ad-todo__item.is-done .ad-todo__text {
-  color: var(--attend-text-faint);
+.astra-modules-grid .ad-todo__item.is-done .ad-todo__text {
+  color: var(--astra-text-faint);
   text-decoration: line-through;
 }
-.attend-modules-grid .ad-todo__item.is-overdue .ad-todo__text {
-  color: var(--attend-accent-red);
+.astra-modules-grid .ad-todo__item.is-overdue .ad-todo__text {
+  color: var(--astra-accent-red);
 }
-.attend-modules-grid .ad-todo__check {
+.astra-modules-grid .ad-todo__check {
   display: grid;
   flex: 0 0 20px;
   width: 20px;
   height: 20px;
   place-items: center;
   cursor: pointer;
-  color: var(--attend-text-faint);
+  color: var(--astra-text-faint);
 }
-.attend-modules-grid .ad-todo__item.is-done .ad-todo__check {
-  color: var(--attend-accent-green);
+.astra-modules-grid .ad-todo__item.is-done .ad-todo__check {
+  color: var(--astra-accent-green);
 }
-.attend-modules-grid .ad-todo__item.is-overdue .ad-todo__check {
-  color: var(--attend-accent-red);
+.astra-modules-grid .ad-todo__item.is-overdue .ad-todo__check {
+  color: var(--astra-accent-red);
 }
-.attend-modules-grid .ad-todo__check svg {
+.astra-modules-grid .ad-todo__check svg {
   width: 18px;
   height: 18px;
 }
-.attend-modules-grid .ad-todo__text {
+.astra-modules-grid .ad-todo__text {
   flex: 1;
   min-width: 0;
   font-size: 13px;
   cursor: pointer;
   word-break: break-word;
 }
-.attend-modules-grid .ad-todo__tag {
+.astra-modules-grid .ad-todo__tag {
   flex: 0 0 auto;
   padding: 1px 8px;
   border-radius: 8px;
@@ -1611,13 +1623,13 @@
   font-weight: 600;
   border: 1px solid currentColor;
   background: color-mix(in srgb, currentColor 12%, transparent);
-  color: var(--attend-text-muted);
+  color: var(--astra-text-muted);
 }
-.attend-modules-grid .ad-todo__tag[data-prio="重要且紧急"] { color: var(--attend-accent-red); }
-.attend-modules-grid .ad-todo__tag[data-prio="重要不紧急"],
-.attend-modules-grid .ad-todo__tag[data-prio="紧急不重要"] { color: var(--attend-accent-yellow); }
-.attend-modules-grid .ad-todo__tag[data-prio="不重要不紧急"] { color: var(--attend-text-muted); }
-.attend-modules-grid .ad-todo__empty {
+.astra-modules-grid .ad-todo__tag[data-prio="重要且紧急"] { color: var(--astra-accent-red); }
+.astra-modules-grid .ad-todo__tag[data-prio="重要不紧急"],
+.astra-modules-grid .ad-todo__tag[data-prio="紧急不重要"] { color: var(--astra-accent-yellow); }
+.astra-modules-grid .ad-todo__tag[data-prio="不重要不紧急"] { color: var(--astra-text-muted); }
+.astra-modules-grid .ad-todo__empty {
   flex: 1;
   align-self: stretch;
   min-height: 0;
@@ -1628,9 +1640,9 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  color: var(--attend-text-muted);
+  color: var(--astra-text-muted);
 }
-.attend-modules-grid .ad-todo__empty-icon {
+.astra-modules-grid .ad-todo__empty-icon {
   width: 40px;
   height: 40px;
   display: flex;
@@ -1639,11 +1651,11 @@
   color: inherit;
   transform: translateY(-4px);
 }
-.attend-modules-grid .ad-todo__empty-icon svg {
+.astra-modules-grid .ad-todo__empty-icon svg {
   width: 40px;
   height: 40px;
 }
-.attend-modules-grid .ad-todo__empty-text {
+.astra-modules-grid .ad-todo__empty-text {
   font-size: 14px;
   font-weight: 400;
   color: inherit;
@@ -1651,7 +1663,7 @@
 }
 
 /* ---- 待办进展 ---- */
-.attend-modules-grid .ad-wo {
+.astra-modules-grid .ad-wo {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -1659,25 +1671,25 @@
   flex: 1;
   overflow: hidden;
 }
-.attend-modules-grid .ad-wo__group h4 {
+.astra-modules-grid .ad-wo__group h4 {
   display: flex;
   align-items: center;
   gap: 6px;
   margin: 6px 0;
   font-size: 12px;
   font-weight: 600;
-  color: var(--attend-text-muted);
+  color: var(--astra-text-muted);
 }
-.attend-modules-grid .ad-wo__mark {
-  color: var(--attend-accent-yellow);
+.astra-modules-grid .ad-wo__mark {
+  color: var(--astra-accent-yellow);
 }
-.attend-modules-grid .ad-wo--overdue .ad-wo__mark {
-  color: var(--attend-accent-red);
+.astra-modules-grid .ad-wo--overdue .ad-wo__mark {
+  color: var(--astra-accent-red);
 }
-.attend-modules-grid .ad-wo__sep {
+.astra-modules-grid .ad-wo__sep {
   height: 2px;
 }
-.attend-modules-grid .ad-wo__list {
+.astra-modules-grid .ad-wo__list {
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -1685,7 +1697,7 @@
   padding: 0;
   list-style: none;
 }
-.attend-modules-grid .ad-wo__list li {
+.astra-modules-grid .ad-wo__list li {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1694,33 +1706,33 @@
   font-size: 12.5px;
   cursor: pointer;
 }
-.attend-modules-grid .ad-wo__list li:hover {
-  background: var(--attend-surface-hover);
+.astra-modules-grid .ad-wo__list li:hover {
+  background: var(--astra-surface-hover);
 }
-.attend-modules-grid .ad-wo__date {
+.astra-modules-grid .ad-wo__date {
   flex: 0 0 auto;
   font-size: 11px;
   font-variant-numeric: tabular-nums;
-  color: var(--attend-text-faint);
+  color: var(--astra-text-faint);
 }
-.attend-modules-grid .ad-wo__text {
+.astra-modules-grid .ad-wo__text {
   flex: 1;
   min-width: 0;
-  color: var(--attend-text);
+  color: var(--astra-text);
   word-break: break-word;
 }
-.attend-modules-grid .ad-wo__list li.is-overdue-row .ad-wo__text {
-  color: var(--attend-accent-red);
+.astra-modules-grid .ad-wo__list li.is-overdue-row .ad-wo__text {
+  color: var(--astra-accent-red);
 }
-.attend-modules-grid .ad-wo__over {
+.astra-modules-grid .ad-wo__over {
   flex: 0 0 auto;
   padding: 1px 7px;
   border-radius: 999px;
   font-size: 10px;
-  color: var(--attend-accent-red);
-  background: color-mix(in srgb, var(--attend-accent-red) 16%, transparent);
+  color: var(--astra-accent-red);
+  background: color-mix(in srgb, var(--astra-accent-red) 16%, transparent);
 }
-.attend-modules-grid .ad-wo__urg {
+.astra-modules-grid .ad-wo__urg {
   flex: 0 0 auto;
   padding: 1px 7px;
   border-radius: 8px;
@@ -1728,27 +1740,28 @@
   font-weight: 600;
   border: 1px solid currentColor;
   background: color-mix(in srgb, currentColor 12%, transparent);
-  color: var(--attend-text-muted);
+  color: var(--astra-text-muted);
 }
-.attend-modules-grid .ad-wo__urg[data-urg="high"] { color: var(--attend-accent-red); }
-.attend-modules-grid .ad-wo__urg[data-urg="mid"] { color: var(--attend-accent-yellow); }
-.attend-modules-grid .ad-wo__urg[data-urg="low"] { color: var(--attend-accent-blue); }
-.attend-modules-grid .ad-wo__urg[data-urg="none"] { color: var(--attend-text-muted); }
-.attend-modules-grid .ad-wo__empty {
+.astra-modules-grid .ad-wo__urg[data-urg="high"] { color: var(--astra-accent-red); }
+.astra-modules-grid .ad-wo__urg[data-urg="mid"] { color: var(--astra-accent-yellow); }
+.astra-modules-grid .ad-wo__urg[data-urg="low"] { color: var(--astra-accent-blue); }
+.astra-modules-grid .ad-wo__urg[data-urg="none"] { color: var(--astra-text-muted); }
+.astra-modules-grid .ad-wo__empty {
   padding: 20px 12px;
   text-align: center;
   font-size: 12px;
-  color: var(--attend-text-muted);
+  color: var(--astra-text-muted);
 }
-.attend-modules-grid .ad-wo__foot {
-  padding-top: 8px;
-  border-top: 1px solid var(--attend-border);
+.astra-modules-grid .ad-wo__foot {
+  /* 左右/底部内边距：对齐任务行左缩进，并让出卡片 9px 圆角，避免首字被左下圆角切掉 */
+  padding: 8px 10px 10px;
+  border-top: 1px solid var(--astra-border);
   font-size: 11px;
-  color: var(--attend-text-faint);
+  color: var(--astra-text-faint);
 }
 
 /* ---- 项目情况（阶段管道） ---- */
-.attend-modules-grid .ad-proj {
+.astra-modules-grid .ad-proj {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -1756,7 +1769,7 @@
   flex: 1;
   min-height: 0;
 }
-.attend-modules-grid .ad-proj__list {
+.astra-modules-grid .ad-proj__list {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -1765,42 +1778,42 @@
   overflow-y: auto; /* 滚动移到列表层，给 sum 空出贴底空间 */
   padding: 0 14px; /* 原父层左右 14px 缩进移至滚动容器，保证行内容缩进不变 */
 }
-.attend-modules-grid .ad-proj__row {
+.astra-modules-grid .ad-proj__row {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 9px 44px 9px 10px;
-  border: 1px solid var(--attend-border);
+  border: 1px solid var(--astra-border);
   border-radius: 9px;
-  background: color-mix(in srgb, var(--attend-surface) 55%, transparent);
+  background: color-mix(in srgb, var(--astra-surface) 55%, transparent);
   cursor: pointer;
   position: relative;
 }
-.attend-modules-grid .ad-proj__row:hover {
-  background: var(--attend-surface-hover);
+.astra-modules-grid .ad-proj__row:hover {
+  background: var(--astra-surface-hover);
 }
-.attend-modules-grid .ad-proj__dot {
+.astra-modules-grid .ad-proj__dot {
   flex: 0 0 10px;
   width: 10px;
   height: 10px;
   border-radius: 50%;
   background: var(--ad-proj-dot);
 }
-.attend-modules-grid .ad-proj__name {
+.astra-modules-grid .ad-proj__name {
   display: flex;
   flex-direction: column;
   min-width: 0;
   font-size: 13px;
   font-weight: 600;
-  color: var(--attend-text);
+  color: var(--astra-text);
 }
-.attend-modules-grid .ad-proj__name .ad-meta {
+.astra-modules-grid .ad-proj__name .ad-meta {
   margin-top: 2px;
   font-size: 11px;
   font-weight: 400;
-  color: var(--attend-text-faint);
+  color: var(--astra-text-faint);
 }
-.attend-modules-grid .ad-proj__track {
+.astra-modules-grid .ad-proj__track {
   flex: 1;
   min-width: 0;
 }
@@ -1823,9 +1836,9 @@
   flex: 0 0 auto;
   font-size: 9px;
   white-space: nowrap;
-  color: var(--attend-text);
+  color: var(--astra-text);
   /* 连接线本身不拦截点击 */
-  --proc-line: var(--attend-border-strong);
+  --proc-line: var(--astra-border-strong);
 }
 .ad-proj__stage::before {
   content: "";
@@ -1850,23 +1863,23 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--attend-border-strong);
+  background: var(--astra-border-strong);
 }
 .ad-proj__stage.is-done .ad-pip {
   background: #40c463; /* 同上 */
 }
 
 /* 主页卡片：阶段管道（复用全局样式 + 主页专属尺寸） */
-.attend-modules-grid .ad-proj__stages {
+.astra-modules-grid .ad-proj__stages {
   gap: var(--pip-gap, 3px);
 }
-.attend-modules-grid .ad-proj__stage {
+.astra-modules-grid .ad-proj__stage {
   font-size: 9px;
 }
-.attend-modules-grid .ad-pip {
+.astra-modules-grid .ad-pip {
   flex: 0 0 8px;
 }
-.attend-modules-grid .ad-proj__chev {
+.astra-modules-grid .ad-proj__chev {
   position: absolute;
   top: 50%;
   right: 18px;
@@ -1877,32 +1890,32 @@
   align-items: center;
   justify-content: center;
   border-radius: 6px;
-  color: var(--attend-text-faint);
+  color: var(--astra-text-faint);
   cursor: pointer;
   transition: color 0.12s ease, background 0.12s ease;
 }
-.attend-modules-grid .ad-proj__chev svg {
+.astra-modules-grid .ad-proj__chev svg {
   width: 14px;
   height: 14px;
 }
-.attend-modules-grid .ad-proj__chev:hover {
-  color: var(--attend-accent-blue);
+.astra-modules-grid .ad-proj__chev:hover {
+  color: var(--astra-accent-blue);
   background: var(--background-modifier-hover);
 }
-.attend-modules-grid .ad-proj__sum {
+.astra-modules-grid .ad-proj__sum {
   display: flex;
   align-items: center;
   justify-content: flex-start;
   flex-shrink: 0;
   margin-top: auto; /* 吸附卡片底部（对齐上游 obsidian-dashboard-main:887） */
   padding: 8px 14px 0; /* 左右缩进补回原父层 14px */
-  border-top: 1px dashed var(--attend-border);
+  border-top: 1px dashed var(--astra-border);
   font-size: 11px;
-  color: var(--attend-text-faint);
+  color: var(--astra-text-faint);
 }
 
 /* ---- 倒计时 ---- */
-.attend-modules-grid .ad-cd {
+.astra-modules-grid .ad-cd {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1910,79 +1923,80 @@
   padding: 12px 18px 18px;
   flex: 1;
 }
-.attend-modules-grid .ad-cd__sub {
+.astra-modules-grid .ad-cd__sub {
   font-size: 12px;
-  color: var(--attend-text-muted);
+  color: var(--astra-text-muted);
 }
-.attend-modules-grid .ad-cd__big {
+.astra-modules-grid .ad-cd__big {
   display: flex;
   align-items: baseline;
   gap: 6px;
   font-size: 46px;
   font-weight: 750;
   line-height: 1;
-  color: var(--attend-text);
+  color: var(--astra-text);
 }
-.attend-modules-grid .ad-cd__big .ad-unit {
+.astra-modules-grid .ad-cd__big .ad-unit {
   font-size: 12px;
   font-weight: 600;
-  color: var(--attend-text-faint);
+  color: var(--astra-text-faint);
 }
-.attend-modules-grid .ad-cd__bottom {
+.astra-modules-grid .ad-cd__bottom {
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-top: auto; /* 将剩余周数行 + 进度条吸附到卡片底部（对齐上游 obsidian-dashboard-main:1174） */
 }
-.attend-modules-grid .ad-cd__row {
+.astra-modules-grid .ad-cd__row {
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  color: var(--attend-text-muted);
+  color: var(--astra-text-muted);
 }
-.attend-modules-grid .ad-cd__row strong {
-  color: var(--attend-text);
+.astra-modules-grid .ad-cd__row strong {
+  color: var(--astra-text);
 }
-.attend-modules-grid .ad-cd__bar {
+.astra-modules-grid .ad-cd__bar {
   width: 100%;
   height: 8px;
   border-radius: 999px;
   overflow: hidden;
-  background: var(--attend-surface-hover);
+  background: var(--astra-surface-hover);
 }
-.attend-modules-grid .ad-cd .ad-fill {
+.astra-modules-grid .ad-cd .ad-fill {
+  width: 100%;
   height: 100%;
   border-radius: 999px;
-  background: var(--attend-accent-blue);
+  background: var(--astra-accent-blue);
 }
-.attend-modules-grid .ad-cd__arrived {
+.astra-modules-grid .ad-cd__arrived {
   font-size: 20px;
   font-weight: 700;
-  color: var(--attend-accent-green);
+  color: var(--astra-accent-green);
 }
 
 /* ==================== 全部项目视图（ProjectBoardView）==================== */
-/* 独立 ItemView，容器不在 .attend-dashboard 内，故在此补全 --attend-* 变量。 */
+/* 独立 ItemView，容器不在 .astra-dashboard 内，故在此补全 --astra-* 变量。 */
 .po-board-view,
 .ad-task-modal {
-  /* attend 变量（供 gantt/table/calendar 等其他 po 子视图使用，保持主题跟随） */
-  --attend-bg: var(--background-primary);
-  --attend-surface: var(--background-secondary);
-  --attend-surface-hover: var(--background-modifier-hover);
-  --attend-border: var(--background-modifier-border);
-  --attend-border-strong: var(--background-modifier-border-hover);
-  --attend-text: var(--text-normal);
-  --attend-text-muted: var(--text-muted);
-  --attend-text-faint: var(--text-faint);
-  --attend-accent-blue: #3b82f6;
-  --attend-accent-green: #16a34a;
-  --attend-accent-yellow: #f59e0b;
-  --attend-accent-purple: #a855f7;
-  --attend-accent-red: #ef4444;
-  --attend-accent-rose: #ec4899;
-  --attend-chart-grid: color-mix(in srgb, var(--text-muted) 20%, transparent);
+  /* astra 变量（供 gantt/table/calendar 等其他 po 子视图使用，保持主题跟随） */
+  --astra-bg: var(--background-primary);
+  --astra-surface: var(--background-secondary);
+  --astra-surface-hover: var(--background-modifier-hover);
+  --astra-border: var(--background-modifier-border);
+  --astra-border-strong: var(--background-modifier-border-hover);
+  --astra-text: var(--text-normal);
+  --astra-text-muted: var(--text-muted);
+  --astra-text-faint: var(--text-faint);
+  --astra-accent-blue: #3b82f6;
+  --astra-accent-green: #16a34a;
+  --astra-accent-yellow: #f59e0b;
+  --astra-accent-purple: #a855f7;
+  --astra-accent-red: #ef4444;
+  --astra-accent-rose: #ec4899;
+  --astra-chart-grid: color-mix(in srgb, var(--text-muted) 20%, transparent);
   /* 上游 --ad-* 调色板（1:1 移植 .po-container/.po-sidebar/.po-main 使用）
      与 .ad-task-modal 共享同一份定义，避免双源漂移（如圆角 12px/10px 类问题）。
      强调色改为跟随 Obsidian 主题（与嵌入态 .po-board-host.po-board-view / .flomo-container
@@ -2007,7 +2021,7 @@
   height: 100%;
   overflow-y: auto;
   box-sizing: border-box;
-  color: var(--attend-text);
+  color: var(--astra-text);
   font-family: var(--font-interface);
   font-size: 13px;
   padding: 22px 28px 60px;
@@ -2052,7 +2066,7 @@ body.theme-light .ad-task-modal {
 .po-empty {
   padding: 32px 16px;
   text-align: center;
-  color: var(--attend-text-faint);
+  color: var(--astra-text-faint);
 }
 
 /* --- 侧栏（1:1 上游 obsidian-dashboard-main） --- */
@@ -2252,7 +2266,7 @@ body.theme-light .ad-task-modal {
   max-width: 50%;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid var(--attend-border);
+  border-right: 1px solid var(--astra-border);
   background: var(--ad-s1);
   overflow: hidden;
 }
@@ -2260,9 +2274,9 @@ body.theme-light .ad-task-modal {
   display: flex;
   align-items: center;
   padding: 0 14px;
-  border-bottom: 1px solid var(--attend-border);
+  border-bottom: 1px solid var(--astra-border);
   font-weight: 650;
-  color: var(--attend-text-muted);
+  color: var(--astra-text-muted);
   font-size: 11px;
   letter-spacing: 0.02em;
   flex: 0 0 auto;
@@ -2276,19 +2290,19 @@ body.theme-light .ad-task-modal {
   align-items: center;
   gap: 6px;
   padding: 0 8px 0 14px;
-  border-bottom: 1px solid var(--attend-border);
+  border-bottom: 1px solid var(--astra-border);
   cursor: default;
   user-select: none;
   white-space: nowrap;
 }
 .po-gantt__label-row--child {
-  color: var(--attend-text-muted);
+  color: var(--astra-text-muted);
 }
 .po-gantt__label-dot {
   flex: 0 0 auto;
   width: 16px;
   text-align: center;
-  color: var(--attend-text-faint);
+  color: var(--astra-text-faint);
   cursor: pointer;
 }
 .po-gantt__label-title {
@@ -2304,7 +2318,7 @@ body.theme-light .ad-task-modal {
   margin-left: auto;
   width: 16px;
   text-align: center;
-  color: var(--attend-text-muted);
+  color: var(--astra-text-muted);
   cursor: pointer;
   opacity: 0;
   transition: opacity 0.1s;
@@ -2334,7 +2348,7 @@ body.theme-light .ad-task-modal {
   display: block;
 }
 .po-gantt__hdr-bg {
-  fill: var(--ad-s1);
+  fill: var(--astra-bg);
 }
 .po-gantt__band-even {
   fill: transparent;
@@ -2344,7 +2358,7 @@ body.theme-light .ad-task-modal {
 }
 .po-gantt__hdr-month-top,
 .po-gantt__hdr-year {
-  fill: var(--attend-text-muted);
+  fill: var(--astra-text-muted);
   font-size: 10px;
   font-weight: 600;
   pointer-events: none;
@@ -2352,7 +2366,7 @@ body.theme-light .ad-task-modal {
 .po-gantt__hdr-month,
 .po-gantt__hdr-quarter,
 .po-gantt__hdr-week {
-  fill: var(--attend-text);
+  fill: var(--astra-text);
   font-size: 10px;
   font-weight: 600;
   text-anchor: middle;
@@ -2367,7 +2381,7 @@ body.theme-light .ad-task-modal {
   font-weight: 700;
 }
 .po-gantt__hdr-day {
-  fill: var(--attend-text-muted);
+  fill: var(--astra-text-muted);
   font-size: 10px;
   text-anchor: middle;
   dominant-baseline: central;
@@ -2377,7 +2391,7 @@ body.theme-light .ad-task-modal {
   fill: rgba(200, 80, 80, 0.06);
 }
 .po-gantt__hdr-tick {
-  stroke: var(--attend-border-strong);
+  stroke: var(--astra-border-strong);
   stroke-width: 1;
 }
 .po-gantt__weekend {
@@ -2385,7 +2399,7 @@ body.theme-light .ad-task-modal {
   pointer-events: none;
 }
 .po-gantt__gridline-v {
-  stroke: color-mix(in srgb, var(--attend-border-strong) 85%, transparent);
+  stroke: color-mix(in srgb, var(--astra-border-strong) 85%, transparent);
   stroke-width: 1;
   stroke-dasharray: 2 3;
   pointer-events: none;
@@ -2397,12 +2411,12 @@ body.theme-light .ad-task-modal {
   pointer-events: none;
 }
 .po-gantt__today {
-  stroke: var(--attend-accent-rose);
+  stroke: var(--astra-accent-rose);
   stroke-width: 2;
   stroke-dasharray: 4 3;
 }
 .po-gantt__today-diamond {
-  fill: var(--attend-accent-rose);
+  fill: var(--astra-accent-rose);
 }
 .po-gantt__bar {
   cursor: pointer;
@@ -2415,7 +2429,7 @@ body.theme-light .ad-task-modal {
   opacity: 0.85;
 }
 .po-gantt__bar--parent {
-  stroke: var(--attend-border-strong);
+  stroke: var(--astra-border-strong);
   stroke-width: 1;
 }
 .po-gantt__bar.is-completed {
@@ -2429,19 +2443,19 @@ body.theme-light .ad-task-modal {
   cursor: ew-resize;
 }
 .po-bar--highlight {
-  stroke: var(--attend-text);
+  stroke: var(--astra-text);
   stroke-width: 1.5;
 }
 .po-gantt__tooltip {
   position: absolute;
   max-width: 320px;
   padding: 8px 10px;
-  border: 1px solid var(--attend-border-strong);
+  border: 1px solid var(--astra-border-strong);
   border-radius: 6px;
   background: var(--ad-s1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   font-size: 12px;
-  color: var(--attend-text);
+  color: var(--astra-text);
   pointer-events: none;
   z-index: 50;
   opacity: 0;
@@ -2456,10 +2470,10 @@ body.theme-light .ad-task-modal {
   flex: 0 0 5px;
   cursor: row-resize;
   background: var(--ad-line);
-  border-top: 1px solid var(--attend-border);
+  border-top: 1px solid var(--astra-border);
 }
 .po-resize:hover {
-  background: var(--attend-accent-blue);
+  background: var(--astra-accent-blue);
 }
 
 /* --- 列表 --- */
@@ -2471,7 +2485,7 @@ body.theme-light .ad-task-modal {
 }
 .po-toolbar__label {
   font-size: 12px;
-  color: var(--attend-text-muted);
+  color: var(--astra-text-muted);
 }
 .po-chip {
   padding: 5px 12px;
@@ -2508,8 +2522,8 @@ body.theme-light .ad-task-modal {
 .po-table td {
   padding: 8px 12px;
   text-align: left;
-  border-bottom: 1px solid var(--attend-border);
-  border-right: 1px solid var(--attend-border);
+  border-bottom: 1px solid var(--astra-border);
+  border-right: 1px solid var(--astra-border);
   white-space: nowrap;
 }
 .po-table th:last-child,
@@ -2520,23 +2534,23 @@ body.theme-light .ad-task-modal {
   position: sticky;
   top: 0;
   background: var(--ad-s1);
-  color: var(--attend-text-muted);
+  color: var(--astra-text-muted);
   font-weight: 650;
   font-size: 11px;
   letter-spacing: 0.02em;
   z-index: 2;
-  border-bottom: 1px solid var(--attend-border-strong);
+  border-bottom: 1px solid var(--astra-border-strong);
 }
 .po-th--sortable {
   cursor: pointer;
   user-select: none;
 }
 .po-th--sortable:hover {
-  color: var(--attend-text);
+  color: var(--astra-text);
 }
 .po-sort-arrow {
   font-size: 10px;
-  color: var(--attend-text-muted);
+  color: var(--astra-text-muted);
 }
 .po-data-row {
   cursor: default;
@@ -2549,7 +2563,7 @@ body.theme-light .ad-task-modal {
   opacity: 0.55;
 }
 .po-data-row.po-row--highlight {
-  background: color-mix(in srgb, var(--attend-accent-blue) 16%, transparent);
+  background: color-mix(in srgb, var(--astra-accent-blue) 16%, transparent);
 }
 .po-spacer-cell {
   padding: 0 !important;
@@ -2561,7 +2575,7 @@ body.theme-light .ad-task-modal {
   justify-content: center;
   width: 15px;
   height: 15px;
-  border: 1.5px solid var(--attend-border-strong);
+  border: 1.5px solid var(--astra-border-strong);
   border-radius: 50%;
   cursor: pointer;
   font-size: 9px;
@@ -2577,7 +2591,7 @@ body.theme-light .ad-task-modal {
   color: var(--ad-accent);
 }
 .po-name-cell {
-  color: var(--attend-text);
+  color: var(--astra-text);
 }
 .po-prio {
   display: inline-block;
@@ -2589,18 +2603,18 @@ body.theme-light .ad-task-modal {
   background: color-mix(in srgb, currentColor 12%, transparent);
 }
 .po-p-high {
-  color: var(--attend-accent-red);
+  color: var(--astra-accent-red);
 }
 .po-p-med {
-  color: var(--attend-accent-yellow);
+  color: var(--astra-accent-yellow);
 }
 .po-p-low {
-  color: var(--attend-text-muted);
+  color: var(--astra-text-muted);
 }
 .po-mono {
   font-family: var(--font-monospace);
   font-size: 11px;
-  color: var(--attend-text-muted);
+  color: var(--astra-text-muted);
 }
 .po-status {
   display: inline-block;
@@ -2612,21 +2626,21 @@ body.theme-light .ad-task-modal {
   background: color-mix(in srgb, currentColor 12%, transparent);
 }
 .po-todo {
-  color: var(--attend-text-muted);
-  background: color-mix(in srgb, var(--attend-text-muted) 15%, transparent);
+  color: var(--astra-text-muted);
+  background: color-mix(in srgb, var(--astra-text-muted) 15%, transparent);
 }
 .po-progress {
-  color: var(--attend-accent-blue);
+  color: var(--astra-accent-blue);
 }
 .po-blocked {
-  color: var(--attend-accent-yellow);
+  color: var(--astra-accent-yellow);
 }
 .po-done {
-  color: var(--attend-accent-green);
-  background: color-mix(in srgb, var(--attend-accent-green) 12%, transparent);
+  color: var(--astra-accent-green);
+  background: color-mix(in srgb, var(--astra-accent-green) 12%, transparent);
 }
 .po-cancelled {
-  color: var(--attend-text-faint);
+  color: var(--astra-text-faint);
   background: transparent;
   text-decoration: line-through;
 }
@@ -2642,7 +2656,7 @@ body.theme-light .ad-task-modal {
   opacity: 0.4;
 }
 .po-row--drag-over {
-  outline: 1px dashed var(--attend-border-strong);
+  outline: 1px dashed var(--astra-border-strong);
 }
 
 /* --- 阶段紧凑管道（复用 ad-* 样式类，与上游 obsidian-dashboard-main:1745 一致） --- */
@@ -3914,7 +3928,7 @@ body.is-mobile .flomo-shell .flomo-sidebar {
   padding: 6px 0 12px;
   font-size: 14px;
   font-weight: 600;
-  color: var(--attend-text);
+  color: var(--astra-text);
 }
 .po-cal__nav {
   display: flex;
@@ -3922,8 +3936,8 @@ body.is-mobile .flomo-shell .flomo-sidebar {
 }
 .po-cal__btn {
   background: transparent;
-  border: 1px solid var(--attend-border);
-  color: var(--attend-text-muted);
+  border: 1px solid var(--astra-border);
+  color: var(--astra-text-muted);
   padding: 4px 8px;
   border-radius: 6px;
   cursor: pointer;
@@ -3932,17 +3946,17 @@ body.is-mobile .flomo-shell .flomo-sidebar {
 }
 .po-cal__btn:hover {
   background: var(--ad-h1);
-  color: var(--attend-text);
+  color: var(--astra-text);
 }
 .po-cal__weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   text-align: center;
   font-size: 10px;
-  color: var(--attend-text-muted);
+  color: var(--astra-text-muted);
   font-weight: 600;
   padding-bottom: 6px;
-  border-bottom: 1px solid var(--attend-border);
+  border-bottom: 1px solid var(--astra-border);
 }
 .po-cal__days {
   display: grid;
@@ -3960,7 +3974,7 @@ body.is-mobile .flomo-shell .flomo-sidebar {
   align-items: stretch;
   justify-content: flex-start;
   font-size: 11px;
-  color: var(--attend-text-muted);
+  color: var(--astra-text-muted);
   border: 1px solid transparent;
   transition: background 0.12s ease, border-color 0.12s ease;
   padding: 4px 3px;
@@ -3968,23 +3982,23 @@ body.is-mobile .flomo-shell .flomo-sidebar {
 }
 .po-cal__day:hover {
   background: var(--ad-h1);
-  border-color: var(--attend-border);
+  border-color: var(--astra-border);
 }
 .po-cal__day.is-today {
-  background: color-mix(in srgb, var(--attend-accent-blue) 16%, var(--ad-s1));
-  border-color: color-mix(in srgb, var(--attend-accent-blue) 40%, transparent);
-  color: var(--attend-text);
+  background: color-mix(in srgb, var(--astra-accent-blue) 16%, var(--ad-s1));
+  border-color: color-mix(in srgb, var(--astra-accent-blue) 40%, transparent);
+  color: var(--astra-text);
   font-weight: 600;
 }
 .po-cal__day.has-overdue {
-  border-color: color-mix(in srgb, var(--attend-accent-red) 30%, transparent);
+  border-color: color-mix(in srgb, var(--astra-accent-red) 30%, transparent);
 }
 .po-cal__day.has-overdue:not(.is-today) {
-  background: color-mix(in srgb, var(--attend-accent-red) 8%, var(--ad-s1));
+  background: color-mix(in srgb, var(--astra-accent-red) 8%, var(--ad-s1));
 }
 .po-cal__day--drag-over {
-  background: color-mix(in srgb, var(--attend-accent-blue) 22%, var(--ad-s1)) !important;
-  border-color: var(--attend-accent-blue) !important;
+  background: color-mix(in srgb, var(--astra-accent-blue) 22%, var(--ad-s1)) !important;
+  border-color: var(--astra-accent-blue) !important;
 }
 .po-cal__day-num {
   font-size: 11px;
@@ -4004,7 +4018,7 @@ body.is-mobile .flomo-shell .flomo-sidebar {
 }
 .po-cal__day-more {
   font-size: 8px;
-  color: var(--attend-text-faint);
+  color: var(--astra-text-faint);
   text-align: left;
   padding-left: 4px;
   margin-top: 1px;
@@ -4013,9 +4027,9 @@ body.is-mobile .flomo-shell .flomo-sidebar {
 .po-cal__preview {
   margin-top: 12px;
   padding: 10px;
-  border-top: 1px solid var(--attend-border);
+  border-top: 1px solid var(--astra-border);
   font-size: 11px;
-  color: var(--attend-text-muted);
+  color: var(--astra-text-muted);
   background: var(--ad-s1);
   border-radius: 6px;
 }
@@ -4033,7 +4047,7 @@ body.is-mobile .flomo-shell .flomo-sidebar {
 }
 .po-cal__task-name {
   flex: 1;
-  color: var(--attend-text);
+  color: var(--astra-text);
 }
 .po-cal__task .po-status {
   font-size: 9px;
@@ -4052,7 +4066,7 @@ body.is-mobile .flomo-shell .flomo-sidebar {
   flex: 1;
   min-width: 200px;
   background: var(--ad-s1);
-  border: 1px solid var(--attend-border);
+  border: 1px solid var(--astra-border);
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -4065,14 +4079,14 @@ body.is-mobile .flomo-shell .flomo-sidebar {
   gap: 6px;
   font-size: 12px;
   font-weight: 600;
-  color: var(--attend-text);
+  color: var(--astra-text);
   padding-bottom: 8px;
-  border-bottom: 1px solid var(--attend-border);
+  border-bottom: 1px solid var(--astra-border);
 }
 .po-kanban__count {
   margin-left: auto;
   font-size: 10px;
-  color: var(--attend-text-muted);
+  color: var(--astra-text-muted);
 }
 .po-kanban__card {
   background: var(--ad-h1);
@@ -4082,10 +4096,10 @@ body.is-mobile .flomo-shell .flomo-sidebar {
   cursor: pointer;
   transition: all 0.12s ease;
   font-size: 12px;
-  color: var(--attend-text);
+  color: var(--astra-text);
 }
 .po-kanban__card:hover {
-  border-color: var(--attend-border-strong);
+  border-color: var(--astra-border-strong);
   background: var(--ad-h1);
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
@@ -4096,15 +4110,15 @@ body.is-mobile .flomo-shell .flomo-sidebar {
   gap: 8px;
   margin-top: 6px;
   font-size: 10px;
-  color: var(--attend-text-muted);
+  color: var(--astra-text-muted);
 }
 .po-kanban__card--dragging {
   opacity: 0.5;
   transform: rotate(2deg);
 }
 .po-kanban__col--drag-over {
-  border-color: color-mix(in srgb, var(--attend-accent-blue) 60%, transparent);
-  background: color-mix(in srgb, var(--attend-accent-blue) 12%, var(--ad-s1));
+  border-color: color-mix(in srgb, var(--astra-accent-blue) 60%, transparent);
+  background: color-mix(in srgb, var(--astra-accent-blue) 12%, var(--ad-s1));
 }
 
 /* ============================================================
@@ -4364,7 +4378,7 @@ body.theme-light .ad-task-modal .ad-node-cell.is-skip-overdue { border-color: #9
 .ad-node-note-wrap { margin-top: 12px; }
 
 /* ===== 每日口语模块 ===== */
-.attend-daily-phrase-surface .ad-dp {
+.astra-daily-phrase-surface .ad-dp {
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -4376,7 +4390,7 @@ body.theme-light .ad-task-modal .ad-node-cell.is-skip-overdue { border-color: #9
   text-align: center;
 }
 /* 文本区：占满剩余高度并垂直居中；按钮独立于文本，落于卡片底部 */
-.attend-daily-phrase-surface .ad-dp__content {
+.astra-daily-phrase-surface .ad-dp__content {
   flex: 1;
   min-height: 0;
   width: 100%;
@@ -4423,4 +4437,14 @@ body.theme-light .ad-task-modal .ad-node-cell.is-skip-overdue { border-color: #9
   font-size: 13px;
   color: var(--text-muted);
   line-height: 1.5;
+}
+
+/* ==================== 静态样式辅助类（替代 JS inline style，便于主题化）==================== */
+/* 日历视图内容区：为滚动条预留固定槽位，避免滚动条出现/消失导致的重排抖动 */
+.astra-calendar-scroll-gutter {
+  scrollbar-gutter: stable;
+}
+/* 热图有笔记的日期格子：可点击 */
+.astra-heat-cell--clickable {
+  cursor: pointer;
 }

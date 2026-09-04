@@ -39,13 +39,11 @@ export class LinterManager {
   }
 
   async onload(): Promise<void> {
-    console.log("[LinterLite] LinterManager.onload enter");
     try {
       await this.loadSettings();
       this.registerSaveHook();
-      console.log("[LinterLite] save hook registered");
-    } catch (err) {
-      console.error("[LinterLite] LinterManager.onload error", err);
+    } catch {
+      // 加载失败保持静默，不影响插件其余功能
     }
   }
 
@@ -114,7 +112,6 @@ export class LinterManager {
       result = applyYamlTimestamp(result, this.settings.yamlTimestamp, runtime);
     }
 
-    console.log("[LinterLite] lint result", { changed: result !== text, twoSpaces: twoSpacesEnabled, yaml: yamlEnabled, result: result.slice(0, 200) });
     return result;
   }
 
@@ -149,14 +146,12 @@ export class LinterManager {
             | null;
           const editor = info?.editor ?? null;
           if (file && editor && !this.shouldIgnoreFile(file)) {
-            console.log("[LinterLite] save command lint", file.path);
             void this.runLinterEditor(editor, file);
           }
         }
       };
-      console.log("[LinterLite] save hook registered (editor:save-file checkCallback)");
     } else {
-      console.warn("[LinterLite] editor:save-file command not available; save-on-lint disabled");
+      // editor:save-file 命令不可用，保存时 lint 关闭
     }
 
     // 「编辑即触发」模式（lintOnSave=false）：监听内容变更 → 防抖 lint。
@@ -181,7 +176,6 @@ export class LinterManager {
             | null;
           const activeEditor = activeInfo?.editor ?? null;
           if (activeEditor) {
-            console.log("[LinterLite] lint triggered (change)", currentFile.path);
             void this.runLinterEditor(activeEditor, currentFile);
           }
         }, 800);
@@ -195,7 +189,6 @@ export class LinterManager {
 
     const linted = this.lintText(markdown, file);
     if (linted === markdown) {
-      console.log("[LinterLite] no change", file.path);
       return;
     }
 
@@ -208,7 +201,6 @@ export class LinterManager {
       const endPos = { line: lastLine, ch: editor.getLine(lastLine).length };
       editor.replaceRange(linted, { line: 0, ch: 0 }, endPos);
       this.lastLintedContent.set(file.path, linted);
-      console.log("[LinterLite] applied", file.path);
     } finally {
       // 下一帧解除，确保 CodeMirror 的 change 事件已派发完毕。
       window.setTimeout(() => {

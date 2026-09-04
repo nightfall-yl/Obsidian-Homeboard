@@ -117,7 +117,7 @@ export interface DailyPhraseSettings {
   filePath: string;
 }
 
-export interface AttendSettings {
+export interface AstraSettings {
   displayName: string;
   openOnStartup: boolean;
   startupMode: StartupMode;
@@ -162,8 +162,8 @@ export interface ActivityEntry {
   paths: string[];
 }
 
-export interface AttendPluginData {
-  settings: AttendSettings;
+export interface AstraPluginData {
+  settings: AstraSettings;
   activity: Record<string, ActivityEntry>;
   linkSnapshots: Record<string, number>;
   fileWordCounts: Record<string, number>;
@@ -231,8 +231,8 @@ export interface DashboardSnapshot {
   graph: KnowledgeGraphSnapshot;
 }
 
-export interface AttendDataStore {
-  data: AttendPluginData;
+export interface AstraDataStore {
+  data: AstraPluginData;
   requestDataSave(): void;
 }
 
@@ -296,7 +296,7 @@ export const DEFAULT_DAILY_PHRASE_SETTINGS: DailyPhraseSettings = {
   filePath: "",
 };
 
-export const DEFAULT_SETTINGS: AttendSettings = {
+export const DEFAULT_SETTINGS: AstraSettings = {
   displayName: "",
   openOnStartup: true,
   startupMode: "replace-active",
@@ -312,7 +312,7 @@ export const DEFAULT_SETTINGS: AttendSettings = {
   diary: DEFAULT_DIARY_SETTINGS,
   todoSourceFolder: "",
   projectsFolder: "Projects",
-  npdpStages: ["立项", "规划", "开发", "测试", "上线"],
+  npdpStages: ["Charter", "PDCP", "TR", "ADCP", "COR"],
   npdpMaxStage: 5,
   npdpProgressFilter: 5,
   currentPoView: "gantt",
@@ -327,7 +327,7 @@ export const DEFAULT_SETTINGS: AttendSettings = {
   mobileHiddenModules: ["todo", "weekly", "projects", "countdown"],
 };
 
-export const DEFAULT_DATA: AttendPluginData = {
+export const DEFAULT_DATA: AstraPluginData = {
   settings: DEFAULT_SETTINGS,
   activity: {},
   linkSnapshots: {},

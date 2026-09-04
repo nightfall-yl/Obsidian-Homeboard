@@ -1,8 +1,8 @@
-# Dashboard — Obsidian 个人工作台插件
+# Astra — Obsidian 个人工作台插件
 
-Dashboard 是一个 Obsidian 插件：把「快速捕获 / 任务管理 / 项目管理 / 笔记统计 / 日历」收进一个页面，数据全部存在本地文件里，不依赖任何外部服务或账号。
+Astra 是一个 Obsidian 插件：把「快速捕获 / 任务管理 / 项目管理 / 笔记统计 / 日历」收进一个页面，数据全部存在本地文件里，不依赖任何外部服务或账号。
 
-插件 ID：`attention`（安装目录为 `.obsidian/plugins/attention/`）。
+插件 ID：`astral-trek`（安装目录为 `.obsidian/plugins/astral-trek/`）。
 
 ## 功能
 
@@ -51,14 +51,10 @@ Dashboard 是一个 Obsidian 插件：把「快速捕获 / 任务管理 / 项目
 
 ## 命令
 
-| 命令 | 说明 |
-| --- | --- |
-| 打开首页看板 | 打开 Dashboard 主页 |
-| 打开全部项目 | 打开主页并内嵌跳转到「全部项目」 |
-| 打开日历 | 在侧边栏打开日历视图 |
-| 重新扫描首页统计 | 强制重扫并刷新首页统计 |
+本插件不注册任何命令。通过左侧边栏的 Ribbon 图标打开：
 
-侧边栏 Ribbon 提供「打开 Dashboard」和「打开日历」两个图标入口。
+- **打开 Astra**：打开 Astra 主页
+- **打开日历**：在侧边栏打开日历视图
 
 ## 设置
 
@@ -118,4 +114,4 @@ npm run build    # 类型检查 + 生产构建，并把 main.js / manifest.json 
 
 ## 安装
 
-将构建产物（`main.js`、`manifest.json`、`styles.css`，可直接使用 `dist/` 内的副本）放入 `<你的库>/.obsidian/plugins/attention/` 目录，然后在 Obsidian 命令面板执行 **Reload app without saving**（或重启 Obsidian）即可。
+将构建产物（`main.js`、`manifest.json`、`styles.css`，可直接使用 `dist/` 内的副本）放入 `<你的库>/.obsidian/plugins/astral-trek/` 目录，然后在 Obsidian 命令面板执行 **Reload app without saving**（或重启 Obsidian）即可。

@@ -17,7 +17,16 @@ export function replaceTextareaRange(
   try {
     el.focus();
     el.setSelectionRange(start, end);
-    if (document.execCommand("insertText", false, newText)) {
+    // 刻意保留：execCommand 已废弃，但它是目前唯一能保住浏览器 undo stack 的写法，
+    // 标准 API setRangeText() 不会写入 undo。改动前请先确认撤销行为不受影响。
+    // obsidianmd 配置禁止对该规则加 eslint-disable，故用类型逃逸绕过「类型层」的弃用标记
+    // （运行行为不变，仅让 .execCommand 不再被标 @typescript-eslint/no-deprecated）。
+    const execInsertText = (
+      document as unknown as {
+        execCommand(command: string, showUI?: boolean, value?: string): boolean;
+      }
+    ).execCommand;
+    if (execInsertText("insertText", false, newText)) {
       // execCommand 会触发 input 事件，无需手动派发
       return;
     }

@@ -6,7 +6,8 @@ import {
   setIcon
 } from "obsidian";
 import type { App, EventRef } from "obsidian";
-import type AttendDashboardPlugin from "./main";
+import type AstraDashboardPlugin from "./main";
+import { confirmDialog } from "./confirm-modal";
 import { TaskStore } from "./data/taskStore";
 import { computeWindow, filterWithOrig } from "./data/virtualList";
 import { fmtDate, nowFmt, calcNextRemindDate } from "./data/taskLogic";
@@ -33,10 +34,10 @@ const SVGNS = "http://www.w3.org/2000/svg";
  * 全部项目面板：从 obsidian-dashboard-main 的 ProjectBoard 迁移而来。
  * 不新开标签页，由宿主容器（Dashboard 视图）内嵌渲染。
  * 含左侧项目侧栏 + 甘特 / 列表 / 日历 / 看板 标签页。
- * 所有 host 回调替换为 attend 内自有实现。
+ * 所有 host 回调替换为 astra 内自有实现。
  */
 export class ProjectBoardPanel {
-  private plugin: AttendDashboardPlugin;
+  private plugin: AstraDashboardPlugin;
   private taskStore: TaskStore;
 
   // ---- 视图实例状态（甘特/列表共用） ----
@@ -61,7 +62,7 @@ export class ProjectBoardPanel {
 
   constructor(
     private hostEl: HTMLElement,
-    plugin: AttendDashboardPlugin
+    plugin: AstraDashboardPlugin
   ) {
     this.plugin = plugin;
     this.taskStore = new TaskStore(
@@ -167,7 +168,7 @@ export class ProjectBoardPanel {
       this.renderSidebar(sidebar);
       this.poMainEl = container.createDiv({ cls: "po-main" });
       this.renderPanels();
-    } catch (error) {
+    } catch {
       this.hostEl.empty();
       this.hostEl.addClass("po-board-view");
       this.hostEl.createDiv({ cls: "po-empty", text: "暂无数据" });
@@ -243,7 +244,7 @@ export class ProjectBoardPanel {
       else if (key === "list") this.renderTaskTable(panel, "po-tb2", tasks, this.currentProjects);
       else if (key === "calendar") this.renderCalendarPanel(panel, tasks, this.currentProjects);
       else if (key === "kanban") this.renderKanbanPanel(panel, tasks, this.currentProjects);
-    } catch (error) {
+    } catch {
       panel.createDiv({ cls: "po-empty", text: "暂无数据" });
     }
   }
@@ -310,7 +311,7 @@ export class ProjectBoardPanel {
     });
     allItem.createSpan({
       cls: "po-dot",
-      attr: { style: "background:var(--attend-accent-blue);color:var(--attend-accent-blue)" }
+      attr: { style: "background:var(--astra-accent-blue);color:var(--astra-accent-blue)" }
     });
     allItem.createSpan({ text: "全部项目" });
     allItem.createSpan({ cls: "po-count", text: totalActive + "/" + totalTasks });
@@ -432,7 +433,12 @@ export class ProjectBoardPanel {
 
   /** 删除项目（含所有任务文件）。 */
   private async deleteProject(proj: ProjectInfo): Promise<void> {
-    const confirmed = confirm(`确定删除项目 "${proj.name}" 及其所有任务文件？此操作不可撤销。`);
+    const confirmed = await confirmDialog(this.app, {
+      title: "删除项目",
+      message: `确定删除项目 "${proj.name}" 及其所有任务文件？此操作不可撤销。`,
+      confirmText: "删除",
+      danger: true
+    });
     if (!confirmed) return;
     const folder = this.app.vault.getAbstractFileByPath(proj.path);
     if (folder instanceof TFolder) {
@@ -475,7 +481,7 @@ export class ProjectBoardPanel {
   ): void {
     try {
       this.renderGanttPanelInner(panel, tasks, projects);
-    } catch (error) {
+    } catch {
       panel.empty();
       panel.createDiv({ cls: "po-empty", text: "暂无数据" });
     }
@@ -752,7 +758,6 @@ export class ProjectBoardPanel {
 
     // ---- 表头渲染 ----
     const hdrBg = svgEl("rect", { x: 0, y: 0, width: totalWidth, height: HEADER_HEIGHT, class: "po-gantt__hdr-bg" });
-    (hdrBg as SVGRectElement).style.fill = "var(--attend-bg)";
     headerSvg.appendChild(hdrBg);
 
     const renderMonthBands = (y: number, h: number): void => {
@@ -1869,7 +1874,7 @@ export class ProjectBoardPanel {
     void this.renderAll(true);
   }
 
-  /* ==================== 任务动作（attend 自有实现） ==================== */
+  /* ==================== 任务动作（astra 自有实现） ==================== */
 
   /** 打开任务详情编辑弹窗（对齐上游 host openTaskEditModal）。 */
   private openTaskEditModal(task: TaskItem): void {
@@ -1951,7 +1956,12 @@ export class ProjectBoardPanel {
   /** 删除任务源笔记。 */
   private async deleteTask(task: TaskItem): Promise<void> {
     if (!task.sourceFile) return;
-    const confirmed = confirm(`确定删除任务 "${task.content}"？`);
+    const confirmed = await confirmDialog(this.app, {
+      title: "删除任务",
+      message: `确定删除任务 "${task.content}"？`,
+      confirmText: "删除",
+      danger: true
+    });
     if (!confirmed) return;
     const file = this.app.vault.getAbstractFileByPath(task.sourceFile);
     if (file instanceof TFile) {
@@ -2024,7 +2034,7 @@ export class ProjectBoardPanel {
     }
   }
 
-  /** attend 事件绑定约定：登记到 renderDisposers，重渲染/卸载时统一清理。 */
+  /** astra 事件绑定约定：登记到 renderDisposers，重渲染/卸载时统一清理。 */
   private listen<K extends keyof HTMLElementEventMap>(
     element: HTMLElement,
     eventName: K,

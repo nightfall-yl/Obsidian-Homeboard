@@ -1,6 +1,6 @@
 {
-  "name": "obsidian-attend-dashboard",
-  "version": "1.0.0",
+  "name": "astral-trek",
+  "version": "26.1.1",
   "description": "An interactive Obsidian home dashboard for tasks, knowledge graph, plugins, vault health, and writing activity.",
   "main": "main.js",
   "type": "module",
@@ -23,11 +23,11 @@
   "author": "nightfall",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nightfall-yl/obsidian-attend-dashboard.git"
+    "url": "git+https://github.com/nightfall-yl/obsidian-astral-trek.git"
   },
-  "homepage": "https://github.com/nightfall-yl/obsidian-attend-dashboard#readme",
+  "homepage": "https://github.com/nightfall-yl/obsidian-astral-trek#readme",
   "bugs": {
-    "url": "https://github.com/nightfall-yl/obsidian-attend-dashboard/issues"
+    "url": "https://github.com/nightfall-yl/obsidian-astral-trek/issues"
   },
   "license": "MIT",
   "devDependencies": {

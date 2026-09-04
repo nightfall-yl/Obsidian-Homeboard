@@ -14,7 +14,7 @@ import {
   setIcon,
 } from "obsidian";
 import type { App, EventRef } from "obsidian";
-import type AttendDashboardPlugin from "../main";
+import type AstraDashboardPlugin from "../main";
 import { FlomoStore } from "./store";
 import type {
   Flomo} from "./types";
@@ -113,7 +113,7 @@ export class FlomoBoardPanel {
 
   constructor(
     private hostEl: HTMLElement,
-    private plugin: AttendDashboardPlugin,
+    private plugin: AstraDashboardPlugin,
     filePath: string
   ) {
     this.outFilePath = filePath;
@@ -219,7 +219,7 @@ export class FlomoBoardPanel {
 
     // —— 密度切换按钮（最左）——
     const densityBtn = tools.createEl("button", {
-      cls: "attend-icon-btn clickable-icon",
+      cls: "astra-icon-btn clickable-icon",
       attr: { "aria-label": "切换视图密度" },
     });
     const updateDensityIcon = () => {
@@ -235,7 +235,7 @@ export class FlomoBoardPanel {
 
     // —— 导出按钮（中间）——
     const exportBtn = tools.createEl("button", {
-      cls: "attend-icon-btn clickable-icon",
+      cls: "astra-icon-btn clickable-icon",
       attr: { "aria-label": "导出当前筛选结果" },
     });
     setIcon(exportBtn, "download");
@@ -264,7 +264,7 @@ export class FlomoBoardPanel {
 
     // —— 侧栏切换按钮（最右）——
     const toggleBtn = tools.createEl("button", {
-      cls: "attend-icon-btn clickable-icon",
+      cls: "astra-icon-btn clickable-icon",
       attr: { "aria-label": "切换侧栏" },
     });
     const updateToggleIcon = () => {
@@ -328,7 +328,6 @@ export class FlomoBoardPanel {
         }
       }
     } catch (err) {
-      console.error("[Flomo] 导出失败:", err);
       new Notice(`导出失败: ${(err as Error).message}`);
     }
   }
@@ -812,9 +811,9 @@ export class FlomoBoardPanel {
     area.addClass("flomo-no-transition");
     if (!area.value.trim()) {
       // 空内容：重置 inline height，让 CSS min-height（收起态 40px / 展开态 96px）生效
-      area.style.height = "";
+      area.style.removeProperty("height");
     } else {
-      area.style.height = "auto";
+      area.setCssProps({ height: "auto" });
       area.style.height = area.scrollHeight + "px";
     }
     window.requestAnimationFrame(() => area.removeClass("flomo-no-transition"));
@@ -853,8 +852,7 @@ export class FlomoBoardPanel {
         this.inputCardEl?.removeClass("has-content");
         new Notice("✨ 已记录");
       }
-    } catch (err) {
-      console.error("[Attend] 便签保存失败", err);
+    } catch {
       new Notice("⚠️ 操作失败");
     }
   }
@@ -1626,7 +1624,7 @@ export class FlomoBoardPanel {
 
     const actions = head.createDiv("flomo-card-actions");
     const menuBtn = actions.createEl("button", {
-      cls: "attend-icon-btn",
+      cls: "astra-icon-btn",
       attr: { type: "button", "aria-label": "更多" },
     });
     setIcon(menuBtn, "more-horizontal");
@@ -1648,8 +1646,7 @@ export class FlomoBoardPanel {
         flomo.file,
         this.childComponent
       )
-        .catch((err) => {
-          console.error("[Attend] 便签渲染失败:", err);
+        .catch(() => {
           body.setText(text);
         });
       // 搜索高亮
@@ -1818,8 +1815,7 @@ export class FlomoBoardPanel {
       void this.store
         .deleteFlomo(flomo)
         .then(() => new Notice("已删除"))
-        .catch((err) => {
-          console.error("[Attend] 删除便签失败:", err);
+        .catch(() => {
           new Notice("⚠️ 删除失败");
         });
     });
@@ -1998,7 +1994,6 @@ export class FlomoBoardPanel {
 
     // 定位到按钮下方
     const rect = anchor.getBoundingClientRect();
-    pop.style.position = "fixed";
     pop.style.top = `${rect.bottom + window.scrollY + 6}px`;
     pop.style.left = `${rect.left + window.scrollX}px`;
     document.body.appendChild(pop);
@@ -2056,8 +2051,8 @@ export class FlomoBoardPanel {
     inp.addEventListener("change", () => {
       const files = Array.from(inp.files ?? []);
       this.disposeImagePicker(inp);
-      void this.importSelectedImages(files).catch((err: unknown) => {
-        console.error("[Flomo] Failed to import selected image:", err);
+      void this.importSelectedImages(files).catch(() => {
+        new Notice("⚠️ 图片导入失败");
       });
     }, { once: true });
     inp.addEventListener("cancel", () => {
@@ -2097,7 +2092,6 @@ export class FlomoBoardPanel {
       }
       new Notice(`图片已保存: ${fileName}`);
     } catch (e) {
-      console.error("[Flomo] 图片保存失败:", e);
       new Notice(`图片保存失败: ${(e as Error).message}`);
     }
   }

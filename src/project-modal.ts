@@ -114,7 +114,7 @@ export class ProjectModal extends Modal {
 		if (ed) descArea.value = ed.description;
 
 		// Stage dropdown (hidden for 非阶段项目)
-		const stages = this.opts.stages || ['立项', '规划', '开发', '测试', '上线'];
+		const stages = this.opts.stages || ['Charter', 'PDCP', 'TR', 'ADCP', 'COR'];
 		const stageField = contentEl.createDiv({ cls: 'ad-modal-field' });
 		stageField.createEl('label', { cls: 'ad-modal-label', text: '项目阶段' });
 		const stageWrap = stageField.createDiv({ cls: 'ad-modal-row' });

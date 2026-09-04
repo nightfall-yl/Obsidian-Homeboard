@@ -9,7 +9,7 @@ import {
   setIcon,
 } from "obsidian";
 import type { App } from "obsidian";
-import type AttendDashboardPlugin from "./main";
+import type AstraDashboardPlugin from "./main";
 import type { StartupMode } from "./models";
 import {
   DEFAULT_CALENDAR_SETTINGS,
@@ -21,30 +21,30 @@ import {
 } from "./models";
 import { lightSchemeOptions, darkSchemeOptions } from "./minimal/schemes";
 
-export class AttendSettingTab extends PluginSettingTab {
+export class AstraSettingTab extends PluginSettingTab {
   constructor(
     app: App,
-    private readonly attendPlugin: AttendDashboardPlugin
+    private readonly astraPlugin: AstraDashboardPlugin
   ) {
-    super(app, attendPlugin);
+    super(app, astraPlugin);
   }
 
   display(): void {
-    renderSettings(this.containerEl, this.attendPlugin);
+    renderSettings(this.containerEl, this.astraPlugin);
   }
 }
 
-export class AttendSettingsModal extends Modal {
+export class AstraSettingsModal extends Modal {
   constructor(
     app: App,
-    private readonly attendPlugin: AttendDashboardPlugin
+    private readonly astraPlugin: AstraDashboardPlugin
   ) {
     super(app);
   }
 
   onOpen(): void {
-    this.modalEl.addClass("attend-settings-modal");
-    renderSettings(this.contentEl, this.attendPlugin);
+    this.modalEl.addClass("astra-settings-modal");
+    renderSettings(this.contentEl, this.astraPlugin);
   }
 
   onClose(): void {
@@ -134,10 +134,10 @@ type SettingsSection = {
 
 function renderSettings(
   container: HTMLElement,
-  plugin: AttendDashboardPlugin
+  plugin: AstraDashboardPlugin
 ): void {
   container.empty();
-  container.addClass("attend-settings-root");
+  container.addClass("astra-settings-root");
 
   // Defensive: ensure new settings exist (in case data.json predates migration)
   if (!plugin.data.settings.calendar) {
@@ -174,7 +174,7 @@ function renderSettings(
     plugin.data.settings.dailyPhrase = { ...DEFAULT_DAILY_PHRASE_SETTINGS };
   }
   if (!plugin.data.settings.npdpStages) {
-    plugin.data.settings.npdpStages = ["立项", "规划", "开发", "测试", "上线"];
+    plugin.data.settings.npdpStages = ["Charter", "PDCP", "TR", "ADCP", "COR"];
   }
   if (typeof plugin.data.settings.projectsFolder !== "string") {
     plugin.data.settings.projectsFolder = "Projects";
@@ -212,7 +212,7 @@ function renderSettings(
   const sections: SettingsSection[] = [
     {
       id: "dashboard",
-      label: "Dashboard",
+      label: "Astra",
       icon: "layout-dashboard",
     },
     {
@@ -222,8 +222,8 @@ function renderSettings(
     },
   ];
 
-  const navEl = container.createDiv({ cls: "attend-settings-nav" });
-  const contentEl = container.createDiv({ cls: "attend-settings-content" });
+  const navEl = container.createDiv({ cls: "astra-settings-nav" });
+  const contentEl = container.createDiv({ cls: "astra-settings-content" });
   const sectionEls = new Map<string, HTMLElement>();
   const navButtons = new Map<string, HTMLButtonElement>();
 
@@ -238,16 +238,16 @@ function renderSettings(
 
   sections.forEach((section, index) => {
     const button = navEl.createEl("button", {
-      cls: "attend-settings-nav-btn",
+      cls: "astra-settings-nav-btn",
       attr: { type: "button" },
     });
-    const iconEl = button.createSpan({ cls: "attend-settings-nav-icon" });
+    const iconEl = button.createSpan({ cls: "astra-settings-nav-icon" });
     setIcon(iconEl, section.icon);
     button.createSpan({ text: section.label });
     button.addEventListener("click", () => setActiveSection(section.id));
     navButtons.set(section.id, button);
 
-    const sectionEl = contentEl.createDiv({ cls: "attend-settings-section" });
+    const sectionEl = contentEl.createDiv({ cls: "astra-settings-section" });
     sectionEls.set(section.id, sectionEl);
     if (index === 0) {
       sectionEl.addClass("is-active");
@@ -279,7 +279,7 @@ function renderSettings(
   generalGroup.addSetting((setting) =>
     setting
       .setName("启动时打开首页")
-      .setDesc("Obsidian 工作区加载完成后自动显示 Dashboard。")
+      .setDesc("Obsidian 工作区加载完成后自动显示 Astra。")
       .addToggle((toggle) =>
         toggle
           .setValue(plugin.data.settings.openOnStartup)
@@ -381,7 +381,7 @@ function renderSettings(
       .setDesc("用「英文逗号」分隔的阶段列表，决定项目管道与筛选。")
       .addText((text) =>
         text
-          .setPlaceholder("立项,规划,开发,测试,上线")
+          .setPlaceholder("Charter,PDCP,TR,ADCP,COR")
           .setValue(plugin.data.settings.npdpStages.join(","))
           .onChange(async (value) => {
             plugin.data.settings.npdpStages = value
@@ -459,7 +459,7 @@ function renderSettings(
     qc: "快速捕获",
     dailyPhrase: "每日口语",
     todo: "TODO",
-    weekly: "待办进展",
+    weekly: "任务进展",
     projects: "项目情况",
     countdown: "倒计时",
     recent: "最近笔记"
@@ -718,7 +718,7 @@ type MinimalStringKey =
   | "chartWidth";
 function renderMinimalSettings(
   container: HTMLElement,
-  plugin: AttendDashboardPlugin
+  plugin: AstraDashboardPlugin
 ): void {
   const manager = plugin.minimalManager;
   if (!manager) return;
@@ -821,7 +821,7 @@ function renderMinimalSettings(
 
 function renderLinterSettings(
   container: HTMLElement,
-  plugin: AttendDashboardPlugin
+  plugin: AstraDashboardPlugin
 ): void {
   const manager = plugin.linterManager;
   if (!manager) return;

@@ -1,8 +1,8 @@
 import type { App, PluginManifest} from "obsidian";
 import { Plugin, TFile } from "obsidian";
 import {
-  AttendDashboardView,
-  VIEW_TYPE_ATTEND_DASHBOARD
+  AstraDashboardView,
+  VIEW_TYPE_ASTRA_DASHBOARD
 } from "./dashboard-view";
 import {
   DEFAULT_DATA,
@@ -10,12 +10,12 @@ import {
   DEFAULT_SETTINGS,
   DEFAULT_CURSOR_POSITION_SETTINGS,
   DEFAULT_CALENDAR_SETTINGS,
-  type AttendPluginData,
-  type AttendSettings,
+  type AstraPluginData,
+  type AstraSettings,
   type ForceViewModeSettings,
   type StartupMode
 } from "./models";
-import { AttendSettingTab } from "./settings";
+import { AstraSettingTab } from "./settings";
 import { StatsService } from "./stats-service";
 import { ForceViewModeManager } from "./forceViewMode";
 import { CursorPositionManager } from "./cursorPosition";
@@ -28,8 +28,8 @@ import { LinterManager } from "./linter/manager";
 import { StaticStore } from "./static-store";
 import type { IWeekStartOption } from "obsidian-calendar-ui";
 
-export default class AttendDashboardPlugin extends Plugin {
-  data: AttendPluginData = structuredClone(DEFAULT_DATA);
+export default class AstraDashboardPlugin extends Plugin {
+  data: AstraPluginData = structuredClone(DEFAULT_DATA);
   stats!: StatsService;
   forceViewModeManager!: ForceViewModeManager;
   cursorPositionManager!: CursorPositionManager;
@@ -46,20 +46,19 @@ export default class AttendDashboardPlugin extends Plugin {
   }
 
   async onload(): Promise<void> {
-    console.log("[LinterLite] plugin onload start");
     await this.loadPluginData();
     this.stats = new StatsService(this.app, this);
 
     this.registerView(
-      VIEW_TYPE_ATTEND_DASHBOARD,
-      (leaf) => new AttendDashboardView(leaf, this)
+      VIEW_TYPE_ASTRA_DASHBOARD,
+      (leaf) => new AstraDashboardView(leaf, this)
     );
 
-    this.addRibbonIcon("home", "打开 Dashboard", () => {
+    this.addRibbonIcon("home", "打开 Astra", () => {
       void this.openDashboard("new-tab");
     });
 
-    this.addSettingTab(new AttendSettingTab(this.app, this));
+    this.addSettingTab(new AstraSettingTab(this.app, this));
 
     // Calendar
     this.registerView(VIEW_TYPE_CALENDAR, (leaf) => new CalendarView(leaf));
@@ -84,12 +83,10 @@ export default class AttendDashboardPlugin extends Plugin {
 
     // Linter 设置（存于 Section2 的 static-data.json，挂在 Markdown+ Section）
     this.linterManager = new LinterManager(this.app, this, this.section2Store);
-    console.log("[LinterLite] about to init LinterManager");
     try {
       await this.linterManager.onload();
-      console.log("[LinterLite] LinterManager.onload OK");
-    } catch (err) {
-      console.error("[LinterLite] LinterManager.onload FAILED", err);
+    } catch {
+      // LinterManager 初始化失败不影响其余功能
     }
 
     this.app.workspace.onLayoutReady(() => {
@@ -119,7 +116,7 @@ export default class AttendDashboardPlugin extends Plugin {
     mode: StartupMode = this.data.settings.startupMode
   ): Promise<void> {
     const existing = this.app.workspace.getLeavesOfType(
-      VIEW_TYPE_ATTEND_DASHBOARD
+      VIEW_TYPE_ASTRA_DASHBOARD
     )[0];
     if (existing) {
       await this.app.workspace.revealLeaf(existing);
@@ -131,7 +128,7 @@ export default class AttendDashboardPlugin extends Plugin {
         ? this.app.workspace.getLeaf("tab")
         : this.app.workspace.getLeaf(false);
     await leaf.setViewState({
-      type: VIEW_TYPE_ATTEND_DASHBOARD,
+      type: VIEW_TYPE_ASTRA_DASHBOARD,
       active: true
     });
     await this.app.workspace.revealLeaf(leaf);
@@ -140,26 +137,26 @@ export default class AttendDashboardPlugin extends Plugin {
   /** 打开首页看板并内嵌跳转到「全部项目」（不新开独立标签页）。 */
   async openProjectBoard(): Promise<void> {
     const leaves = this.app.workspace.getLeavesOfType(
-      VIEW_TYPE_ATTEND_DASHBOARD
+      VIEW_TYPE_ASTRA_DASHBOARD
     );
     const existing = leaves[0];
     if (!existing) {
       const leaf = this.app.workspace.getLeaf("tab");
       await leaf.setViewState({
-        type: VIEW_TYPE_ATTEND_DASHBOARD,
+        type: VIEW_TYPE_ASTRA_DASHBOARD,
         active: true
       });
       await this.app.workspace.revealLeaf(leaf);
       // 等新面板完成 onOpen 的首次渲染后再导航，避免被后续渲染覆盖
       await new Promise((resolve) => window.setTimeout(resolve, 60));
       const view = leaf.view;
-      if (view instanceof AttendDashboardView) {
+      if (view instanceof AstraDashboardView) {
         await view.navigateProjectBoard(null);
       }
       return;
     }
     await this.app.workspace.revealLeaf(existing);
-    if (existing.view instanceof AttendDashboardView) {
+    if (existing.view instanceof AstraDashboardView) {
       await existing.view.navigateProjectBoard(null);
     }
   }
@@ -200,9 +197,9 @@ export default class AttendDashboardPlugin extends Plugin {
   refreshDashboardViews(force = false): void {
     if (force) this.stats.invalidate();
     this.app.workspace
-      .getLeavesOfType(VIEW_TYPE_ATTEND_DASHBOARD)
+      .getLeavesOfType(VIEW_TYPE_ASTRA_DASHBOARD)
       .forEach((leaf) => {
-        if (leaf.view instanceof AttendDashboardView) {
+        if (leaf.view instanceof AstraDashboardView) {
           leaf.view.requestRefresh();
         }
       });
@@ -244,7 +241,7 @@ export default class AttendDashboardPlugin extends Plugin {
   }
 
   private async loadPluginData(): Promise<void> {
-    const saved = (await this.loadData()) as Partial<AttendPluginData> | null;
+    const saved = (await this.loadData()) as Partial<AstraPluginData> | null;
 
     // Migrate heatmap settings from malformed values produced by earlier
     // reconciliation bugs.  Old code could persist quoted empty strings
@@ -325,7 +322,7 @@ export default class AttendDashboardPlugin extends Plugin {
     await this.section2Store.load();
     await this.section2Store.migrateFromLegacy();
     const legacyFV = (
-      saved?.settings as Partial<AttendSettings> & {
+      saved?.settings as Partial<AstraSettings> & {
         forceViewMode?: ForceViewModeSettings;
       }
     )?.forceViewMode;

@@ -106,7 +106,7 @@ export class StaticStore {
   async migrateFromLegacy(): Promise<void> {
     const adapter = this.plugin.app.vault.adapter;
     // 兼容读取旧文件：既检查正确位置（插件目录下），也检查早期「路径粘连」bug
-    // 产生的错位文件（.obsidian/plugins/attentionminimal-settings.json 等）。
+    // 产生的错位文件（.obsidian/plugins/astral-trekminimal-settings.json 等）。
     const candidatePaths = (fileName: string): string[] => {
       const correct = this.pathInPluginDir(fileName);
       const misplaced = normalizePath([this.plugin.manifest.dir, fileName].join(""));

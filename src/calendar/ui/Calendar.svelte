@@ -92,7 +92,7 @@
   }
 
   function handleHoverDay(date, targetEl, isMetaPressed) {
-    onHoverDay(date.format("YYYY-MM-DD"), isMetaPressed);
+    onHoverDay(date.format("YYYY-MM-DD"), isMetaPressed, targetEl);
     return true;
   }
 
@@ -107,13 +107,13 @@
 </script>
 
 <div
-  class="attend-calendar-outer"
+  class="astra-calendar-outer"
   class:highlight-today={highlightToday}
   bind:this={outerEl}
   style="overflow: visible; height: {innerHeight ? innerHeight * zoomLevel : 300}px;"
 >
   <div
-    class="attend-calendar-inner"
+    class="astra-calendar-inner"
     class:stretch={useStretch}
     bind:this={innerEl}
     bind:clientHeight={innerHeight}
@@ -136,29 +136,29 @@
 </div>
 
 <style>
-  .attend-calendar-outer {
+  .astra-calendar-outer {
     width: 100%;
     min-height: auto;
     transition: height 0.15s ease-out;
   }
 
-  .attend-calendar-inner {
+  .astra-calendar-inner {
     transform-origin: top left;
   }
 
-  :global(.attend-calendar-outer .calendar .day) {
+  :global(.astra-calendar-outer .calendar .day) {
     text-shadow: none !important;
     -webkit-text-stroke: 0 !important;
     paint-order: normal !important;
   }
 
-  :global(.attend-calendar-outer:not(.highlight-today) .calendar .day.today) {
+  :global(.astra-calendar-outer:not(.highlight-today) .calendar .day.today) {
     color: var(--text-normal) !important;
     font-weight: normal !important;
     background-color: transparent !important;
   }
 
-  :global(.attend-calendar-outer.highlight-today .calendar .day.today) {
+  :global(.astra-calendar-outer.highlight-today .calendar .day.today) {
     color: var(--text-normal) !important;
     font-weight: normal !important;
     background-color: rgba(59, 130, 246, 0.15) !important;
