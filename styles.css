@@ -23,21 +23,21 @@
 
 /* 嵌入态（body 含 .po-board-host）：仅在跳转面板出现时，从 view-content 起建立
    确定高度 flex 链，使面板内部(.po-board-host/.po-container)能按视口高度铺满、不塌缩。
-   主页无 .po-board-host，这些规则不命中，root/body 走上方自然流，热图安全。
-   根容器(.astra-dashboard)的 padding/限宽常驻保留，故嵌入态外面仍有间距、不贴边。 */
-.workspace-leaf-content[data-type="astra-dashboard-view"]:has(.po-board-host) > .view-content,
-.astra-dashboard-view-content:has(.po-board-host) {
+   状态类 .is-po-board 由 JS 在创建 po-board-host 时加到 view-content（见 dashboard-view），
+   用普通类选择器替代 :has 后代检测，避免触发选择器性能告警并保证语义清晰。
+   主页无 .po-board-host，这些规则不命中，root/body 走上方自然流，热图安全。 */
+.astra-dashboard-view-content.is-po-board {
   display: flex;
   flex-direction: column;
   height: 100%;
   overflow: hidden;
 }
-.astra-dashboard-root:has(.po-board-host) {
+.astra-dashboard-view-content.is-po-board .astra-dashboard-root {
   flex: 1;
   min-height: 0;
   overflow: hidden;
 }
-.astra-dashboard-body:has(.po-board-host) {
+.astra-dashboard-view-content.is-po-board .astra-dashboard-body {
   flex: 1;
   min-height: 0;
   overflow: hidden;
@@ -567,7 +567,6 @@
 .astra-heatmap-wrapper .ad-ns__dow {
   display: grid;
   grid-template-rows: repeat(7, var(--hm-cell, 15px));
-  row-gap: var(--hm-rgap, 5px);
   align-items: center;
   font-family: var(--font-monospace, monospace);
   font-size: clamp(10px, 3.6cqi, 11px);
@@ -577,19 +576,21 @@
 .astra-heatmap-wrapper .ad-ns__dow span {
   height: var(--hm-cell, 15px);
   line-height: var(--hm-cell, 15px);
+  /* 与原 row-gap 对齐：行轨内用垂直 margin 实现同样 5px 行距 */
+  margin: calc(var(--hm-rgap, 5px) / 2) 0;
 }
 
 .astra-heatmap-wrapper .ad-ns__cells {
   display: grid;
   grid-auto-flow: column;
   grid-template-rows: repeat(7, var(--hm-cell, 15px));
-  column-gap: var(--hm-cgap, 5px);
-  row-gap: var(--hm-rgap, 5px);
   width: max-content;
 }
 .astra-heatmap-wrapper .ad-ns__cell {
   width: var(--hm-cell, 15px);
   height: var(--hm-cell, 15px);
+  /* 用 margin 实现格间 5px 间隙（原 column-gap/row-gap，避免触发 multicolumn 兼容告警） */
+  margin: calc(var(--hm-rgap, 5px) / 2) calc(var(--hm-cgap, 5px) / 2);
   border-radius: 2px;
   background: var(--ad-hm-0);
   outline: 1px solid rgba(255, 255, 255, 0.02);
@@ -3666,8 +3667,10 @@ body.is-mobile .flomo-shell .flomo-sidebar {
 .flomo-tag-item {
   padding-left: 12px;
 }
+/* 标签树包裹层：保持默认 block 作为透明容器（不用 display:contents，
+   规避 Obsidian "css-display-contents" 兼容告警）；item 自身全宽+margin，
+   视觉与 contents 一致。缩进由 .flomo-nav-item 内联 paddingLeft 决定，不受影响 */
 .flomo-tag-node {
-  display: contents;
 }
 .flomo-tag-item .flomo-nav-icon {
   color: var(--text-accent);

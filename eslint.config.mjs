@@ -30,8 +30,9 @@ export default tseslint.config(
       "@typescript-eslint/no-misused-promises": "error",
       "no-console": "warn",
       // 声明式设置 API（getSettingDefinitions）是 1.13 新特性，完整迁移属于
-      // 独立重构；当前设置页为命令式构建，先关闭此建议性规则。
+      // 独立重构；当前设置页为命令式构建，先关闭此建议性规则（两条相关规则）。
       "obsidianmd/settings-tab/prefer-setting-definitions": "off",
+      "obsidianmd/settings-tab/progressive-api": "off",
       // 本插件 UI 以中文为主，该规则会把非首词强转小写（"Sean"→"sean"、
       // "Dashboard"→"dashboard"、"UTC"→"utc"），对中文与品牌名基本是误报。
       "obsidianmd/ui/sentence-case": "off"

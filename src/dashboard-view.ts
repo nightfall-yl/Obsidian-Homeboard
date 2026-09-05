@@ -255,7 +255,8 @@ export class AstraDashboardView extends ItemView {
    *  仅在首次调用时创建 header（欢迎/日期/按钮行），后续页面切换只替换 body。 */
   private ensureDashboardRoot(snapshot: DashboardSnapshot | null): HTMLElement {
     if (this.dashboardRootEl && this.dashboardRootEl.isConnected) {
-      // body 重建前先清掉旧的 body
+      // body 重建前先清掉旧的 body，并复位嵌入态标记
+      this.contentEl.removeClass("is-po-board");
       if (this.dashboardBodyEl) {
         this.dashboardBodyEl.remove();
         this.dashboardBodyEl = null;
@@ -938,6 +939,7 @@ export class AstraDashboardView extends ItemView {
     this.clearRenderResources();
     const body = this.ensureDashboardRoot(this.lastSnapshot);
     body.empty();
+    this.contentEl.addClass("is-po-board");
     // 面板宿主容器
     const host = body.createDiv("po-board-host");
     const panel = new FlomoBoardPanel(
@@ -1414,6 +1416,7 @@ export class AstraDashboardView extends ItemView {
     this.clearRenderResources();
     const body = this.ensureDashboardRoot(this.lastSnapshot);
     body.empty();
+    this.contentEl.addClass("is-po-board");
     // 看板宿主容器（标题交给 Obsidian 原生头部 view-header）
     const host = body.createDiv("po-board-host");
     const panel = new ProjectBoardPanel(host, this.plugin);
