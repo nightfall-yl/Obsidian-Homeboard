@@ -479,9 +479,9 @@
   letter-spacing: 0.02em;
   line-height: 1;
 }
-.ad-badge--danger {
-  background: var(--astra-accent-red) !important;
-  color: #fff !important;
+.astra-surface-header > .ad-badge.ad-badge--danger {
+  background: var(--astra-accent-red);
+  color: #fff;
   animation: ad-badge-blink 2.2s ease-in-out infinite;
 }
 @keyframes ad-badge-blink {
@@ -567,6 +567,7 @@
 .astra-heatmap-wrapper .ad-ns__dow {
   display: grid;
   grid-template-rows: repeat(7, var(--hm-cell, 15px));
+  row-gap: var(--hm-rgap, 5px);
   align-items: center;
   font-family: var(--font-monospace, monospace);
   font-size: clamp(10px, 3.6cqi, 11px);
@@ -576,21 +577,19 @@
 .astra-heatmap-wrapper .ad-ns__dow span {
   height: var(--hm-cell, 15px);
   line-height: var(--hm-cell, 15px);
-  /* 与原 row-gap 对齐：行轨内用垂直 margin 实现同样 5px 行距 */
-  margin: calc(var(--hm-rgap, 5px) / 2) 0;
 }
 
 .astra-heatmap-wrapper .ad-ns__cells {
   display: grid;
   grid-auto-flow: column;
   grid-template-rows: repeat(7, var(--hm-cell, 15px));
+  column-gap: var(--hm-cgap, 5px);
+  row-gap: var(--hm-rgap, 5px);
   width: max-content;
 }
 .astra-heatmap-wrapper .ad-ns__cell {
   width: var(--hm-cell, 15px);
   height: var(--hm-cell, 15px);
-  /* 用 margin 实现格间 5px 间隙（原 column-gap/row-gap，避免触发 multicolumn 兼容告警） */
-  margin: calc(var(--hm-rgap, 5px) / 2) calc(var(--hm-cgap, 5px) / 2);
   border-radius: 2px;
   background: var(--ad-hm-0);
   outline: 1px solid rgba(255, 255, 255, 0.02);
@@ -1236,17 +1235,17 @@
 }
 
 .calendar-confirm-modal .modal-buttons {
-  display: flex !important;
-  flex-direction: row !important;
-  justify-content: flex-end !important;
-  align-items: center !important;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
   gap: 12px;
   margin-top: 16px;
 }
 
 .calendar-confirm-modal .modal-buttons .modal-button {
-  float: none !important;
-  display: inline-flex !important;
+  float: none;
+  display: inline-flex;
 }
 
 /* 通用确认弹窗（confirmDialog，替代 window.confirm） */
@@ -1446,9 +1445,9 @@
   cursor: grabbing;
   pointer-events: none;
 }
-.astra-card--doomed {
+.astra-card.astra-card--doomed {
   opacity: 0.45;
-  outline: 2px dashed var(--astra-accent-red, #e5534b) !important;
+  outline: 2px dashed var(--astra-accent-red, #e5534b);
 }
 
 /* 添加卡片菜单 */
@@ -1539,13 +1538,15 @@
 }
 /* 快速捕获模块卡片本身也需要 overflow: visible，否则输入卡的 focus box-shadow 会被裁剪 */
 .astra-modules-grid .astra-qc-surface {
-  overflow: visible !important;
+  /* 特异性 0-2-0 已高于泛型卡片(0-1-0)，无需 !important */
+  overflow: visible;
 }
 .astra-modules-grid .qc-input-card {
-  margin: 0 !important;
+  /* 0-2-0 > .flomo-input-card(0-1-0)，去 !important 后仍能覆盖其 margin/flex */
+  margin: 0;
   padding: 14px 16px 10px;
-  flex: 1 1 auto !important;
-  flex-shrink: 1 !important;
+  flex: 1 1 auto;
+  flex-shrink: 1;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -3910,6 +3911,16 @@ body.is-mobile .flomo-shell .flomo-sidebar {
   .flomo-otd-action-btn {
     padding: 5px 10px;
     font-size: 12px;
+  }
+  /* 移动端编辑态：datetime 占据整行，取消/保存落到下一行，
+     避免日期控件挤压/遮挡按钮 */
+  .flomo-edit-wrap {
+    flex-wrap: wrap;
+    gap: 8px 6px;
+  }
+  .flomo-edit-datetime {
+    flex: 1 1 100%;
+    width: 100%;
   }
 }
 
