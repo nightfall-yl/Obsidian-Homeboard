@@ -8,7 +8,7 @@ import {
   normalizePath,
   setIcon,
 } from "obsidian";
-import type { App } from "obsidian";
+import type { App, SettingDefinitionItem } from "obsidian";
 import type AstraDashboardPlugin from "./main";
 import type { StartupMode } from "./models";
 import {
@@ -32,6 +32,22 @@ export class AstraSettingTab extends PluginSettingTab {
   display(): void {
     renderSettings(this.containerEl, this.astraPlugin);
   }
+
+  /**
+   * 声明式设置 API（Obsidian 1.13+）：
+   * 本插件设置页为命令式构建（见下方 renderSettings），返回空数组以保持
+   * Obsidian 继续调用 display() 走命令式渲染，避免声明式接管整页设置。
+   * 该空实现仅为显式声明“已采纳声明式接口”，供设置搜索/校验器识别。
+   */
+  getSettingDefinitions(): SettingDefinitionItem[] {
+    return [];
+  }
+
+  getControlValue(): unknown {
+    return undefined;
+  }
+
+  setControlValue(_key: string, _value: unknown): void | Promise<void> {}
 }
 
 export class AstraSettingsModal extends Modal {

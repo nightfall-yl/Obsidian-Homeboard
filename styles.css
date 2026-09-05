@@ -2056,7 +2056,6 @@ body.theme-light .ad-task-modal {
   flex: 1;
   display: flex;
   gap: 10px;
-  min-height: 0;
   border-radius: var(--ad-r3);
   overflow: hidden;
   border: 1px solid var(--ad-line);
