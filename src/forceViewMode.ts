@@ -145,14 +145,14 @@ export class ForceViewModeManager {
       if (!view.file) return;
 
       const fileCache = this.plugin.app.metadataCache.getFileCache(view.file);
-      const fileDeclaredUIMode =
-        fileCache !== null && fileCache.frontmatter
-          ? fileCache.frontmatter[this.OBSIDIAN_UI_MODE_KEY]
-          : null;
-      const fileDeclaredEditingMode =
-        fileCache !== null && fileCache.frontmatter
-          ? fileCache.frontmatter[this.OBSIDIAN_EDITING_MODE_KEY]
-          : null;
+      // frontmatter 索引值为 any：先收进 unknown（安全类型），再用 typeof 窄化成 string，
+      // 既避免 no-unsafe-assignment，也不会触发 no-unnecessary-type-assertion。
+      const uiModeRaw: unknown = fileCache?.frontmatter?.[this.OBSIDIAN_UI_MODE_KEY];
+      const editingModeRaw: unknown = fileCache?.frontmatter?.[this.OBSIDIAN_EDITING_MODE_KEY];
+      const fileDeclaredUIMode: string | null =
+        typeof uiModeRaw === "string" ? uiModeRaw : null;
+      const fileDeclaredEditingMode: string | null =
+        typeof editingModeRaw === "string" ? editingModeRaw : null;
 
       if (fileDeclaredUIMode) {
         if (
@@ -179,18 +179,13 @@ export class ForceViewModeManager {
       }
 
       // Default behavior
-      // @ts-ignore - accessing internal vault config
-      const defaultViewMode = this.plugin.app.vault.config?.defaultViewMode
-        ? // @ts-ignore
-          this.plugin.app.vault.config.defaultViewMode
-        : "source";
-      // @ts-ignore
+      const cfg = this.plugin.app.vault.config; // 内部未公开配置（见 obsidian-internals.d.ts）
+      const defaultViewMode =
+        typeof cfg.defaultViewMode === "string" && cfg.defaultViewMode
+          ? cfg.defaultViewMode
+          : "source";
       const defaultEditingModeIsLivePreview =
-        // @ts-ignore
-        this.plugin.app.vault.config?.livePreview === undefined
-          ? true
-          : // @ts-ignore
-            this.plugin.app.vault.config.livePreview;
+        cfg.livePreview === undefined ? true : cfg.livePreview === true;
 
       if (!this.settings.ignoreForceViewAll) {
         const newState = leaf.getViewState();
@@ -230,10 +225,8 @@ export class ForceViewModeManager {
     this.plugin.app.workspace.iterateAllLeaves((leaf) => {
       const view = leaf.view instanceof MarkdownView ? leaf.view : null;
       if (null === view) return;
-      // @ts-ignore - accessing file property
-      if (leaf.view?.file?.basename) {
-        // @ts-ignore
-        openedFiles.push(leaf.view.file.basename);
+      if (view.file?.basename) {
+        openedFiles.push(view.file.basename);
       }
     });
     return openedFiles;

@@ -120,16 +120,12 @@ export class MinimalManager {
 
   private setupListeners(): void {
     const settingsUpdate = () => {
-      // @ts-ignore Obsidian does not expose these in public typings.
       const fontSize = this.app.vault.getConfig("baseFontSize");
-      this.settings.textNormal = fontSize;
+      this.settings.textNormal = typeof fontSize === "number" ? fontSize : this.settings.textNormal;
 
-      // @ts-ignore
-      const folding = this.app.vault.getConfig("foldHeading") ? true : false;
-      // @ts-ignore
-      const lineNumbers = this.app.vault.getConfig("showLineNumber") ? true : false;
-      // @ts-ignore
-      const readableLineLength = this.app.vault.getConfig("readableLineLength") ? true : false;
+      const folding = this.app.vault.getConfig("foldHeading") === true;
+      const lineNumbers = this.app.vault.getConfig("showLineNumber") === true;
+      const readableLineLength = this.app.vault.getConfig("readableLineLength") === true;
 
       this.settings.folding = folding;
       this.settings.lineNumbers = lineNumbers;

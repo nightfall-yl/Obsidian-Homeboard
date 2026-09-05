@@ -411,7 +411,13 @@ export class FlomoBoardPanel {
       },
     ];
     for (const p of presets) {
-      this.renderNavItem(sidebar, p.key, p.icon, p.text, p.count);
+      this.renderNavItem(
+        sidebar,
+        p.key as Parameters<typeof this.renderNavItem>[1],
+        p.icon,
+        p.text,
+        p.count
+      );
     }
 
     // —— 检索式

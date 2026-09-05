@@ -62,7 +62,7 @@ export class CursorPositionManager {
 
     this.plugin.registerEvent(
       this.plugin.app.workspace.on("quit", () => {
-        this.writeDb(this.db);
+        void this.writeDb(this.db);
       })
     );
 
@@ -81,14 +81,16 @@ export class CursorPositionManager {
     );
 
     this.plugin.registerInterval(
-      window.setInterval(() => this.writeDb(this.db), this.settings.saveTimer)
+      window.setInterval(() => {
+        void this.writeDb(this.db);
+      }, this.settings.saveTimer)
     );
 
-    this.restoreEphemeralState();
+    void this.restoreEphemeralState();
   }
 
   onunload() {
-    this.writeDb(this.db);
+    void this.writeDb(this.db);
   }
 
   private renameFile(file: TAbstractFile, oldPath: string) {
@@ -114,7 +116,7 @@ export class CursorPositionManager {
     if (!this.lastEphemeralState) this.lastEphemeralState = st;
 
     if (!isNaN(st.scroll!) && !this.isEphemeralStatesEquals(st, this.lastEphemeralState)) {
-      this.saveEphemeralState(st);
+      void this.saveEphemeralState(st);
       this.lastEphemeralState = st;
     }
   }
@@ -198,7 +200,7 @@ export class CursorPositionManager {
 
     if (await this.plugin.app.vault.adapter.exists(this.dbFilePath)) {
       const data = await this.plugin.app.vault.adapter.read(this.dbFilePath);
-      db = JSON.parse(data);
+      db = JSON.parse(data) as typeof db;
     }
 
     return db;
@@ -209,12 +211,12 @@ export class CursorPositionManager {
 
     const newParentFolder = this.dbFilePath.substring(0, this.dbFilePath.lastIndexOf("/"));
     if (newParentFolder && !(await this.plugin.app.vault.adapter.exists(newParentFolder))) {
-      this.plugin.app.vault.adapter.mkdir(newParentFolder);
+      await this.plugin.app.vault.adapter.mkdir(newParentFolder);
     }
 
     if (JSON.stringify(this.db) !== JSON.stringify(this.lastSavedDb)) {
-      this.plugin.app.vault.adapter.write(this.dbFilePath, JSON.stringify(db));
-      this.lastSavedDb = JSON.parse(JSON.stringify(db));
+      await this.plugin.app.vault.adapter.write(this.dbFilePath, JSON.stringify(db));
+      this.lastSavedDb = JSON.parse(JSON.stringify(db)) as typeof this.lastSavedDb;
     }
   }
 

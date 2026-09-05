@@ -7,3 +7,4 @@ dist/
 docs/*
 !docs/attend-dashboard-preview.png
 obsidian-dashboard-main/
+.workbuddy/

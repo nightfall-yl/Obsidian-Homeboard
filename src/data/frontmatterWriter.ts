@@ -29,7 +29,7 @@ export function yamlScalar(value: string): string {
 		value.endsWith(':') ||
 		value.includes(' #') ||
 		value.trim() !== value ||
-		/^[#\-?&*!|>'"%@`\[\]{},]/.test(value);
+		/^[#\-?&*!|>'"%@`[\]{},]/.test(value);
 	return unsafe ? JSON.stringify(value) : value;
 }
 

@@ -47,9 +47,15 @@ export class CalendarView extends ItemView {
     this.calendar = new Calendar({
       target: this.containerEl.children[1] as HTMLElement,
       props: {
-        onDateClick: this.onDateClick.bind(this),
-        onHoverDay: this.onHoverDay.bind(this),
-        onContextMenuDay: this.onContextMenuDay.bind(this),
+        // 不用 .bind(this)：未开启 strictBindCallApply 时 bind 返回 any，
+        // 会触发 no-unsafe-assignment；箭头函数既保类型又保 this。
+        onDateClick: (date: string, isMetaPressed: boolean) => {
+          void this.onDateClick(date, isMetaPressed);
+        },
+        onHoverDay: (date: string, isMetaPressed: boolean, targetEl?: unknown) =>
+          this.onHoverDay(date, isMetaPressed, targetEl),
+        onContextMenuDay: (date: string, event: MouseEvent) =>
+          this.onContextMenuDay(date, event),
       },
     });
 

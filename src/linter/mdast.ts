@@ -48,7 +48,7 @@ function parseTextToAST(text: string): Root {
   });
 
   if (LRU.size >= MAX_CACHE) {
-    const oldest = LRU.keys().next().value;
+    const oldest = LRU.keys().next().value as string;
     if (oldest !== undefined) LRU.delete(oldest);
   }
   LRU.set(text, ast);

@@ -813,7 +813,7 @@ export class AstraDashboardView extends ItemView {
     const prop = settings.dateFieldValue?.trim();
     if (!prop) return null;
     const cache = this.app.metadataCache.getFileCache(file);
-    const raw = cache?.frontmatter?.[prop];
+    const raw = cache?.frontmatter?.[prop] as string | number | Date | null | undefined;
     if (raw == null) return null;
     if (typeof raw === "number") return new Date(raw);
     if (raw instanceof Date) return raw;
@@ -1240,7 +1240,9 @@ export class AstraDashboardView extends ItemView {
             void this.toggleTask(task, row);
           });
           const text = row.createSpan({ cls: "ad-todo__text", text: task.content });
-          this.listen(text, "click", () => this.openTaskEditModal(task));
+          this.listen(text, "click", () => {
+            void this.openTaskEditModal(task);
+          });
           const prioLabel = task.priority || "未设置";
           row.createSpan({
             cls: "ad-todo__tag",
@@ -1384,7 +1386,9 @@ export class AstraDashboardView extends ItemView {
         });
       }
     }
-    this.listen(li, "click", () => this.openTaskEditModal(task));
+    this.listen(li, "click", () => {
+      void this.openTaskEditModal(task);
+    });
     this.listen(li, "contextmenu", (e) => {
       e.preventDefault();
       const menu = new Menu();

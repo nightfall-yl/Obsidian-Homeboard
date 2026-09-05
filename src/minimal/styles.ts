@@ -153,8 +153,6 @@ export function removeLightScheme(): void {
 }
 
 export function setFontSize(app: App, textNormal: number): void {
-  // @ts-ignore Obsidian does not expose these in public typings.
   app.vault.setConfig("baseFontSize", textNormal);
-  // @ts-ignore
   app.updateFontSize();
 }

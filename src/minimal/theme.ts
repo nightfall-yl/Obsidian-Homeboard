@@ -10,11 +10,8 @@ export function updateDarkStyle(app: App, settings: MinimalSettings): void {
     "minimal-dark-black"
   );
   document.body.addClass("theme-dark", settings.darkStyle);
-  // @ts-ignore Not exposed in public typings.
   if (app.vault.getConfig("theme") !== "system") {
-    // @ts-ignore
     app.setTheme("obsidian");
-    // @ts-ignore
     app.vault.setConfig("theme", "obsidian");
   }
   app.workspace.trigger("css-change");
@@ -29,11 +26,8 @@ export function updateLightStyle(app: App, settings: MinimalSettings): void {
     "minimal-light-white"
   );
   document.body.addClass("theme-light", settings.lightStyle);
-  // @ts-ignore Not exposed in public typings.
   if (app.vault.getConfig("theme") !== "system") {
-    // @ts-ignore
     app.setTheme("moonstone");
-    // @ts-ignore
     app.vault.setConfig("theme", "moonstone");
   }
   app.workspace.trigger("css-change");
@@ -50,7 +44,6 @@ export function updateLightScheme(settings: MinimalSettings): void {
 }
 
 export function updateTheme(app: App): void {
-  // @ts-ignore
   if (app.vault.getConfig("theme") === "system") {
     if (document.body.classList.contains("theme-light")) {
       document.body.removeClass("theme-light");
@@ -68,13 +61,10 @@ export function updateTheme(app: App): void {
       document.body.addClass("theme-light");
     }
 
-    // @ts-ignore
     const currentTheme = app.vault.getConfig("theme");
     const newTheme = currentTheme === "moonstone" ? "obsidian" : "moonstone";
 
-    // @ts-ignore
     app.setTheme(newTheme);
-    // @ts-ignore
     app.vault.setConfig("theme", newTheme);
   }
   app.workspace.trigger("css-change");

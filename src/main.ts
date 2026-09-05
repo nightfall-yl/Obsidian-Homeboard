@@ -75,7 +75,7 @@ export default class AstraDashboardPlugin extends Plugin {
 
     // Cursor Position
     this.cursorPositionManager = new CursorPositionManager(this, this.data.settings.cursorPosition);
-    this.cursorPositionManager.onload();
+    void this.cursorPositionManager.onload();
 
     // Minimal 主题设置（存于 Section2 的 static-data.json，挂在 Markdown+ Section）
     this.minimalManager = new MinimalManager(this.app, this, this.section2Store);
@@ -208,7 +208,7 @@ export default class AstraDashboardPlugin extends Plugin {
   async activateCalendarView(): Promise<void> {
     const existing = this.app.workspace.getLeavesOfType(VIEW_TYPE_CALENDAR);
     if (existing.length > 0) {
-      this.app.workspace.revealLeaf(existing[0]!);
+      await this.app.workspace.revealLeaf(existing[0]!);
       return;
     }
     const position = this.data.settings.calendar.position || "left";
@@ -224,7 +224,7 @@ export default class AstraDashboardPlugin extends Plugin {
     }
     const calendarLeaf = this.app.workspace.getLeavesOfType(VIEW_TYPE_CALENDAR)[0];
     if (calendarLeaf) {
-      this.app.workspace.revealLeaf(calendarLeaf);
+      await this.app.workspace.revealLeaf(calendarLeaf);
     }
   }
 

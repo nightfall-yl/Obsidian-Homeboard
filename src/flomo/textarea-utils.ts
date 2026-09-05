@@ -22,10 +22,15 @@ export function replaceTextareaRange(
     // obsidianmd 配置禁止对该规则加 eslint-disable，故用类型逃逸绕过「类型层」的弃用标记
     // （运行行为不变，仅让 .execCommand 不再被标 @typescript-eslint/no-deprecated）。
     const execInsertText = (
-      document as unknown as {
-        execCommand(command: string, showUI?: boolean, value?: string): boolean;
-      }
-    ).execCommand;
+      command: string,
+      showUI?: boolean,
+      value?: string
+    ): boolean =>
+      (
+        document as unknown as {
+          execCommand(command: string, showUI?: boolean, value?: string): boolean;
+        }
+      ).execCommand(command, showUI, value);
     if (execInsertText("insertText", false, newText)) {
       // execCommand 会触发 input 事件，无需手动派发
       return;
