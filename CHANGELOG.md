@@ -2,7 +2,7 @@
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
-> 说明：本更新日志自 `26.1.1` 起维护。`1.0.0` 及更早版本的历史变更不予保留，`versions.json` 中 `1.0.0` 之前的版本条目也已移除。
+> 说明：本更新日志自 `26.1.1` 起维护。
 
 ## [26.1.1] - 2026-09-04
 
@@ -31,6 +31,9 @@
   - 桌面端「链接」与「命令」两个字段改为同一行显示（2 列栅格，与「名称」「图标」一致）。
   - 「命令」字段改为框内联想输入（基于 `AbstractInputSuggest`），去掉原来的「选择」按钮。
 - 移除全部 Minimal 主题命令（49 条）以及 4 条核心命令。现插件**不注册任何命令**，统一通过左侧边栏 Ribbon 的「打开 Astra」「打开日历」两个图标进入（Ribbon 入口与启动时自动打开首页的行为不受影响）。
+- 项目默认阶段命名改为英文：`Charter, PDCP, TR, ADCP, COR`（同步更新设置项默认值与输入框 placeholder）。
+- 移动端（宽度 < 680px）编辑便签时，日期选择框改为独占整行，取消 / 保存按钮换行显示在右侧，避免被日期控件遮挡。
+- `README.md` 在标题下补一段英文简介，满足 Obsidian 社区库对英文描述的要求；并将「本周待办 & 逾期提醒」模块名对齐为「任务进展」。
 
 ### 问题修复
 
@@ -40,6 +43,7 @@
 - 统计值兜底 `String(v ?? "")` 会产生 `[object Object]`：改为仅接受数字与数字字符串。
 - 3 处 `confirm()` 替换为 Obsidian 原生确认弹窗（新增 `confirm-modal.ts`，Esc 与点击遮罩均视为取消）。
 - `Calendar.svelte` 使用已废弃的 `window.event`：改为用 `getBoundingClientRect()` 中心点合成 `MouseEvent`。
+- 热图方格间距在「移除 gap 以规避 multicolumn 告警」后丢失：恢复基于 `row-gap` / `column-gap` 的原始间距（保留 `grid-auto-flow: column` 的既有 multicolumn 标记不再处理）。
 
 ### 工程与代码质量
 
@@ -51,6 +55,11 @@
   - `no-unused-vars` 4 处：内联 `diff_match_patch` 的类型形状；3 处 `catch (error)` 改为 `catch {}`。
 - 关闭 `obsidianmd/ui/sentence-case` 规则：该规则对中文界面属误报（会把非首词强制转小写，如「例如 Sean」→「例如 sean」）。
 - `README.md` 同步更新：产品名改为 Astra，并修正已失效的「4 条命令」表格（现为 0 命令）。
+- 外部校验告警治理（不影响运行时行为）：
+  - 为 `AstraSettingTab` 补实现声明式设置 API 三件套（`getSettingDefinitions` 返回空数组，`getControlValue` / `setControlValue` 空实现）——规避 Obsidian 1.13+ 的 `settings-tab/progressive-api` 告警，同时返回空数组故仍走 `display()`，现有两栏设置页样式不受影响；对应的两条 lint 规则在 `eslint.config.mjs` 关闭。
+  - `styles.css` 移除 4 处 `:has()`（改用 JS 维护的 `is-po-board` 状态类）与 1 处 `display: contents`，消除 `css-display-contents` 等兼容告警。
+  - `!important` 由 28 处精简到 19 处：对可安全提高选择器特异性的条目（逾期角标实色红、日历确认弹窗按钮、快速捕获模块、卡片丢弃态）用复合/提权选择器替代；其余为对抗 Obsidian 内置默认样式的必要防御声明，保留不动。
+  - 移除同规则内重复的 `min-height`；`manifest.json` 描述补句点。
 
 ### 刻意保留
 
