@@ -143,6 +143,14 @@ interface ModuleDragState {
   prevGridPos: string;
   offsetX: number;
   offsetY: number;
+  /** 起手时卡片在 grid 内的基准位置（px）。拖动全程只按指针增量移动，
+   *  不再每帧重算 grid.getBoundingClientRect()——避免 placeholder 插入引发的
+   *  grid 重排/FLIP 让 gr.top 变化，导致卡片瞬间跳位（10px+ 偏移） */
+  baseLeft: number;
+  baseTop: number;
+  /** 起手指针坐标，作为拖动增量基准 */
+  startX: number;
+  startY: number;
   lastX: number;
   lastY: number;
   overTrash: boolean;
@@ -2283,6 +2291,10 @@ export class AstraDashboardView extends ItemView {
     const prevGridPos = board.style.position || "";
     board.setCssProps({ position: "relative" }); // 确保 absolute 以 grid 为定位基准
     card.classList.add("astra-card--dragging"); // 提供 position:absolute / z-index / pointer-events
+    // 同类名 `.astra-card--dragging` 的特异性(0,1,0)低于 `.astra-modules-grid .astra-surface`(0,2,0)，
+    // 后者会把 position 留在 relative，导致卡片作为网格项被 placeholder 挤下一行，再叠加 inline top 偏移 → 向下错位一个模块。
+    // 内联样式优先级最高，强制脱流为 absolute。
+    card.setCssProps({ position: "absolute" });
     card.style.width = rect.width + "px";
     card.style.height = rect.height + "px";
     card.style.left = rect.left - gridRect.left + "px";
@@ -2295,6 +2307,10 @@ export class AstraDashboardView extends ItemView {
       prevGridPos,
       offsetX: clientX - rect.left,
       offsetY: clientY - rect.top,
+      baseLeft: rect.left - gridRect.left,
+      baseTop: rect.top - gridRect.top,
+      startX: clientX,
+      startY: clientY,
       lastX: clientX,
       lastY: clientY,
       overTrash: false,
@@ -2330,10 +2346,11 @@ export class AstraDashboardView extends ItemView {
     ds.moved = true;
     ds.lastX = ev.clientX;
     ds.lastY = ev.clientY;
-    // 用 grid 相对坐标定位，与卡片 absolute 基准一致（与 viewport/fixed 无关，不错位）
-    const gr = ds.grid.getBoundingClientRect();
-    ds.card.style.left = ev.clientX - gr.left - ds.offsetX + "px";
-    ds.card.style.top = ev.clientY - gr.top - ds.offsetY + "px";
+    // 增量式定位：起手记录 baseLeft/baseTop（卡在 grid 内的基准）与 startX/startY，
+    // 此后只按指针增量移动，不再每帧重算 gridRect——避免 placeholder 插入后的
+    // grid 重排/FLIP 让基准跳动（10px+ 偏移根因）
+    ds.card.style.left = ds.baseLeft + (ev.clientX - ds.startX) + "px";
+    ds.card.style.top = ds.baseTop + (ev.clientY - ds.startY) + "px";
 
     // 悬停垃圾桶：高亮并暂停重排，避免边删边抖
     const overTrash = this.isOverModuleTrash(ev.clientX, ev.clientY);
