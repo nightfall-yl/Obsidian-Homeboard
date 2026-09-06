@@ -950,8 +950,8 @@ function renderLinterSettings(
 
   linterGroup.addSetting((setting) => {
     setting
-      .setName("忽略文件夹")
-      .setDesc("对全部文件或保存时格式化的忽略文件夹。")
+      .setName("忽略文件/文件夹")
+      .setDesc("保存时对忽略的文件/文件夹不执行格式化。")
       .addTextArea((text) => {
         text
           .setPlaceholder("模板\n归档/附件")
